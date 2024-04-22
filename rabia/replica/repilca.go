@@ -15,9 +15,9 @@ import (
 
 var conn net.Conn
 var listener net.Listener
-var seq int = 0
-
 var wg sync.WaitGroup
+
+
 
 func init(){
 	gob.Register(Command{})
@@ -51,28 +51,27 @@ func main() {
 	// 他のレプリカのポート番号を取得
 	var portNums, listener = listenAndAcceptConnectionWithProxy(listener, port)
 
+	command:= Command{Op: "write", Timestamp: 0}
 	// 他のレプリカとの同期処理を実装
 	for {
-		weakMVC(port, portNums, listener)
+		weakMVC(command,port, portNums, listener)
 		seq++
 	}
 	
 }
 
-func weakMVC(port string, portNums []int, listener net.Listener) {
+func weakMVC(command Command, selfPort string, portNums []int, listener net.Listener) {
 	return 
 }
 
-func exchangeBefore(port string, portNums []int, listener net.Listener) {
-	for{
-		conn, err := listener.Accept()
-		if err != nil {
-			fmt.Println("接続エラー:", err)
-			return
-		}
+func exchangeBefore(command Command,selfPort string, portNums []int, listener net.Listener) {
+	var cnt int = 0
 
-
-	}
+	for _, portNum := range portNums {
+		go func(portNum int) {
+			
+		}()
+	}	
 
 }
 
