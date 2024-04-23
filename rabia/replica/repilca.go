@@ -42,6 +42,7 @@ func receiveCommand(conn net.Conn) (Command, error) {
 func main() {
 	// サーバーに接続し、自身に割り当てられたポート番号を受け取る
 	var port string = sayHelloAndReceivePortNum(conn)
+	portInt, _ := strconv.Atoi(port)
 
 	// プロキシからの接続を待ち受ける
 	// 他のレプリカのポート番号を取得
@@ -50,50 +51,84 @@ func main() {
 	command := Command{Op: "write", Timestamp: 0}
 	// 他のレプリカとの同期処理を実装
 	for {
-		weakMVC(command, port, portNums, listener)
+		weakMVC(command, portInt, portNums, listener)
 	}
 
 }
 
-func weakMVC(command Command, selfPort string, portNums []int, listener net.Listener) {
-	return
+func weakMVC(command Command, selfPort int, portNums []int, listener net.Listener) {
+	exchangeStage(command, portNums, listener, selfPort)
+	time.Sleep(1000 * time.Millisecond)
 }
 
-func exchangeBefore(command Command, selfPort string, portNums []int, listener net.Listener) int {
 
-	var receiveCnt int = 0
-	var sameCnt int = 0
-	for {
-		conn, err := listener.Accept()
-		if err != nil {
-			fmt.Println("接続エラー:", err)
-			continue
-		}
-		go func(conn net.Conn) {
-			defer conn.Close()
-			data, err := receiveCommand(conn)
-			if err != nil {
-				fmt.Println("コマンド受信エラー:", err)
-				return
-			}
-			fmt.Println("コマンドを受信しました: ", data)
-			receiveCnt++
-			if data == command {
-				sameCnt++
-			}
-			if receiveCnt >= len(portNums)/2+1 {
-				if sameCnt >= len(portNums)/2+1 {
-					return 1
-				}
-				return 0
-			}
-		}(conn)
-	}
-
+func exchangeStage(command Command, portNums []int, listener net.Listener, port int) {
+    // 他のレプリカとの同期処理を実装
+    var state int
+    wg := sync.WaitGroup{}
+    wg.Add(1)
+    go func() {
+        state = exchangeBefore(command, portNums, port, &wg)
+        wg.Done()
+    }()
+    go exchangeAfter(portNums, command, &wg)
+    wg.Wait()
+    fmt.Println("state: ", state)
 }
 
-func exchangeAfter(port string, portNums []int, listener net.Listener) {
+func exchangeBefore(command Command, portNums []int, port int, wg *sync.WaitGroup) int {
+    ln, err := net.Listen("tcp", ":"+strconv.Itoa(port))
+    if err != nil {
+        fmt.Println("リッスンエラー:", err)
+        return -1
+    }
+    defer ln.Close()
 
+    var receiveCnt int = 0
+    var sameCnt int = 0
+
+    for {
+        conn, err := ln.Accept()
+        if err != nil {
+            fmt.Println("接続エラー:", err)
+            return -1
+        }
+
+        go func(conn net.Conn) {
+            defer conn.Close()
+            receivedCommand, err := receiveCommand(conn)
+            if err != nil {
+                fmt.Println("コマンド受信エラー:", err)
+                return
+            }
+            receiveCnt++
+            if receivedCommand == command {
+                sameCnt++
+            }
+        }(conn)
+
+        if receiveCnt == len(portNums)/2+1 {
+            if sameCnt == len(portNums)/2+1 {
+				conn.Close()
+                return 1
+            }
+			conn.Close()
+            return 0
+        }
+		time.Sleep(1 * time.Second)
+    }
+}
+
+func exchangeAfter(portNums []int, command Command, wg *sync.WaitGroup) {
+    for _, portNum := range portNums {
+        conn, err := net.Dial("tcp", "localhost:"+strconv.Itoa(portNum))
+        if err != nil {
+			continue	
+        }
+		fmt.Println("sousinn")
+        defer conn.Close()
+        sendCommand(conn, command)
+    }
 }
 
 func sayHelloAndReceivePortNum(conn net.Conn) string {
@@ -127,11 +162,15 @@ func sayHelloAndReceivePortNum(conn net.Conn) string {
 
 func listenAndAcceptConnectionWithProxy(listener net.Listener, port string) ([]int, net.Listener) {
 	listener, err := net.Listen("tcp", ":"+port)
-
 	if err != nil {
 		fmt.Println("リッスンエラー:", err)
 		return nil, nil
 	}
+	defer func() {
+		if err := listener.Close(); err != nil {
+			fmt.Println("クローズエラー:", err)
+		}
+	}()
 
 	// リクエストを待ち受ける
 	conn, err := listener.Accept()
