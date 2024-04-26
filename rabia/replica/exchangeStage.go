@@ -1,92 +1,92 @@
 package main
 
-
-import(
-	"net"
-	"strconv"
+import (
 	"fmt"
+	"net"
 	"sync"
-	"time"
+	
 )
 
+var Mutex sync.Mutex	
 
-func exchangeStage(command Command, portNums []int, listener net.Listener, port int)int{
-    // 他のレプリカとの同期処理を実装
+
+func exchangeStage(command Command, portNums []int, port int, ln net.Listener) int{
+	conns := setConnectionWithOtherReplicas(portNums, port)
     var state int
     wg := sync.WaitGroup{}
-    wg.Add(1)
-    go func() {
-        state = exchangeBefore(command, portNums, port)
-        wg.Done()
-    }()
-    go exchangeAfter(portNums, command)
-    wg.Wait()
-	return state
+	exchangeAfter(conns, command, &wg)
+	state = exchangeBefore(command, portNums, ln, &wg)
+    return state 
 }
 
-func exchangeBefore(command Command, portNums []int, port int) int {
-    ln, err := net.Listen("tcp", ":"+strconv.Itoa(port))
-    if err != nil {
-        fmt.Println("リッスンエラー:", err)
-        return -1
-    }
-    defer ln.Close()
+func exchangeBefore(command Command, portNums []int, ln net.Listener, wg *sync.WaitGroup) int {
+	var receiveCnt int = 0
+	var sameCnt int = 0
 
-    var receiveCnt int = 0
-    var sameCnt int = 0
+	result := make(chan int)
+	connCh := make(chan net.Conn)
 
-    result := make(chan int)
+	go func() {
+		for {
+			conn, err := ln.Accept()
+			defer ln.Close()
+			if err != nil {
+				fmt.Println("Error accepting: ", err.Error())
+				return
+			}
+			connCh <- conn
+		}
+	}()
 
-    for {
-        conn, err := ln.Accept()
-        if err != nil {
-            fmt.Println("接続エラー:", err)
-            return -1
-        }
+	for {
+		select {
+		case conn := <-connCh:
+			wg.Add(1)
+			go func(conn net.Conn) {
+				defer wg.Done()
+				defer conn.Close()
 
+				receivedCommand, err := receiveCommand(conn)
+				if err != nil {
+					fmt.Println("Error receiving command: ", err.Error())
+					
+				}
+				Mutex.Lock()
+				receiveCnt++
+				Mutex.Unlock()
+				fmt.Printf("Message received.  Cnt:%d\n", receiveCnt)
+
+				if receivedCommand == command {
+					Mutex.Lock()
+					sameCnt++
+					Mutex.Unlock()
+				}
+
+				if receiveCnt == len(portNums)/2+1 {
+					if sameCnt == len(portNums)/2+1 {
+						result <- 1
+					} else {
+						result <- 0
+					}
+				}
+			}(conn)
+		case res := <-result:
+			return res
+		}
+		if receiveCnt == len(portNums)/2+1 {
+			break
+		}
+	}
+	return <-result
+}
+
+func exchangeAfter(conns []net.Conn, command Command, wg *sync.WaitGroup) {
+    for _, conn := range conns {
+        wg.Add(1)
         go func(conn net.Conn) {
-            defer conn.Close()
-
-            receivedCommand, err := receiveCommand(conn)
-            if err != nil {
-                return
-            }
-            receiveCnt++
-			fmt.Printf("Message received.  Cnt:%d\n",receiveCnt)
-            
-
-            if receivedCommand == command {
-                sameCnt++
-            }
-
-            if receiveCnt == len(portNums)/2+1 {
-                if sameCnt == len(portNums)/2+1 {
-                    result <- 1
-                } else {
-                    result <- 0
-                }
-            }
+            defer wg.Done()
+            fmt.Printf("Sending command to %v\n", conn.RemoteAddr())
+            sendCommand(conn, command)
         }(conn)
-
-
-        select {
-        case res := <-result:
-            return res
-        case <-time.After(1 * time.Second):
-        }
     }
 }
-
-func exchangeAfter(portNums []int, command Command) {
-	
-    for _, portNum := range portNums {
-        conn, err := net.Dial("tcp", "localhost:"+strconv.Itoa(portNum))
-        if err != nil {
-			continue	
-        }
-		fmt.Printf("Sending command to %d\n", portNum)
-        defer conn.Close()
-        sendCommand(conn, command)
-    }
-}
-
