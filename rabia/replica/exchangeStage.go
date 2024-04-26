@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net"
 	"sync"
+	"time"
 	
 )
 
@@ -15,69 +16,55 @@ func exchangeStage(command Command, portNums []int, port int, ln net.Listener) i
     var state int
     wg := sync.WaitGroup{}
 	exchangeAfter(conns, command, &wg)
-	state = exchangeBefore(command, portNums, ln, &wg)
+	state = exchangeBefore(command, portNums, port,ln)
     return state 
 }
 
-func exchangeBefore(command Command, portNums []int, ln net.Listener, wg *sync.WaitGroup) int {
-	var receiveCnt int = 0
-	var sameCnt int = 0
 
-	result := make(chan int)
-	connCh := make(chan net.Conn)
+func exchangeBefore(command Command, portNums []int, port int,ln net.Listener) int {
+    var receiveCnt int = 0
+    var sameCnt int = 0
 
-	go func() {
-		for {
-			conn, err := ln.Accept()
-			defer ln.Close()
-			if err != nil {
-				fmt.Println("Error accepting: ", err.Error())
-				return
-			}
-			connCh <- conn
-		}
-	}()
+    result := make(chan int)
 
-	for {
-		select {
-		case conn := <-connCh:
-			wg.Add(1)
-			go func(conn net.Conn) {
-				defer wg.Done()
-				defer conn.Close()
+    for {
+        conn, err := ln.Accept()
+        if err != nil {
+            fmt.Println("接続エラー:", err)
+            return -1
+        }
 
-				receivedCommand, err := receiveCommand(conn)
-				if err != nil {
-					fmt.Println("Error receiving command: ", err.Error())
-					
-				}
-				Mutex.Lock()
-				receiveCnt++
-				Mutex.Unlock()
-				fmt.Printf("Message received.  Cnt:%d\n", receiveCnt)
+        go func(conn net.Conn) {
+            defer conn.Close()
 
-				if receivedCommand == command {
-					Mutex.Lock()
-					sameCnt++
-					Mutex.Unlock()
-				}
+            receivedCommand, err := receiveCommand(conn)
+            if err != nil {
+                return
+            }
+            receiveCnt++
+			fmt.Printf("Message received.  Cnt:%d\n",receiveCnt)
+            
 
-				if receiveCnt == len(portNums)/2+1 {
-					if sameCnt == len(portNums)/2+1 {
-						result <- 1
-					} else {
-						result <- 0
-					}
-				}
-			}(conn)
-		case res := <-result:
-			return res
-		}
-		if receiveCnt == len(portNums)/2+1 {
-			break
-		}
-	}
-	return <-result
+            if receivedCommand == command {
+                sameCnt++
+            }
+
+            if receiveCnt == len(portNums)/2+1 {
+                if sameCnt == len(portNums)/2+1 {
+                    result <- 1
+                } else {
+                    result <- 0
+                }
+            }
+        }(conn)
+
+
+        select {
+        case res := <-result:
+            return res
+        case <-time.After(1 * time.Second):
+        }
+    }
 }
 
 func exchangeAfter(conns []net.Conn, command Command, wg *sync.WaitGroup) {

@@ -1,16 +1,13 @@
 package main
 
-
-import(
+import (
+	"bufio"
 	"encoding/gob"
-	"net"
 	"fmt"
+	"net"
 	"strconv"
 	"strings"
-	"bufio"
 	"time"
-	
-
 )
 
 func sendCommand(conn net.Conn, command Command) {
@@ -32,8 +29,6 @@ func receiveCommand(conn net.Conn) (Command, error) {
 	return data, nil
 }
 
-
-
 func sendBinaryValue(conn net.Conn, value int) {
 	encoder := gob.NewEncoder(conn)
 	err := encoder.Encode(value)
@@ -52,28 +47,26 @@ func receiveBinaryValue(conn net.Conn) (int, error) {
 	return data, nil
 }
 
-type Command struct{
-	Op string
+type Command struct {
+	Op        string
 	Timestamp int
-
 }
 
 func setConnectionWithOtherReplicas(portNums []int, selfPort int) []net.Conn {
-    var conns []net.Conn
+	var conns []net.Conn
 
-    for _, portNum := range portNums {
+	for _, portNum := range portNums {
 		conn, err := net.Dial("tcp", fmt.Sprintf("localhost:%d", portNum))
-        if err != nil {
-            fmt.Printf("接続エラー (ポート番号: %d): %v\n", portNum, err)
-            continue
-        }
+		if err != nil {
+			fmt.Printf("接続エラー (ポート番号: %d): %v\n", portNum, err)
+			continue
+		}
 
-        conns = append(conns, conn)
-    }
+		conns = append(conns, conn)
+	}
 	fmt.Println(conns)
-    return conns
+	return conns
 }
-
 
 func sayHelloAndReceivePortNum(conn net.Conn) string {
 	conn, err := net.Dial("tcp", "localhost:8080")
