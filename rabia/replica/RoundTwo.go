@@ -33,7 +33,7 @@ func roundTwoReceive(selfSeq int, nodeNum int,phase int) (int,int) {
 
            
             for v, c := range cnt {
-                if c >= nodeNum/2+1 {
+                if c >= nodeNum/2+1 && v.Value != -1{
 					VoteValueDataMutex.Unlock()
                     return -1,v.Value
                 }
