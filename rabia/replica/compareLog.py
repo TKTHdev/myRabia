@@ -12,9 +12,9 @@ def compare_consensus_values(log1_content, log2_content):
     
     # 抽出したconsensusValueの値が一致しているかどうかを確認する
     if values1 == values2:
-        print("consensusValueの値は一致しています。")
+        return True
     else:
-        print("consensusValueの値は一致していません。")
+        return False 
 
 # ログファイル1とログファイル2の内容を取得する
 log1_content = ""
@@ -25,6 +25,11 @@ with open("log1.txt", "r") as file:
 
 with open("log2.txt", "r") as file:
     log2_content = file.read()
+    
+with open("log3.txt", "r") as file:
+    log3_content = file.read()
 
 # ログファイルを比較する
-compare_consensus_values(log1_content, log2_content)
+if compare_consensus_values(log1_content, log2_content) and compare_consensus_values(log2_content, log3_content):
+    print("すべてのログファイルのconsensusValueの値は一致しています。")
+
