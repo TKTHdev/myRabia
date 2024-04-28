@@ -20,7 +20,6 @@ func main() {
 	var Operation string
 	fmt.Println("Operation: ")
 	fmt.Scan(&Operation)
-	command := Command{Op: Operation, Timestamp: 0}
 	var port string = sayHelloAndReceivePortNum(conn)
 	portInt, _ := strconv.Atoi(port)
 
@@ -28,24 +27,34 @@ func main() {
 	// 他のレプリカのポート番号を取得
 	var portNums = listenAndAcceptConnectionWithProxy(listener, port)
 
-	ln, err := net.Listen("tcp", ":"+strconv.Itoa(portInt))
-	if err != nil {
-		fmt.Println("リッスンエラー:", err)
-		return
-	}
 
+	go listenAndAccept(port)	
 	time.Sleep(250 * time.Millisecond)
 
+	var seq int = 0
 	// 他のレプリカとの同期処理を実装
-	weakMVC(command, portInt, portNums, ln)
+	for{
+		command:=CommandData{Op: Operation, Timestamp: 0, Seq: seq}
+		var stateValue int = exchangeStage(command, portNums, portInt,  seq)
+		fmt.Println("state: ", stateValue)
+		weakMVC(stateValue,command, portInt, portNums, listener, seq)
+		seq++
+		fmt.Println("cnt: ", seq)
+		time.Sleep(250 * time.Millisecond)	
+	}
 
 }
 
-func weakMVC(command Command, selfPort int, portNums []int, ln net.Listener) {
-	// Exchange Stage
-	var state int
-	state = exchangeStage(command, portNums, selfPort, ln)
-	fmt.Println("state: ", state)
-	var vote int = roundOne(state, portNums, selfPort, ln)
-	fmt.Println("vote: ", vote)
+func weakMVC(stateValue int ,command CommandData, selfPort int, portNums []int, ln net.Listener, seq int) {
+	var phase int = 0
+
+	//Round 1
+	var state StateValueData = StateValueData{Value: stateValue, Seq: seq, Phase: phase}
+	voteValue :=roundOne(state, portNums, selfPort, seq,phase)
+	fmt.Println("vote: ", voteValue)
+
+	//Round 2
+	var vote VoteValueData = VoteValueData{Value: voteValue, Seq: seq, Phase: phase}
+	consensusValue :=roundTwo(vote, portNums, selfPort, seq,phase)
+	fmt.Println("consensus: ", consensusValue)
 }

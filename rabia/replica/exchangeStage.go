@@ -1,79 +1,56 @@
 package main
 
 import (
-	"fmt"
+    "fmt"
 	"net"
 	"sync"
-	"time"
 	
 )
 
-var Mutex sync.Mutex	
+var countMutex sync.Mutex
 
-
-func exchangeStage(command Command, portNums []int, port int, ln net.Listener) int{
+func exchangeStage(command CommandData, portNums []int, port int,seq int) int{
 	conns := setConnectionWithOtherReplicas(portNums, port)
     var state int
     wg := sync.WaitGroup{}
-	exchangeAfter(conns, command, &wg)
-	state = exchangeBefore(command, portNums, port,ln)
+	exchangeSend(conns, command, &wg)
+	state = exchangeReceive(seq,len(portNums))
     return state 
 }
 
 
-func exchangeBefore(command Command, portNums []int, port int,ln net.Listener) int {
-    var receiveCnt int = 0
-    var sameCnt int = 0
-
-    result := make(chan int)
-
-    for {
-        conn, err := ln.Accept()
-        if err != nil {
-            fmt.Println("接続エラー:", err)
-            return -1
-        }
-
-        go func(conn net.Conn) {
-            defer conn.Close()
-
-            receivedCommand, err := receiveCommand(conn)
-            if err != nil {
-                return
+func exchangeReceive(selfSeq int, nodeNum int) int {
+    for{
+        CommandDataMutex.Lock()
+        if(len(CommandDataMapList[selfSeq])>=nodeNum/2+1){
+            count := make(map[CommandData]int)
+            for _, command := range CommandDataMapList[selfSeq] {
+                countMutex.Lock()
+                count[command]++
+                countMutex.Unlock()
             }
-            receiveCnt++
-			fmt.Printf("Message received.  Cnt:%d\n",receiveCnt)
-            
-
-            if receivedCommand == command {
-                sameCnt++
-            }
-
-            if receiveCnt == len(portNums)/2+1 {
-                if sameCnt == len(portNums)/2+1 {
-                    result <- 1
-                } else {
-                    result <- 0
+            for _, c := range count {
+                if c >= nodeNum/2+1 {
+                    fmt.Println("State: 1")
+                    CommandDataMutex.Unlock()
+                    return 1
                 }
             }
-        }(conn)
-
-
-        select {
-        case res := <-result:
-            return res
-        case <-time.After(1 * time.Second):
+            CommandDataMutex.Unlock()
+            return 0
         }
+        CommandDataMutex.Unlock()
     }
 }
 
-func exchangeAfter(conns []net.Conn, command Command, wg *sync.WaitGroup) {
+func exchangeSend(conns []net.Conn, command CommandData, wg *sync.WaitGroup) {
     for _, conn := range conns {
         wg.Add(1)
         go func(conn net.Conn) {
             defer wg.Done()
-            fmt.Printf("Sending command to %v\n", conn.RemoteAddr())
-            sendCommand(conn, command)
+            //fmt.Printf("Sending command to %v\n", conn.RemoteAddr())
+            //fmt.Println("Sending Command: ", command)
+            sendData(conn, command)
         }(conn)
     }
 }

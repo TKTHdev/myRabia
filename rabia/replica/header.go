@@ -10,6 +10,18 @@ import (
 	"time"
 )
 
+type Command struct {
+	Op        string
+	Timestamp int
+	seq int 
+}
+
+type BinaryValue struct{
+	value int 
+	seq int 
+	phase int
+}
+
 func sendCommand(conn net.Conn, command Command) {
 	encoder := gob.NewEncoder(conn)
 	err := encoder.Encode(command)
@@ -29,7 +41,7 @@ func receiveCommand(conn net.Conn) (Command, error) {
 	return data, nil
 }
 
-func sendBinaryValue(conn net.Conn, value int) {
+func sendBinaryValue(conn net.Conn, value BinaryValue) {
 	encoder := gob.NewEncoder(conn)
 	err := encoder.Encode(value)
 	if err != nil {
@@ -37,20 +49,18 @@ func sendBinaryValue(conn net.Conn, value int) {
 	}
 }
 
-func receiveBinaryValue(conn net.Conn) (int, error) {
-	var data int
+func receiveBinaryValue(conn net.Conn) (BinaryValue, error) {
+	var data BinaryValue
 	decoder := gob.NewDecoder(conn)
 	err := decoder.Decode(&data)
 	if err != nil {
-		return -1, err
+		fmt.Println("Error decoding: ", err.Error())
+		return BinaryValue{}, err	
 	}
 	return data, nil
 }
 
-type Command struct {
-	Op        string
-	Timestamp int
-}
+
 
 func setConnectionWithOtherReplicas(portNums []int, selfPort int) []net.Conn {
 	var conns []net.Conn
@@ -58,13 +68,13 @@ func setConnectionWithOtherReplicas(portNums []int, selfPort int) []net.Conn {
 	for _, portNum := range portNums {
 		conn, err := net.Dial("tcp", fmt.Sprintf("localhost:%d", portNum))
 		if err != nil {
-			fmt.Printf("接続エラー (ポート番号: %d): %v\n", portNum, err)
+			//fmt.Printf("接続エラー (ポート番号: %d): %v\n", portNum, err)
 			continue
 		}
 
 		conns = append(conns, conn)
 	}
-	fmt.Println(conns)
+	//fmt.Println(conns)
 	return conns
 }
 
