@@ -1,7 +1,7 @@
 package main
 
 import (
-    "fmt"
+    //"fmt"
 	"net"
 	"sync"
 	
@@ -15,6 +15,7 @@ func exchangeStage(command CommandData, portNums []int, port int,seq int) int{
     wg := sync.WaitGroup{}
 	exchangeSend(conns, command, &wg)
 	state = exchangeReceive(seq,len(portNums))
+    //fmt.Println("State: ", state)
     return state 
 }
 
@@ -31,7 +32,6 @@ func exchangeReceive(selfSeq int, nodeNum int) int {
             }
             for _, c := range count {
                 if c >= nodeNum/2+1 {
-                    fmt.Println("State: 1")
                     CommandDataMutex.Unlock()
                     return 1
                 }

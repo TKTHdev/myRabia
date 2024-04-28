@@ -121,3 +121,17 @@ func receiveData(conn net.Conn) (ConsensusData, error) {
     }
     return data, nil
 }
+
+func deleteData(seq int) {
+    CommandDataMutex.Lock()
+    delete(CommandDataMapList, seq)
+    CommandDataMutex.Unlock()
+
+    StateValueDataMutex.Lock()
+    delete(StateValueDataMapList, seq)
+    StateValueDataMutex.Unlock()
+
+    VoteValueDataMutex.Lock()
+    delete(VoteValueDataMapList, seq)
+    VoteValueDataMutex.Unlock()
+}

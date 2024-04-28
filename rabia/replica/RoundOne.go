@@ -1,7 +1,7 @@
 package main
 
 import (
-    "fmt"
+    //"fmt"
 	"net"
 	"sync"
 	
@@ -29,16 +29,16 @@ func roundOneReceive(selfSeq int, nodeNum int) int {
                 cnt[command]++
                 RoundOneCntMutex.Unlock()
             }
-            for _, c := range cnt {
+            for v, c := range cnt {
                 if c >= nodeNum/2+1 {
-                    fmt.Println("State: 1")
+                    //fmt.Println("vote: ",v.Value)
 					StateValueDataMutex.Unlock()
-                    return 1
+                    return v.Value
                 }
             }
-            fmt.Println("State: 0")
 			StateValueDataMutex.Unlock()
-            return 0
+            //fmt.Println("vote: ?")
+            return -1
         }
 		StateValueDataMutex.Unlock()
     }
