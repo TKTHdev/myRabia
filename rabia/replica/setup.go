@@ -2,7 +2,6 @@ package main
 
 import (
 	"bufio"
-	"encoding/gob"
 	"fmt"
 	"net"
 	"strconv"
@@ -10,59 +9,8 @@ import (
 	"time"
 )
 
-type Command struct {
-	Op        string
-	Timestamp int
-	seq int 
-}
 
-type BinaryValue struct{
-	value int 
-	seq int 
-	phase int
-}
-
-func sendCommand(conn net.Conn, command Command) {
-	encoder := gob.NewEncoder(conn)
-	err := encoder.Encode(command)
-	if err != nil {
-		return
-	}
-}
-
-func receiveCommand(conn net.Conn) (Command, error) {
-	var data Command
-	decoder := gob.NewDecoder(conn)
-	err := decoder.Decode(&data)
-	if err != nil {
-
-		return Command{}, err
-	}
-	return data, nil
-}
-
-func sendBinaryValue(conn net.Conn, value BinaryValue) {
-	encoder := gob.NewEncoder(conn)
-	err := encoder.Encode(value)
-	if err != nil {
-		return
-	}
-}
-
-func receiveBinaryValue(conn net.Conn) (BinaryValue, error) {
-	var data BinaryValue
-	decoder := gob.NewDecoder(conn)
-	err := decoder.Decode(&data)
-	if err != nil {
-		fmt.Println("Error decoding: ", err.Error())
-		return BinaryValue{}, err	
-	}
-	return data, nil
-}
-
-
-
-func setConnectionWithOtherReplicas(portNums []int, selfPort int) []net.Conn {
+func setConnectionWithOtherReplicas(portNums []int) []net.Conn {
 	var conns []net.Conn
 
 	for _, portNum := range portNums {
@@ -78,7 +26,7 @@ func setConnectionWithOtherReplicas(portNums []int, selfPort int) []net.Conn {
 	return conns
 }
 
-func sayHelloAndReceivePortNum(conn net.Conn) string {
+func sayHelloAndReceivePortNum() string {
 	conn, err := net.Dial("tcp", "localhost:8080")
 	if err != nil {
 		fmt.Println("接続エラー:", err)
@@ -146,10 +94,16 @@ func listenAndAcceptConnectionWithProxy(listener net.Listener, port string) []in
 
 	time.Sleep(1000 * time.Millisecond)
 	//ポート番号リストをパース
-	portNums, err := parsePortList(message)
+	portNums,err := parsePortList(message)
 	if portNums == nil {
 		return nil
 	}
+	if err != nil {
+		fmt.Println(err)
+		return nil
+	}
+
+	
 	fmt.Println("他のレプリカのポート番号リスト: ", portNums)
 
 	return portNums

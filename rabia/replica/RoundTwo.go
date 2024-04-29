@@ -12,7 +12,7 @@ var RoundTwoMutex sync.Mutex
 var RoundTwoCntMutex sync.Mutex
 
 func roundTwo(vote VoteValueData, portNums []int, port int,seq int, phase int) (int,int){
-	conns := setConnectionWithOtherReplicas(portNums, port)
+	conns := setConnectionWithOtherReplicas(portNums)
     wg := sync.WaitGroup{}
 	roundTwoSend(conns, vote,phase, seq,&wg)
 	var consensus,consensusValue  =roundTwoReceive(seq,len(portNums),phase)
@@ -46,6 +46,7 @@ func roundTwoReceive(selfSeq int, nodeNum int,phase int) (int,int) {
                 }
             }
             stateCoinFlip :=CommonCoinFlip(selfSeq, phase)
+            fmt.Println("coin flip: ",stateCoinFlip)
 			VoteValueDataMutex.Unlock()
             return stateCoinFlip,-1 
         }

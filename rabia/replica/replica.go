@@ -1,7 +1,6 @@
 package main
 
 import (
-	"encoding/gob"
 	"fmt"
 	"net"
 	"strconv"
@@ -13,10 +12,6 @@ import (
 var conn net.Conn
 var listener net.Listener
 
-func init() {
-	gob.Register(Command{})
-}
-
 func main() {
 
 	// ログファイルを作成
@@ -24,7 +19,7 @@ func main() {
 	fmt.Println("Enter log file name: ")
 	fmt.Scan(&logName)
 	logName = "log" + logName + ".txt"
-	logFile, err := os.Create(logName)
+	logFile, err := os.Create("logs/"+logName)
 	if err != nil {
 		log.Fatal("Cannot create file", err)
 	}
@@ -35,7 +30,7 @@ func main() {
 	var Operation string
 	fmt.Println("Operation: ")
 	fmt.Scan(&Operation)
-	var port string = sayHelloAndReceivePortNum(conn)
+	var port string = sayHelloAndReceivePortNum()
 	portInt, _ := strconv.Atoi(port)
 
 	// プロキシからの接続を待ち受ける
@@ -47,16 +42,13 @@ func main() {
 	time.Sleep(250 * time.Millisecond)
 
 
-	
-
-
+	//ここで合意アルゴリズムを実行
 	var seq int = 0
-	// 他のレプリカとの同期処理を実装
-	for i:=0;i<100000;i++{
+	for{
 		fmt.Println("cnt: ", seq)
 
 		command:=CommandData{Op: Operation, Timestamp: 0, Seq: seq}
-		var stateValue int = exchangeStage(command, portNums, portInt,  seq)
+		var stateValue int = exchangeStage(command, portNums,  seq)
 
 
 		consensusValue :=weakMVC(stateValue,command, portInt, portNums, listener, seq)
@@ -64,8 +56,8 @@ func main() {
 		seq++
 		
 		//delete data to save memory
-		if(seq>=1){
-			deleteData(seq-1)
+		if(seq>=2){
+			deleteData(seq-2)
 		}
 
 		//time.Sleep(500 * time.Millisecond)
@@ -79,7 +71,7 @@ func weakMVC(stateValue int ,command CommandData, selfPort int, portNums []int, 
 
 	//Round 1
 	var state StateValueData = StateValueData{Value: stateValue, Seq: seq, Phase: phase}
-	voteValue :=roundOne(state, portNums, selfPort, seq,phase)
+	voteValue :=roundOne(state, portNums,  seq)
 	
 
 	//Round 2
@@ -89,10 +81,11 @@ func weakMVC(stateValue int ,command CommandData, selfPort int, portNums []int, 
 		fmt.Println("reached consensus: ", consensusValue)
 		return consensusValue
 	}
+
 	for{
 		phase++
 		state = StateValueData{Value: consensusValue, Seq: seq, Phase: phase}
-		voteValue =roundOne(state, portNums, selfPort, seq,phase)
+		voteValue =roundOne(state, portNums,  seq)
 		vote = VoteValueData{Value: voteValue, Seq: seq, Phase: phase}
 		consensus,consensusValue =roundTwo(vote, portNums, selfPort, seq,phase)
 		if(consensus == -1){

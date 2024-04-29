@@ -32,4 +32,6 @@ with open("log3.txt", "r") as file:
 # ログファイルを比較する
 if compare_consensus_values(log1_content, log2_content) and compare_consensus_values(log2_content, log3_content):
     print("すべてのログファイルのconsensusValueの値は一致しています。")
+else:
+    print("ログファイルのconsensusValueの値が一致していません。")
 

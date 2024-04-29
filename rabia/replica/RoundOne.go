@@ -10,10 +10,10 @@ import (
 var RoundOneMutex sync.Mutex
 var RoundOneCntMutex sync.Mutex
 
-func roundOne(state StateValueData, portNums []int, port int,seq int, phase int) int{
-	conns := setConnectionWithOtherReplicas(portNums, port)
+func roundOne(state StateValueData, portNums []int, seq int) int{
+	conns := setConnectionWithOtherReplicas(portNums)
     wg := sync.WaitGroup{}
-	roundOneSend(conns, state,phase, seq,&wg)
+	roundOneSend(conns, state,&wg)
 	var vote int =roundOneReceive(seq,len(portNums))
     return vote
 }
@@ -44,7 +44,7 @@ func roundOneReceive(selfSeq int, nodeNum int) int {
     }
 }
 
-func roundOneSend(conns []net.Conn, state StateValueData,phase int, seq int, wg *sync.WaitGroup) {
+func roundOneSend(conns []net.Conn, state StateValueData, wg *sync.WaitGroup) {
     for _, conn := range conns {
         wg.Add(1)
         go func(conn net.Conn) {

@@ -135,3 +135,38 @@ func deleteData(seq int) {
     delete(VoteValueDataMapList, seq)
     VoteValueDataMutex.Unlock()
 }
+
+//Unused now 
+//Measure the size of the map data structure
+func printCommandDataMapListSize() {
+    CommandDataMutex.Lock()
+    var totalSize int
+    for _, value := range CommandDataMapList {
+        size := len(value)
+        totalSize += size
+    }
+    fmt.Printf("Total Size: %d\n", totalSize)
+    CommandDataMutex.Unlock()
+}
+
+func printStateValueDataMapListSize() {
+    StateValueDataMutex.Lock()
+    var totalSize int
+    for _, value := range StateValueDataMapList {
+        size := len(value)
+        totalSize += size
+    }
+    fmt.Printf("Total Size: %d\n", totalSize)
+    StateValueDataMutex.Unlock()
+}
+
+func printVoteValueDataMapListSize() {
+    VoteValueDataMutex.Lock()
+    var totalSize int
+    for _, value := range VoteValueDataMapList {
+        size := len(value)
+        totalSize += size
+    }
+    fmt.Printf("Total Size: %d\n", totalSize)
+    VoteValueDataMutex.Unlock()
+}
