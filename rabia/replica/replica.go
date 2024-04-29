@@ -44,7 +44,7 @@ func main() {
 
 	//ここで合意アルゴリズムを実行
 	var seq int = 0
-	for{
+	for i:=0;i<100;i++{
 		fmt.Println("cnt: ", seq)
 
 		command:=CommandData{Op: Operation, Timestamp: 0, Seq: seq}
