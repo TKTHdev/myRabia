@@ -44,23 +44,26 @@ func main() {
 
 	//ここで合意アルゴリズムを実行
 	var seq int = 0
-	for i:=0;i<100;i++{
+	for i:=0;i<10000;i++{
 		fmt.Println("cnt: ", seq)
 
 		command:=CommandData{Op: Operation, Timestamp: 0, Seq: seq}
-		var stateValue int = exchangeStage(command, portNums,  seq)
+		var terminationFlag,stateValue int = exchangeStage(command, portNums,  seq)
+		if terminationFlag == 1{
+			logger.Println("consensusValue: ", stateValue)
+			seq++
+			continue
+		}
 
-
-		consensusValue :=weakMVC(stateValue,command, portInt, portNums, listener, seq)
+	    consensusValue :=weakMVC(stateValue,command, portInt, portNums, listener, seq)
 		logger.Println("consensusValue: ", consensusValue)
 		seq++
 		
 		//delete data to save memory
-		if(seq>=2){
-			deleteData(seq-2)
-		}
+		
 
 		//time.Sleep(500 * time.Millisecond)
+
 	}
 
 }
@@ -71,27 +74,40 @@ func weakMVC(stateValue int ,command CommandData, selfPort int, portNums []int, 
 
 	//Round 1
 	var state StateValueData = StateValueData{Value: stateValue, Seq: seq, Phase: phase}
-	voteValue :=roundOne(state, portNums,  seq)
+	terminationFlag, voteValue :=roundOne(state, portNums,  seq, phase)
+	if terminationFlag == 1{
+		fmt.Println("reached consensus: ", voteValue)
+		return voteValue
+	}	
 	
-
+	
 	//Round 2
 	var vote VoteValueData = VoteValueData{Value: voteValue, Seq: seq, Phase: phase}
-	consensus,consensusValue :=roundTwo(vote, portNums, selfPort, seq,phase)
-	if(consensus == -1){
+	terminationFlag,consensusValue :=roundTwo(vote, portNums, selfPort, seq,phase)
+	if(terminationFlag == 1){
 		fmt.Println("reached consensus: ", consensusValue)
-		return consensusValue
+		return consensusValue 
 	}
 
 	for{
 		phase++
+
 		state = StateValueData{Value: consensusValue, Seq: seq, Phase: phase}
-		voteValue =roundOne(state, portNums,  seq)
+		terminationFlag, voteValue =roundOne(state, portNums,  seq, phase)
+		if terminationFlag == 1{
+			fmt.Println("reached consensus: ", voteValue)
+			return voteValue
+		}
+
 		vote = VoteValueData{Value: voteValue, Seq: seq, Phase: phase}
-		consensus,consensusValue =roundTwo(vote, portNums, selfPort, seq,phase)
-		if(consensus == -1){
+		terminationFlag,consensusValue =roundTwo(vote, portNums, selfPort, seq,phase)
+		if terminationFlag == 1{
 			fmt.Println("reached consensus: ", consensusValue)
 			return  consensusValue
 		}
+
+		deleteData(seq, phase)
+
 	}
 
 }

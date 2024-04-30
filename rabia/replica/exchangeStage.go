@@ -1,7 +1,7 @@
 package main
 
 import (
-    //"fmt"
+    "fmt"
 	"net"
 	"sync"
 	
@@ -9,20 +9,30 @@ import (
 
 var countMutex sync.Mutex
 
-func exchangeStage(command CommandData, portNums []int, seq int) int{
+func exchangeStage(command CommandData, portNums []int, seq int) (int,int){
 	conns := setConnectionWithOtherReplicas(portNums)
     var state int
     wg := sync.WaitGroup{}
 	exchangeSend(conns, command, &wg)
-	state = exchangeReceive(seq,len(portNums))
+	terminationFlag , state := exchangeReceive(seq,len(portNums))
     //fmt.Println("State: ", state)
-    return state 
+    return terminationFlag, state 
 }
 
 
-func exchangeReceive(selfSeq int, nodeNum int) int {
+func exchangeReceive(selfSeq int, nodeNum int) (int,int) {
     for{
         CommandDataMutex.Lock()
+        ConsensusTerminationMutex.Lock()
+        if len(ConsensusTerminationMapList[selfSeq]) !=0 {
+            value := ConsensusTerminationMapList[selfSeq][0].Value
+            CommandDataMutex.Unlock()
+            ConsensusTerminationMutex.Unlock()
+            return 1,value
+        }
+        ConsensusTerminationMutex.Unlock()
+
+
         if(len(CommandDataMapList[selfSeq])>=nodeNum/2+1){
             count := make(map[CommandData]int)
             for _, command := range CommandDataMapList[selfSeq] {
@@ -33,17 +43,18 @@ func exchangeReceive(selfSeq int, nodeNum int) int {
             for _, c := range count {
                 if c >= nodeNum/2+1 {
                     CommandDataMutex.Unlock()
-                    return 1
+                    return 0, 1
                 }
             }
             CommandDataMutex.Unlock()
-            return 0
+            return 0,0
         }
         CommandDataMutex.Unlock()
     }
 }
 
 func exchangeSend(conns []net.Conn, command CommandData, wg *sync.WaitGroup) {
+    fmt.Println("Sending command to replicas")
     for _, conn := range conns {
         wg.Add(1)
         go func(conn net.Conn) {

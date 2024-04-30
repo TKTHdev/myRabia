@@ -10,6 +10,7 @@ import (
 var CommandDataMutex sync.Mutex
 var StateValueDataMutex sync.Mutex
 var VoteValueDataMutex sync.Mutex
+var ConsensusTerminationMutex sync.Mutex
 
 type Data interface{}
 
@@ -35,17 +36,32 @@ type VoteValueData struct {
     Phase int
 }
 
+
+type SeqPhase struct {
+    Seq   int
+    Phase int
+}
+
+
+type ConsensusTermination struct{
+    Seq int
+    Value int
+}
+
 var CommandDataMapList map[int][]CommandData
-var StateValueDataMapList map[int][]StateValueData
-var VoteValueDataMapList map[int][]VoteValueData
+var StateValueDataMapList map[SeqPhase][]StateValueData
+var VoteValueDataMapList map[SeqPhase][]VoteValueData
+var ConsensusTerminationMapList map[int][]ConsensusTermination
 
 func init() {
     CommandDataMapList = make(map[int][]CommandData)
-    StateValueDataMapList = make(map[int][]StateValueData)
-    VoteValueDataMapList = make(map[int][]VoteValueData)
+    StateValueDataMapList = make(map[SeqPhase][]StateValueData)
+    VoteValueDataMapList = make(map[SeqPhase][]VoteValueData)
+    ConsensusTerminationMapList = make(map[int][]ConsensusTermination)
     gob.Register(CommandData{})
     gob.Register(StateValueData{})
     gob.Register(VoteValueData{})
+    gob.Register(ConsensusTermination{})
 }
 
 func listenAndAccept(port string) {
@@ -92,19 +108,28 @@ func handleConnection(conn net.Conn) {
         switch data := data.(type) {
         case CommandData:
             CommandDataMutex.Lock()
+            fmt.Println("Received CommandData: ", data)
             CommandDataMapList[data.Seq] = append(CommandDataMapList[data.Seq], data)
             //fmt.Println("CommandDataMapList: ", CommandDataMapList)
             CommandDataMutex.Unlock()
         case StateValueData:
             StateValueDataMutex.Lock()
-            StateValueDataMapList[data.Seq] = append(StateValueDataMapList[data.Seq], data)
+            fmt.Println("Received StateValueData: ", data)
+            StateValueDataMapList[SeqPhase{Seq: data.Seq, Phase: data.Phase}] = append(StateValueDataMapList[SeqPhase{Seq: data.Seq, Phase: data.Phase}], data)
             //fmt.Println("StateValueDataMapList: ", StateValueDataMapList)
             StateValueDataMutex.Unlock()
         case VoteValueData:
             VoteValueDataMutex.Lock()
-            VoteValueDataMapList[data.Seq] = append(VoteValueDataMapList[data.Seq], data)
+            fmt.Println("Received VoteValueData: ", data)
+            VoteValueDataMapList[SeqPhase{Seq: data.Seq, Phase: data.Phase}] = append(VoteValueDataMapList[SeqPhase{Seq: data.Seq, Phase: data.Phase}], data)
             //fmt.Println("VoteValueDataMaplist: ", VoteValueDataMaplist)
             VoteValueDataMutex.Unlock()
+        case ConsensusTermination:
+            ConsensusTerminationMutex.Lock()
+            fmt.Println("Received ConsensusTermination: ", data)
+            ConsensusTerminationMapList[data.Seq] = append(ConsensusTerminationMapList[data.Seq], data)
+            ConsensusTerminationMutex.Unlock()
+
         default:
             fmt.Println("未知のデータ型です:", data)
         }
@@ -122,17 +147,17 @@ func receiveData(conn net.Conn) (ConsensusData, error) {
     return data, nil
 }
 
-func deleteData(seq int) {
+func deleteData(seq int, phase int) {
     CommandDataMutex.Lock()
     delete(CommandDataMapList, seq)
     CommandDataMutex.Unlock()
 
     StateValueDataMutex.Lock()
-    delete(StateValueDataMapList, seq)
+    delete(StateValueDataMapList, SeqPhase{Seq: seq, Phase: phase})
     StateValueDataMutex.Unlock()
 
     VoteValueDataMutex.Lock()
-    delete(VoteValueDataMapList, seq)
+    delete(VoteValueDataMapList, SeqPhase{Seq: seq, Phase: phase})
     VoteValueDataMutex.Unlock()
 }
 
