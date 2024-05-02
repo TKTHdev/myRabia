@@ -1,16 +1,20 @@
 package main
 
 import (
-    "encoding/gob"
-    "fmt"
-    "net"
-    "sync"
+	"container/heap"
+	"encoding/gob"
+	"fmt"
+	"net"
+	"sync"
 )
 
 var CommandDataMutex sync.Mutex
 var StateValueDataMutex sync.Mutex
 var VoteValueDataMutex sync.Mutex
 var ConsensusTerminationMutex sync.Mutex
+var PQMutex sync.Mutex
+
+
 
 type Data interface{}
 
@@ -28,12 +32,14 @@ type StateValueData struct {
     Value int
     Seq   int
     Phase int
+    CommandData CommandData
 }
 
 type VoteValueData struct {
     Value int
     Seq   int
     Phase int
+    CommandData CommandData
 }
 
 
@@ -48,20 +54,34 @@ type ConsensusTermination struct{
     Value int
 }
 
+
+type Request struct {
+    CommandData CommandData
+    Redirected bool
+    Timestamp int
+}
+
+
 var CommandDataMapList map[int][]CommandData
 var StateValueDataMapList map[SeqPhase][]StateValueData
 var VoteValueDataMapList map[SeqPhase][]VoteValueData
 var ConsensusTerminationMapList map[int][]ConsensusTermination
+var PQ PriorityQueue
+
 
 func init() {
     CommandDataMapList = make(map[int][]CommandData)
     StateValueDataMapList = make(map[SeqPhase][]StateValueData)
     VoteValueDataMapList = make(map[SeqPhase][]VoteValueData)
     ConsensusTerminationMapList = make(map[int][]ConsensusTermination)
+    PQ = make(PriorityQueue, 0)
+    heap.Init(&PQ)
+
     gob.Register(CommandData{})
     gob.Register(StateValueData{})
     gob.Register(VoteValueData{})
     gob.Register(ConsensusTermination{})
+    gob.Register(Request{})
 }
 
 func listenAndAccept(port string) {
@@ -129,6 +149,17 @@ func handleConnection(conn net.Conn) {
             fmt.Println("Received ConsensusTermination: ", data)
             ConsensusTerminationMapList[data.Seq] = append(ConsensusTerminationMapList[data.Seq], data)
             ConsensusTerminationMutex.Unlock()
+        
+        case Request:
+            PQMutex.Lock()
+            if !data.Redirected{
+                PQ = append(PQ, &data.CommandData)
+                data.Redirected = true
+                sendData(conn, data)
+            }else {
+                PQ = append(PQ, &data.CommandData)
+            }
+            PQMutex.Unlock()
 
         default:
             fmt.Println("未知のデータ型です:", data)
