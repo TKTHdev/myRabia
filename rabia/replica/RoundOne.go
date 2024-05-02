@@ -10,31 +10,43 @@ import (
 var RoundOneMutex sync.Mutex
 var RoundOneCntMutex sync.Mutex
 
-func roundOne(state StateValueData, portNums []int, seq int, phase int) (int,int){
+func roundOne(state StateValueData, portNums []int, seq int, phase int) (int, VoteValueData){
+    var returnCommand  CommandData
+    var voteValue int
 	conns := setConnectionWithOtherReplicas(portNums)
     wg := sync.WaitGroup{}
 	roundOneSend(conns, state,&wg)
-    terminationFlag,vote :=roundOneReceive(seq, phase, len(portNums))
-    return terminationFlag, vote
+    terminationFlag,voteValue, returnCommand :=roundOneReceive(seq, phase, len(portNums))
+    returnVoteStruct := VoteValueData{Value: voteValue, Seq: seq, Phase: phase, CommandData: returnCommand}
+    return terminationFlag, returnVoteStruct
 }
 
 
-func roundOneReceive(selfSeq int, phase int,  nodeNum int) (int,int) {
+func roundOneReceive(selfSeq int, phase int,  nodeNum int) (int, int,CommandData){
     for{
+        var anyCommandReceived CommandData
 		StateValueDataMutex.Lock()
         ConsensusTerminationMutex.Lock()
         if len(ConsensusTerminationMapList[selfSeq]) !=0 {
             value := ConsensusTerminationMapList[selfSeq][0].Value
+            returnStruct := ConsensusTerminationMapList[selfSeq][0].CommandData
             ConsensusTerminationMutex.Unlock()
             StateValueDataMutex.Unlock()
-            return 1,value
+            return 1,value, returnStruct
         }
         ConsensusTerminationMutex.Unlock()
         
         if(len(StateValueDataMapList[SeqPhase{Seq: selfSeq, Phase: phase}])>=nodeNum/2+1){
+            for _, command := range StateValueDataMapList[SeqPhase{ Seq: selfSeq, Phase: phase }] {
+                if command.Value ==1 &&command.CommandData.Op != "" {
+                    anyCommandReceived = command.CommandData
+                }
+            }
+            fmt.Println("any command received in state round: ", anyCommandReceived)
             cnt := make(map[StateValueData]int)
             for _, command := range StateValueDataMapList[SeqPhase{ Seq: selfSeq, Phase: phase }] {
                 RoundOneCntMutex.Lock()
+                command.CommandData = anyCommandReceived
                 cnt[command]++
                 RoundOneCntMutex.Unlock()
             }
@@ -42,12 +54,12 @@ func roundOneReceive(selfSeq int, phase int,  nodeNum int) (int,int) {
                 if c >= nodeNum/2+1 {
                     //fmt.Println("vote: ",v.Value)
 					StateValueDataMutex.Unlock()
-                    return 0,v.Value
+                    return 0,v.Value, anyCommandReceived
                 }
             }
 			StateValueDataMutex.Unlock()
             //fmt.Println("vote: ?")
-            return 0,-1
+            return 0,-1, anyCommandReceived
         }
 		StateValueDataMutex.Unlock()
     }

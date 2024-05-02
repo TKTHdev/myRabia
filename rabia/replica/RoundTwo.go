@@ -11,34 +11,48 @@ import (
 var RoundTwoMutex sync.Mutex
 var RoundTwoCntMutex sync.Mutex
 
-func roundTwo(vote VoteValueData, portNums []int, port int,seq int, phase int) (int,int){
+func roundTwo(vote VoteValueData, portNums []int, port int,seq int, phase int) (int,RoundTwoReturnStruct){
 	conns := setConnectionWithOtherReplicas(portNums)
+    var returnStruct RoundTwoReturnStruct
+    var terminationValue int
     wg := sync.WaitGroup{}
 	roundTwoSend(conns, vote,phase, seq,&wg)
-	terminationFlag, consensusValue :=roundTwoReceive(seq,len(portNums),phase, portNums)
-    return terminationFlag, consensusValue
+	terminationFlag, terminationValue, CommandData :=roundTwoReceive(seq,len(portNums),phase, portNums)
+    if CommandData.Op != "" {
+        CommandData = vote.CommandData
+    }
+    returnStruct = RoundTwoReturnStruct{ConsensusValue: terminationValue, CommandData: CommandData}
+    return terminationFlag, returnStruct
 }
 
 
-func roundTwoReceive(selfSeq int, nodeNum int,phase int, portNums []int) (int,int) {
+func roundTwoReceive(selfSeq int, nodeNum int,phase int, portNums []int) (int,int, CommandData) {
     for{
 		VoteValueDataMutex.Lock()
-
+        var anyCommandReceived CommandData
         ConsensusTerminationMutex.Lock()
         if len(ConsensusTerminationMapList[selfSeq]) !=0 {
             fmt.Println(len(ConsensusTerminationMapList[selfSeq]))
             value:=ConsensusTerminationMapList[selfSeq][0].Value
             ConsensusTerminationMutex.Unlock()
             VoteValueDataMutex.Unlock()
-            return 1,value
+            return 1, value, ConsensusTerminationMapList[selfSeq][0].CommandData
         }
         ConsensusTerminationMutex.Unlock()
 
 
         if(len(VoteValueDataMapList[SeqPhase{Seq: selfSeq, Phase: phase}])>=nodeNum/2+1){
+            for _, command := range VoteValueDataMapList[SeqPhase{Seq: selfSeq, Phase: phase}] {
+                if command.CommandData.Op != "" {
+                    anyCommandReceived = command.CommandData
+                }
+            }
+            fmt.Println("VoteValueDataMapList: ", VoteValueDataMapList[SeqPhase{Seq: selfSeq, Phase: phase}])
+            fmt.Println("any command received in vote round: ", anyCommandReceived)
             cnt := make(map[VoteValueData]int)
             for _, command := range VoteValueDataMapList[SeqPhase{Seq: selfSeq, Phase: phase}] {
                 RoundTwoCntMutex.Lock()
+                command.CommandData = anyCommandReceived
                 cnt[command]++
                 RoundTwoCntMutex.Unlock()
             }
@@ -47,21 +61,21 @@ func roundTwoReceive(selfSeq int, nodeNum int,phase int, portNums []int) (int,in
             for v, c := range cnt {
                 if c >= nodeNum/2+1 && v.Value != -1{
 					VoteValueDataMutex.Unlock()
-                    notifyTermination(setConnectionWithOtherReplicas(portNums), &sync.WaitGroup{}, selfSeq, v.Value)
-                    return 1,v.Value
+                    notifyTermination(setConnectionWithOtherReplicas(portNums), &sync.WaitGroup{}, selfSeq, v)
+                    return 1, v.Value, anyCommandReceived
                 }
             }
             for v, c := range cnt {
                 if c>=1 && v.Value != -1{
                     fmt.Println("found at least one vote for non-? value: ",v.Value)
                     VoteValueDataMutex.Unlock()
-                    return 0, v.Value
+                    return 0, v.Value, anyCommandReceived
                 }
             }
             stateCoinFlip :=CommonCoinFlip(selfSeq, phase)
             fmt.Println("coin flip: ",stateCoinFlip)
 			VoteValueDataMutex.Unlock()
-            return 0, stateCoinFlip
+            return 0, stateCoinFlip, anyCommandReceived
         }
 		VoteValueDataMutex.Unlock()
     }
@@ -71,6 +85,7 @@ func roundTwoSend(conns []net.Conn, vote VoteValueData,phase int, seq int, wg *s
     for _, conn := range conns {
         wg.Add(1)
         go func(conn net.Conn) {
+            fmt.Println("sending:  ", vote)
             defer wg.Done()
             sendData(conn, vote)
         }(conn)
@@ -78,12 +93,13 @@ func roundTwoSend(conns []net.Conn, vote VoteValueData,phase int, seq int, wg *s
 }
 
 
-func notifyTermination(conns []net.Conn, wg *sync.WaitGroup, seq int, value int) {
+func notifyTermination(conns []net.Conn, wg *sync.WaitGroup, seq int, termination VoteValueData) {
     for _, conn := range conns {
         wg.Add(1)
         go func(conn net.Conn) {
+            
             defer wg.Done()
-            sendData(conn, ConsensusTermination{Seq: seq, Value: value})
+            sendData(conn, ConsensusTermination{Seq: seq, Value: termination.Value, CommandData: termination.CommandData})
         }(conn)
     }
 }

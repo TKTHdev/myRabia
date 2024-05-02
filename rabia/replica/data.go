@@ -48,10 +48,22 @@ type SeqPhase struct {
     Phase int
 }
 
+type RoundTwoReturnStruct struct {
+    ConsensusValue int
+    CommandData CommandData
+}
 
 type ConsensusTermination struct{
     Seq int
     Value int
+    CommandData CommandData
+}
+
+type TerminationValue struct{
+    isNull bool
+    CommandData CommandData
+    phase int
+    seq int
 }
 
 
@@ -152,10 +164,10 @@ func handleConnection(conn net.Conn) {
         
         case Request:
             PQMutex.Lock()
+            fmt.Println("Received Request: ", data)
             if !data.Redirected{
-                PQ = append(PQ, &data.CommandData)
                 data.Redirected = true
-                sendData(conn, data)
+                broadCastData(portNums, data)
             }else {
                 PQ = append(PQ, &data.CommandData)
             }
@@ -164,6 +176,13 @@ func handleConnection(conn net.Conn) {
         default:
             fmt.Println("未知のデータ型です:", data)
         }
+    }
+}
+
+func broadCastData(portNums []int , data Data) {
+    conns := setConnectionWithOtherReplicas(portNums)
+    for _, conn := range conns {
+        sendData(conn, data)
     }
 }
 
