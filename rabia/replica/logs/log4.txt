@@ -1,5 +1,5 @@
 2024/05/02 21:12:42 consensusValue:  {true { 0 0} 0 0}
-2024/05/02 21:12:42 consensusValue:  {false { 0 0} 0 1}
+2024/05/02 21:12:42 consensusValue:  {true { 0 0} 0 1}
 2024/05/02 21:12:43 consensusValue:  {true { 0 0} 0 2}
 2024/05/02 21:12:43 consensusValue:  {true { 0 0} 0 3}
 2024/05/02 21:12:43 consensusValue:  {false {x % 11 3 4} 1 4}
@@ -17,7 +17,7 @@
 2024/05/02 21:12:44 consensusValue:  {true { 0 0} 0 16}
 2024/05/02 21:12:44 consensusValue:  {false {b = 88 18 17} 1 17}
 2024/05/02 21:12:44 consensusValue:  {true { 0 0} 0 18}
-2024/05/02 21:12:44 consensusValue:  {true {x * 55 19 19} 0 19}
+2024/05/02 21:12:44 consensusValue:  {true { 0 0} 0 19}
 2024/05/02 21:12:44 consensusValue:  {true { 0 0} 0 20}
 2024/05/02 21:12:45 consensusValue:  {false {x + 28 21 21} 0 21}
 2024/05/02 21:12:45 consensusValue:  {true { 0 0} 0 22}
@@ -121,7 +121,7 @@
 2024/05/02 21:12:55 consensusValue:  {true { 0 0} 0 120}
 2024/05/02 21:12:56 consensusValue:  {true { 0 0} 0 121}
 2024/05/02 21:12:56 consensusValue:  {false {a + 70 41 122} 1 122}
-2024/05/02 21:12:56 consensusValue:  {true { 0 0} 1 123}
+2024/05/02 21:12:56 consensusValue:  {true { 0 0} 0 123}
 2024/05/02 21:12:56 consensusValue:  {true { 0 0} 0 124}
 2024/05/02 21:12:56 consensusValue:  {true { 0 0} 0 125}
 2024/05/02 21:12:56 consensusValue:  {true { 0 0} 0 126}
@@ -716,7 +716,7 @@
 2024/05/02 21:14:00 consensusValue:  {true { 0 0} 0 715}
 2024/05/02 21:14:00 consensusValue:  {true { 0 0} 0 716}
 2024/05/02 21:14:01 consensusValue:  {true { 0 0} 0 717}
-2024/05/02 21:14:01 consensusValue:  {false { 0 0} 0 718}
+2024/05/02 21:14:01 consensusValue:  {true { 0 0} 0 718}
 2024/05/02 21:14:01 consensusValue:  {true { 0 0} 0 719}
 2024/05/02 21:14:01 consensusValue:  {true { 0 0} 0 720}
 2024/05/02 21:14:01 consensusValue:  {true { 0 0} 0 721}
@@ -797,10 +797,3 @@
 2024/05/02 21:14:09 consensusValue:  {true { 0 0} 0 796}
 2024/05/02 21:14:09 consensusValue:  {true { 0 0} 0 797}
 2024/05/02 21:14:09 consensusValue:  {true { 0 0} 0 798}
-2024/05/02 21:14:09 consensusValue:  {true { 0 0} 0 799}
-2024/05/02 21:14:10 consensusValue:  {true { 0 0} 0 800}
-2024/05/02 21:14:10 consensusValue:  {true { 0 0} 0 801}
-2024/05/02 21:14:10 consensusValue:  {true { 0 0} 0 802}
-2024/05/02 21:14:10 consensusValue:  {true { 0 0} 0 803}
-2024/05/02 21:14:10 consensusValue:  {true { 0 0} 0 804}
-2024/05/02 21:14:10 consensusValue:  {true { 0 0} 0 805}

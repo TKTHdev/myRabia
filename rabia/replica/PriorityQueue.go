@@ -24,12 +24,15 @@ func (pq *PriorityQueue) Push(x interface{}) {
     *pq = append(*pq, item)
 }
 
+
 func (pq *PriorityQueue) Pop() interface{} {
     old := *pq
     n := len(old)
-    item := old[n-1]
-    old[n-1] = nil
-    *pq = old[0 : n-1]
+    if n == 0 {
+        return nil
+    }
+    item := old[0]
+    *pq = old[1:n]
     return item
 }
 

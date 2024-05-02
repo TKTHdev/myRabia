@@ -16,6 +16,14 @@ var portNums []int
 
 func main() {
 
+	//init SM
+	StateMachine := make(map[string]int)
+
+
+	//color output
+	c := color.New(color.FgCyan)
+	c.Add(color.Underline)
+
 	// ログファイルを作成
 	var logName string 
 	fmt.Println("Enter log file name: ")
@@ -51,6 +59,7 @@ func main() {
 	var seq int = 0
 	for {
 
+		time.Sleep(100 * time.Millisecond)
 		PQMutex.Lock()
 		commandPointer :=PQ.Head()
 		if commandPointer == nil{
@@ -65,8 +74,8 @@ func main() {
 		commandPointer.Seq = seq
 		terminationFlag, stateStruct = exchangeStage(*commandPointer, portNums, seq)
 		if terminationFlag == 1{
-			logger.Println("consensusValue: ", stateStruct.Value, "command: ", stateStruct.CommandData.Op)
 			terminationValue := TerminationValue{isNull: false, CommandData: stateStruct.CommandData, phase: 0, seq: seq}
+			logger.Println("consensusValue: ", terminationValue)
 			color.Green("reached consensus: ", terminationValue,"\n")
 			seq++
 			continue
@@ -75,10 +84,20 @@ func main() {
 
 	    consensusValue:=weakMVC(stateStruct, portInt, portNums, listener, seq)
 		logger.Println("consensusValue: ", consensusValue)
+		if !consensusValue.isNull && consensusValue.CommandData.Op == "" {
+			c := color.New(color.FgHiRed)
+			c.Println("This should not happen!")
+		}
+		if consensusValue.CommandData != *commandPointer || consensusValue.isNull {
+			PQMutex.Lock()
+			PQ.Push(commandPointer)
+			PQMutex.Unlock()
+		}
+		parseCommand(consensusValue.CommandData.Op, StateMachine)
+		c.Println("SM in seq",seq,":", StateMachine)	
 		seq++
 		
 		//delete data to save memory
-		time.Sleep(250 * time.Millisecond)
 
 	}
 
