@@ -56,7 +56,7 @@ func exchangeReceive(selfSeq int, nodeNum int) (int, int, CommandData) {
 }
 
 func exchangeSend(conns []net.Conn, command CommandData, wg *sync.WaitGroup) {
-    fmt.Println("Sending command to replicas")
+    fmt.Println("Sending Command: ", command)
     for _, conn := range conns {
         wg.Add(1)
         go func(conn net.Conn) {

@@ -78,6 +78,7 @@ var CommandDataMapList map[int][]CommandData
 var StateValueDataMapList map[SeqPhase][]StateValueData
 var VoteValueDataMapList map[SeqPhase][]VoteValueData
 var ConsensusTerminationMapList map[int][]ConsensusTermination
+var Dictionary map[CommandData]bool
 var PQ PriorityQueue
 
 
@@ -86,14 +87,17 @@ func init() {
     StateValueDataMapList = make(map[SeqPhase][]StateValueData)
     VoteValueDataMapList = make(map[SeqPhase][]VoteValueData)
     ConsensusTerminationMapList = make(map[int][]ConsensusTermination)
-    PQ = make(PriorityQueue, 0)
-    heap.Init(&PQ)
+    Dictionary = make(map[CommandData]bool)
 
     gob.Register(CommandData{})
     gob.Register(StateValueData{})
     gob.Register(VoteValueData{})
     gob.Register(ConsensusTermination{})
     gob.Register(Request{})
+
+    PQ:= make(PriorityQueue, 0)
+    heap.Init(&PQ)
+   
 }
 
 func listenAndAccept(port string) {
@@ -169,7 +173,7 @@ func handleConnection(conn net.Conn) {
                 data.Redirected = true
                 broadCastData(portNums, data)
             }else {
-                PQ = append(PQ, &data.CommandData)
+                PQ.Push(&data.CommandData)
             }
             PQMutex.Unlock()
 

@@ -8,7 +8,7 @@ import (
 	"strconv"
 	"time"
 	"github.com/fatih/color"
-	
+	"container/heap"
 )
 
 var listener net.Listener
@@ -18,7 +18,6 @@ func main() {
 
 	//init SM
 	StateMachine := make(map[string]int)
-
 
 	//color output
 	c := color.New(color.FgCyan)
@@ -36,6 +35,13 @@ func main() {
 	defer logFile.Close()
 	logger := log.New(logFile, "", log.LstdFlags)
 
+	//Choose the interval
+
+	/*
+	var interval int
+	fmt.Println("Enter the interval: ")
+	fmt.Scan(&interval)
+	*/
 	
 	// サーバーに接続し、自身に割り当てられたポート番号を受け取る
 	/*
@@ -43,6 +49,7 @@ func main() {
 	fmt.Println("Operation: ")
 	fmt.Scan(&Operation)
 	*/
+
 	var port string = sayHelloAndReceivePortNum()
 	portInt, _ := strconv.Atoi(port)
 
@@ -58,15 +65,18 @@ func main() {
 	//ここで合意アルゴリズムを実行
 	var seq int = 0
 	for {
-
-		time.Sleep(100 * time.Millisecond)
 		PQMutex.Lock()
-		commandPointer :=PQ.Head()
-		if commandPointer == nil{
+		if PQ.Len() == 0{
 			PQMutex.Unlock()
 			continue
 		}
-		PQ.Pop()
+		commandPointer := heap.Pop(&PQ).(*CommandData)
+		if Dictionary[*commandPointer]{
+			PQMutex.Unlock()
+			Dictionary[*commandPointer] = false
+			delete(Dictionary, *commandPointer)
+			continue
+		}
 		PQMutex.Unlock()
 		var stateStruct StateValueData
 		fmt.Println("cnt: ", seq)
@@ -81,8 +91,7 @@ func main() {
 			continue
 		}
 		
-
-	    consensusValue:=weakMVC(stateStruct, portInt, portNums, listener, seq)
+	    consensusValue:=weakMVC(stateStruct, portInt, portNums,seq)
 		logger.Println("consensusValue: ", consensusValue)
 		if !consensusValue.isNull && consensusValue.CommandData.Op == "" {
 			c := color.New(color.FgHiRed)
@@ -90,20 +99,32 @@ func main() {
 		}
 		if consensusValue.CommandData != *commandPointer || consensusValue.isNull {
 			PQMutex.Lock()
-			PQ.Push(commandPointer)
+			fmt.Println("Not Matching:")
+			heap.Push(&PQ, commandPointer)
+			Dictionary[consensusValue.CommandData] = true
 			PQMutex.Unlock()
 		}
-		parseCommand(consensusValue.CommandData.Op, StateMachine)
+		if !consensusValue.isNull{
+			parseCommand(consensusValue.CommandData.Op, StateMachine)
+		}
 		c.Println("SM in seq",seq,":", StateMachine)	
 		seq++
 		
 		//delete data to save memory
 
+		/*
+		for _,v:= range PQ {
+			fmt.Print(*v)
+		}
+		fmt.Println()
+		*/
+		//deleteData(seq, 0)
+		//time.Sleep(time.Duration(interval) * time.Millisecond)
 	}
 
 }
 
-func weakMVC(stateStruct StateValueData , selfPort int, portNums []int, ln net.Listener, seq int) (TerminationValue){
+func weakMVC(stateStruct StateValueData , selfPort int, portNums []int,  seq int) (TerminationValue){
 
 	var phase int = 0
 
@@ -123,6 +144,7 @@ func weakMVC(stateStruct StateValueData , selfPort int, portNums []int, ln net.L
 			return terminationValue
 		}
 	}	
+
 	//Round 2
 	fmt.Println("voteValue: ", voteValue)
 	var vote VoteValueData = VoteValueData{Value: voteValue.Value, Seq: seq, Phase: phase, CommandData: voteValue.CommandData}
