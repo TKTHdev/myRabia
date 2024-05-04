@@ -5,7 +5,6 @@ import (
 	"log"
 	"net"
 	"os"
-	"strconv"
 	"time"
 	"github.com/fatih/color"
 	"container/heap"
@@ -51,7 +50,6 @@ func main() {
 	*/
 
 	var port string = sayHelloAndReceivePortNum()
-	portInt, _ := strconv.Atoi(port)
 
 	// プロキシからの接続を待ち受ける
 	// 他のレプリカのポート番号を取得
@@ -71,12 +69,13 @@ func main() {
 			continue
 		}
 		commandPointer := heap.Pop(&PQ).(*CommandData)
-		if Dictionary[*commandPointer]{
+		if Dictionary[CommandTypestamp{CommandData: *commandPointer, Timestamp: commandPointer.Timestamp}]{
 			PQMutex.Unlock()
-			Dictionary[*commandPointer] = false
-			delete(Dictionary, *commandPointer)
+			Dictionary[CommandTypestamp{CommandData: *commandPointer, Timestamp: commandPointer.Timestamp}] = false
+			delete(Dictionary, CommandTypestamp{CommandData: *commandPointer, Timestamp: commandPointer.Timestamp})
 			continue
 		}
+		logger.Println("Proposing command: ", *commandPointer)
 		PQMutex.Unlock()
 		var stateStruct StateValueData
 		fmt.Println("cnt: ", seq)
@@ -91,7 +90,7 @@ func main() {
 			continue
 		}
 		
-	    consensusValue:=weakMVC(stateStruct, portInt, portNums,seq)
+	    consensusValue:=weakMVC(stateStruct, portNums,seq)
 		logger.Println("consensusValue: ", consensusValue)
 		if !consensusValue.isNull && consensusValue.CommandData.Op == "" {
 			c := color.New(color.FgHiRed)
@@ -99,15 +98,21 @@ func main() {
 		}
 		if consensusValue.CommandData != *commandPointer || consensusValue.isNull {
 			PQMutex.Lock()
-			//fmt.Println("Not Matching:")
+			c:= color.New(color.FgYellow)
+			c.Println("This command is already in the log: ",consensusValue.CommandData)
 			heap.Push(&PQ, commandPointer)
-			Dictionary[consensusValue.CommandData] = true
+			Dictionary[CommandTypestamp{CommandData: *commandPointer, Timestamp: commandPointer.Timestamp}] = true
 			PQMutex.Unlock()
 		}
 		if !consensusValue.isNull{
 			parseCommand(consensusValue.CommandData.Op, StateMachine)
 		}
 		c.Println("SM in seq",seq,":", StateMachine)	
+
+		//Print the size of PQ
+		PQMutex.Lock()
+		fmt.Println("PQ size: ", PQ.Len())
+		PQMutex.Unlock()
 		seq++
 		
 		//delete data to save memory
@@ -124,9 +129,11 @@ func main() {
 
 }
 
-func weakMVC(stateStruct StateValueData , selfPort int, portNums []int,  seq int) (TerminationValue){
+func weakMVC(stateStruct StateValueData , portNums []int,  seq int) (TerminationValue){
 
 	var phase int = 0
+
+	c:= color.New(color.FgGreen)
 
 	//Round 1
 	//fmt.Println("State struct: ", stateStruct)
@@ -136,11 +143,11 @@ func weakMVC(stateStruct StateValueData , selfPort int, portNums []int,  seq int
 		
 		if voteValue.Value == 0{
 			terminationValue := TerminationValue{isNull: true, CommandData: voteValue.CommandData, phase: phase, seq: seq}
-			color.Green("reached consensus: ", terminationValue,"\n")
+			c.Println("reached consensus: ", terminationValue)
 			return terminationValue
 		}else{
 			terminationValue := TerminationValue{isNull: false, CommandData: voteValue.CommandData, phase: phase, seq: seq}
-			color.Green("reached consensus: ", terminationValue,"\n")
+			c.Println("reached consensus: ", terminationValue)
 			return terminationValue
 		}
 	}	
@@ -148,16 +155,16 @@ func weakMVC(stateStruct StateValueData , selfPort int, portNums []int,  seq int
 	//Round 2
 	//fmt.Println("voteValue: ", voteValue)
 	var vote VoteValueData = VoteValueData{Value: voteValue.Value, Seq: seq, Phase: phase, CommandData: voteValue.CommandData}
-	terminationFlag, returnStruct :=roundTwo(vote, portNums, selfPort, seq,phase)
+	terminationFlag, returnStruct :=roundTwo(vote, portNums, seq,phase)
 	//fmt.Println("returnStruct: ", returnStruct)
 	if(terminationFlag == 1){
 		if returnStruct.ConsensusValue == 0{
 			terminationValue := TerminationValue{isNull: true, CommandData: returnStruct.CommandData, phase: phase, seq: seq}
-			color.Green("reached consensus: ", terminationValue,"\n")
+			c.Println("reached consensus: ", terminationValue)
 			return terminationValue
 		}else{
 			terminationValue := TerminationValue{isNull: false, CommandData: returnStruct.CommandData, phase: phase, seq: seq}
-			color.Green("reached consensus: ", terminationValue,"\n")
+			c.Println("reached consensus: ", terminationValue)
 			return terminationValue
 		}
 	}	
@@ -170,25 +177,25 @@ func weakMVC(stateStruct StateValueData , selfPort int, portNums []int,  seq int
 		if terminationFlag == 1{
 			if voteValue.Value == 0{
 				terminationValue := TerminationValue{isNull: true, CommandData: voteValue.CommandData, phase: phase, seq: seq}
-				color.Green("reached consensus: ", terminationValue,"\n")
+				c.Println("reached consensus: ", terminationValue)
 				return terminationValue
 			}else{
 				terminationValue := TerminationValue{isNull: false, CommandData: voteValue.CommandData, phase: phase, seq: seq}
-				color.Green("reached consensus: ", terminationValue,"\n")
+				c.Println("reached consensus: ", terminationValue)
 				return terminationValue
 			}
 		}
 		//fmt.Println("voteValue: ", voteValue)
 		var vote  VoteValueData = VoteValueData{Value: voteValue.Value, Seq: seq, Phase: phase, CommandData: voteValue.CommandData}
-		terminationFlag,returnStruct =roundTwo(vote, portNums, selfPort, seq,phase)
+		terminationFlag,returnStruct =roundTwo(vote, portNums, seq,phase)
 		//fmt.Println("returnStruct: ", returnStruct)
 		if terminationFlag == 1{
 			if returnStruct.ConsensusValue == 0{
 				terminationValue := TerminationValue{isNull: true, CommandData: returnStruct.CommandData, phase: phase, seq: seq}
-				color.Green("reached consensus: ", terminationValue,"\n")
+				c.Println("reached consensus: ", terminationValue)
 			}else{
 				terminationValue := TerminationValue{isNull: false, CommandData: returnStruct.CommandData, phase: phase, seq: seq}
-				color.Green("reached consensus: ", terminationValue,"\n")
+				c.Println("reached consensus: ", terminationValue)
 				return terminationValue
 			}
 		}
