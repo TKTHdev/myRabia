@@ -2,7 +2,7 @@ package main
 
 import (
 	"net"
-    "fmt"
+    //"fmt"
 	"sync"
     "math/rand"
 	
@@ -32,7 +32,7 @@ func roundTwoReceive(selfSeq int, nodeNum int,phase int, portNums []int) (int,in
         var anyCommandReceived CommandData
         ConsensusTerminationMutex.Lock()
         if len(ConsensusTerminationMapList[selfSeq]) !=0 {
-            fmt.Println(len(ConsensusTerminationMapList[selfSeq]))
+            //fmt.Println(len(ConsensusTerminationMapList[selfSeq]))
             value:=ConsensusTerminationMapList[selfSeq][0].Value
             ConsensusTerminationMutex.Unlock()
             VoteValueDataMutex.Unlock()
@@ -47,8 +47,8 @@ func roundTwoReceive(selfSeq int, nodeNum int,phase int, portNums []int) (int,in
                     anyCommandReceived = command.CommandData
                 }
             }
-            fmt.Println("VoteValueDataMapList: ", VoteValueDataMapList[SeqPhase{Seq: selfSeq, Phase: phase}])
-            fmt.Println("any command received in vote round: ", anyCommandReceived)
+            //fmt.Println("VoteValueDataMapList: ", VoteValueDataMapList[SeqPhase{Seq: selfSeq, Phase: phase}])
+            //fmt.Println("any command received in vote round: ", anyCommandReceived)
             cnt := make(map[VoteValueData]int)
             for _, command := range VoteValueDataMapList[SeqPhase{Seq: selfSeq, Phase: phase}] {
                 RoundTwoCntMutex.Lock()
@@ -67,13 +67,13 @@ func roundTwoReceive(selfSeq int, nodeNum int,phase int, portNums []int) (int,in
             }
             for v, c := range cnt {
                 if c>=1 && v.Value != -1{
-                    fmt.Println("found at least one vote for non-? value: ",v.Value)
+                    //fmt.Println("found at least one vote for non-? value: ",v.Value)
                     VoteValueDataMutex.Unlock()
                     return 0, v.Value, anyCommandReceived
                 }
             }
             stateCoinFlip :=CommonCoinFlip(selfSeq, phase)
-            fmt.Println("coin flip: ",stateCoinFlip)
+            //fmt.Println("coin flip: ",stateCoinFlip)
 			VoteValueDataMutex.Unlock()
             return 0, stateCoinFlip, anyCommandReceived
         }
@@ -85,7 +85,7 @@ func roundTwoSend(conns []net.Conn, vote VoteValueData,phase int, seq int, wg *s
     for _, conn := range conns {
         wg.Add(1)
         go func(conn net.Conn) {
-            fmt.Println("sending:  ", vote)
+            //fmt.Println("sending:  ", vote)
             defer wg.Done()
             sendData(conn, vote)
         }(conn)

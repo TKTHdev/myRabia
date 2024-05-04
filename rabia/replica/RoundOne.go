@@ -1,7 +1,7 @@
 package main
 
 import (
-    "fmt"
+    //"fmt"
 	"net"
 	"sync"
 	
@@ -42,7 +42,7 @@ func roundOneReceive(selfSeq int, phase int,  nodeNum int) (int, int,CommandData
                     anyCommandReceived = command.CommandData
                 }
             }
-            fmt.Println("any command received in state round: ", anyCommandReceived)
+            //fmt.Println("any command received in state round: ", anyCommandReceived)
             cnt := make(map[StateValueData]int)
             for _, command := range StateValueDataMapList[SeqPhase{ Seq: selfSeq, Phase: phase }] {
                 RoundOneCntMutex.Lock()
@@ -66,7 +66,7 @@ func roundOneReceive(selfSeq int, phase int,  nodeNum int) (int, int,CommandData
 }
 
 func roundOneSend(conns []net.Conn, state StateValueData, wg *sync.WaitGroup) {
-    fmt.Println("Sending state to replicas")
+    //fmt.Println("Sending state to replicas")
     for _, conn := range conns {
         wg.Add(1)
         go func(conn net.Conn) {

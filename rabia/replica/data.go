@@ -144,31 +144,31 @@ func handleConnection(conn net.Conn) {
         switch data := data.(type) {
         case CommandData:
             CommandDataMutex.Lock()
-            fmt.Println("Received CommandData: ", data)
+            //fmt.Println("Received CommandData: ", data)
             CommandDataMapList[data.Seq] = append(CommandDataMapList[data.Seq], data)
             //fmt.Println("CommandDataMapList: ", CommandDataMapList)
             CommandDataMutex.Unlock()
         case StateValueData:
             StateValueDataMutex.Lock()
-            fmt.Println("Received StateValueData: ", data)
+            //fmt.Println("Received StateValueData: ", data)
             StateValueDataMapList[SeqPhase{Seq: data.Seq, Phase: data.Phase}] = append(StateValueDataMapList[SeqPhase{Seq: data.Seq, Phase: data.Phase}], data)
             //fmt.Println("StateValueDataMapList: ", StateValueDataMapList)
             StateValueDataMutex.Unlock()
         case VoteValueData:
             VoteValueDataMutex.Lock()
-            fmt.Println("Received VoteValueData: ", data)
+            //fmt.Println("Received VoteValueData: ", data)
             VoteValueDataMapList[SeqPhase{Seq: data.Seq, Phase: data.Phase}] = append(VoteValueDataMapList[SeqPhase{Seq: data.Seq, Phase: data.Phase}], data)
             //fmt.Println("VoteValueDataMaplist: ", VoteValueDataMaplist)
             VoteValueDataMutex.Unlock()
         case ConsensusTermination:
             ConsensusTerminationMutex.Lock()
-            fmt.Println("Received ConsensusTermination: ", data)
+            //fmt.Println("Received ConsensusTermination: ", data)
             ConsensusTerminationMapList[data.Seq] = append(ConsensusTerminationMapList[data.Seq], data)
             ConsensusTerminationMutex.Unlock()
         
         case Request:
             PQMutex.Lock()
-            fmt.Println("Received Request: ", data)
+            //fmt.Println("Received Request: ", data)
             if !data.Redirected{
                 data.Redirected = true
                 broadCastData(portNums, data)
@@ -215,8 +215,12 @@ func deleteData(seq int, phase int) {
     VoteValueDataMutex.Unlock()
 }
 
+
 //Unused now 
 //Measure the size of the map data structure
+
+
+/*
 func printCommandDataMapListSize() {
     CommandDataMutex.Lock()
     var totalSize int
@@ -249,3 +253,4 @@ func printVoteValueDataMapListSize() {
     fmt.Printf("Total Size: %d\n", totalSize)
     VoteValueDataMutex.Unlock()
 }
+*/

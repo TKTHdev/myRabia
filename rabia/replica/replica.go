@@ -99,7 +99,7 @@ func main() {
 		}
 		if consensusValue.CommandData != *commandPointer || consensusValue.isNull {
 			PQMutex.Lock()
-			fmt.Println("Not Matching:")
+			//fmt.Println("Not Matching:")
 			heap.Push(&PQ, commandPointer)
 			Dictionary[consensusValue.CommandData] = true
 			PQMutex.Unlock()
@@ -129,7 +129,7 @@ func weakMVC(stateStruct StateValueData , selfPort int, portNums []int,  seq int
 	var phase int = 0
 
 	//Round 1
-	fmt.Println("State struct: ", stateStruct)
+	//fmt.Println("State struct: ", stateStruct)
 	var state StateValueData = StateValueData{Value: stateStruct.Value, Seq: seq, Phase: phase, CommandData: stateStruct.CommandData}
 	terminationFlag, voteValue :=roundOne(state, portNums,  seq, phase)
 	if terminationFlag == 1{
@@ -146,10 +146,10 @@ func weakMVC(stateStruct StateValueData , selfPort int, portNums []int,  seq int
 	}	
 
 	//Round 2
-	fmt.Println("voteValue: ", voteValue)
+	//fmt.Println("voteValue: ", voteValue)
 	var vote VoteValueData = VoteValueData{Value: voteValue.Value, Seq: seq, Phase: phase, CommandData: voteValue.CommandData}
 	terminationFlag, returnStruct :=roundTwo(vote, portNums, selfPort, seq,phase)
-	fmt.Println("returnStruct: ", returnStruct)
+	//fmt.Println("returnStruct: ", returnStruct)
 	if(terminationFlag == 1){
 		if returnStruct.ConsensusValue == 0{
 			terminationValue := TerminationValue{isNull: true, CommandData: returnStruct.CommandData, phase: phase, seq: seq}
@@ -178,10 +178,10 @@ func weakMVC(stateStruct StateValueData , selfPort int, portNums []int,  seq int
 				return terminationValue
 			}
 		}
-		fmt.Println("voteValue: ", voteValue)
+		//fmt.Println("voteValue: ", voteValue)
 		var vote  VoteValueData = VoteValueData{Value: voteValue.Value, Seq: seq, Phase: phase, CommandData: voteValue.CommandData}
 		terminationFlag,returnStruct =roundTwo(vote, portNums, selfPort, seq,phase)
-		fmt.Println("returnStruct: ", returnStruct)
+		//fmt.Println("returnStruct: ", returnStruct)
 		if terminationFlag == 1{
 			if returnStruct.ConsensusValue == 0{
 				terminationValue := TerminationValue{isNull: true, CommandData: returnStruct.CommandData, phase: phase, seq: seq}
