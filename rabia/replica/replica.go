@@ -69,9 +69,8 @@ func main() {
 			continue
 		}
 		commandPointer := heap.Pop(&PQ).(*CommandData)
-		check := CommandTimestamp{Command: commandPointer.Op, Timestamp: commandPointer.Timestamp}
 		logger.Println("Command: ", *commandPointer, "Dict: ", Dictionary)
-		if Dictionary[check]==true{
+		if Dictionary[CommandTimestamp{Command: commandPointer.Op, Timestamp: commandPointer.Timestamp}]{
 			PQMutex.Unlock()
 			fmt.Println("Command already reached consensus: ", *commandPointer)
 			delete(Dictionary, CommandTimestamp{Command: commandPointer.Op, Timestamp: commandPointer.Timestamp})

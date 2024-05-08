@@ -51,6 +51,7 @@ func roundTwoReceive(selfSeq int, nodeNum int, phase int, portNums []int) (int, 
 				RoundTwoCntMutex.Lock()
 				command.CommandData = anyCommandReceived
 				cnt[command]++
+
 				RoundTwoCntMutex.Unlock()
 			}
 
@@ -77,7 +78,7 @@ func roundTwoReceive(selfSeq int, nodeNum int, phase int, portNums []int) (int, 
 	}
 }
 
-func roundTwoSend(conns []net.Conn, vote VoteValueData,  wg *sync.WaitGroup) {
+func roundTwoSend(conns []net.Conn, vote VoteValueData, wg *sync.WaitGroup) {
 	for _, conn := range conns {
 		wg.Add(1)
 		go func(conn net.Conn) {

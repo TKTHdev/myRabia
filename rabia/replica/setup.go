@@ -9,7 +9,6 @@ import (
 	"time"
 )
 
-
 func setConnectionWithOtherReplicas(portNums []int) []net.Conn {
 	var conns []net.Conn
 
@@ -94,7 +93,7 @@ func listenAndAcceptConnectionWithProxy(listener net.Listener, port string) []in
 
 	time.Sleep(1000 * time.Millisecond)
 	//ポート番号リストをパース
-	portNums,err := parsePortList(message)
+	portNums, err := parsePortList(message)
 	if portNums == nil {
 		return nil
 	}
@@ -103,7 +102,6 @@ func listenAndAcceptConnectionWithProxy(listener net.Listener, port string) []in
 		return nil
 	}
 
-	
 	fmt.Println("他のレプリカのポート番号リスト: ", portNums)
 
 	return portNums
