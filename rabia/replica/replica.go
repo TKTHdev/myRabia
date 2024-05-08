@@ -69,10 +69,12 @@ func main() {
 			continue
 		}
 		commandPointer := heap.Pop(&PQ).(*CommandData)
-		if Dictionary[CommandTypestamp{CommandData: *commandPointer, Timestamp: commandPointer.Timestamp}]{
+		check := CommandTimestamp{Command: commandPointer.Op, Timestamp: commandPointer.Timestamp}
+		logger.Println("Command: ", *commandPointer, "Dict: ", Dictionary)
+		if Dictionary[check]==true{
 			PQMutex.Unlock()
-			Dictionary[CommandTypestamp{CommandData: *commandPointer, Timestamp: commandPointer.Timestamp}] = false
-			delete(Dictionary, CommandTypestamp{CommandData: *commandPointer, Timestamp: commandPointer.Timestamp})
+			fmt.Println("Command already reached consensus: ", *commandPointer)
+			delete(Dictionary, CommandTimestamp{Command: commandPointer.Op, Timestamp: commandPointer.Timestamp})
 			continue
 		}
 		logger.Println("Proposing command: ", *commandPointer)
@@ -99,9 +101,9 @@ func main() {
 		if consensusValue.CommandData != *commandPointer || consensusValue.isNull {
 			PQMutex.Lock()
 			c:= color.New(color.FgYellow)
-			c.Println("This command is already in the log: ",consensusValue.CommandData)
-			heap.Push(&PQ, commandPointer)
-			Dictionary[CommandTypestamp{CommandData: *commandPointer, Timestamp: commandPointer.Timestamp}] = true
+			c.Println("Adding to dictionary: ",consensusValue.CommandData)
+			PQ.Push(commandPointer)
+			Dictionary[CommandTimestamp{Command: consensusValue.CommandData.Op, Timestamp: consensusValue.CommandData.Timestamp}] = true
 			PQMutex.Unlock()
 		}
 		if !consensusValue.isNull{

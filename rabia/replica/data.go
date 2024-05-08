@@ -73,8 +73,8 @@ type Request struct {
     Timestamp int
 }
 
-type CommandTypestamp struct{
-    CommandData CommandData
+type CommandTimestamp struct{
+    Command string
     Timestamp int
 }
 
@@ -82,7 +82,7 @@ var CommandDataMapList map[int][]CommandData
 var StateValueDataMapList map[SeqPhase][]StateValueData
 var VoteValueDataMapList map[SeqPhase][]VoteValueData
 var ConsensusTerminationMapList map[int][]ConsensusTermination
-var Dictionary map[CommandTypestamp]bool
+var Dictionary map[CommandTimestamp]bool
 var PQ PriorityQueue
 
 
@@ -91,7 +91,7 @@ func init() {
     StateValueDataMapList = make(map[SeqPhase][]StateValueData)
     VoteValueDataMapList = make(map[SeqPhase][]VoteValueData)
     ConsensusTerminationMapList = make(map[int][]ConsensusTermination)
-    Dictionary = make(map[CommandTypestamp]bool)
+    Dictionary = make(map[CommandTimestamp]bool)
 
     gob.Register(CommandData{})
     gob.Register(StateValueData{})
