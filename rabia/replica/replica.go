@@ -1,13 +1,13 @@
 package main
 
 import (
+	"container/heap"
 	"fmt"
+	"github.com/fatih/color"
 	"log"
 	"net"
 	"os"
 	"time"
-	"github.com/fatih/color"
-	"container/heap"
 )
 
 var listener net.Listener
@@ -23,11 +23,11 @@ func main() {
 	c.Add(color.Underline)
 
 	// ログファイルを作成
-	var logName string 
+	var logName string
 	fmt.Println("Enter log file name: ")
 	fmt.Scan(&logName)
 	logName = "log" + logName + ".txt"
-	logFile, err := os.Create("logs/"+logName)
+	logFile, err := os.Create("logs/" + logName)
 	if err != nil {
 		log.Fatal("Cannot create file", err)
 	}
@@ -37,16 +37,16 @@ func main() {
 	//Choose the interval
 
 	/*
-	var interval int
-	fmt.Println("Enter the interval: ")
-	fmt.Scan(&interval)
+		var interval int
+		fmt.Println("Enter the interval: ")
+		fmt.Scan(&interval)
 	*/
-	
+
 	// サーバーに接続し、自身に割り当てられたポート番号を受け取る
 	/*
-	var Operation string
-	fmt.Println("Operation: ")
-	fmt.Scan(&Operation)
+		var Operation string
+		fmt.Println("Operation: ")
+		fmt.Scan(&Operation)
 	*/
 
 	var port string = sayHelloAndReceivePortNum()
@@ -56,21 +56,20 @@ func main() {
 	portNums = listenAndAcceptConnectionWithProxy(listener, port)
 
 	// 他のレプリカとの接続を確立
-	go listenAndAccept(port)	
+	go listenAndAccept(port)
 	time.Sleep(250 * time.Millisecond)
-
 
 	//ここで合意アルゴリズムを実行
 	var seq int = 0
 	for {
 		PQMutex.Lock()
-		if PQ.Len() == 0{
+		if PQ.Len() == 0 {
 			PQMutex.Unlock()
 			continue
 		}
 		commandPointer := heap.Pop(&PQ).(*CommandData)
 		logger.Println("Command: ", *commandPointer, "Dict: ", Dictionary)
-		if Dictionary[CommandTimestamp{Command: commandPointer.Op, Timestamp: commandPointer.Timestamp}]{
+		if Dictionary[CommandTimestamp{Command: commandPointer.Op, Timestamp: commandPointer.Timestamp}] {
 			PQMutex.Unlock()
 			fmt.Println("Command already reached consensus: ", *commandPointer)
 			delete(Dictionary, CommandTimestamp{Command: commandPointer.Op, Timestamp: commandPointer.Timestamp})
@@ -83,15 +82,15 @@ func main() {
 		var terminationFlag int
 		commandPointer.Seq = seq
 		terminationFlag, stateStruct = exchangeStage(*commandPointer, portNums, seq)
-		if terminationFlag == 1{
+		if terminationFlag == 1 {
 			terminationValue := TerminationValue{isNull: false, CommandData: stateStruct.CommandData, phase: 0, seq: seq}
 			logger.Println("consensusValue: ", terminationValue)
-			color.Green("reached consensus: ", terminationValue,"\n")
+			color.Green("reached consensus: ", terminationValue, "\n")
 			seq++
 			continue
 		}
-		
-	    consensusValue:=weakMVC(stateStruct, portNums,seq)
+
+		consensusValue := weakMVC(stateStruct, portNums, seq)
 		logger.Println("consensusValue: ", consensusValue)
 		if !consensusValue.isNull && consensusValue.CommandData.Op == "" {
 			c := color.New(color.FgHiRed)
@@ -99,30 +98,30 @@ func main() {
 		}
 		if consensusValue.CommandData != *commandPointer || consensusValue.isNull {
 			PQMutex.Lock()
-			c:= color.New(color.FgYellow)
-			c.Println("Adding to dictionary: ",consensusValue.CommandData)
+			c := color.New(color.FgYellow)
+			c.Println("Adding to dictionary: ", consensusValue.CommandData)
 			PQ.Push(commandPointer)
 			Dictionary[CommandTimestamp{Command: consensusValue.CommandData.Op, Timestamp: consensusValue.CommandData.Timestamp}] = true
 			PQMutex.Unlock()
 		}
-		if !consensusValue.isNull{
+		if !consensusValue.isNull {
 			parseCommand(consensusValue.CommandData.Op, StateMachine)
 		}
-		c.Println("SM in seq",seq,":", StateMachine)	
+		c.Println("SM in seq", seq, ":", StateMachine)
 
 		//Print the size of PQ
 		PQMutex.Lock()
 		fmt.Println("PQ size: ", PQ.Len())
 		PQMutex.Unlock()
 		seq++
-		
+
 		//delete data to save memory
 
 		/*
-		for _,v:= range PQ {
-			fmt.Print(*v)
-		}
-		fmt.Println()
+			for _,v:= range PQ {
+				fmt.Print(*v)
+			}
+			fmt.Println()
 		*/
 		//deleteData(seq, 0)
 		//time.Sleep(time.Duration(interval) * time.Millisecond)
@@ -130,71 +129,71 @@ func main() {
 
 }
 
-func weakMVC(stateStruct StateValueData , portNums []int,  seq int) (TerminationValue){
+func weakMVC(stateStruct StateValueData, portNums []int, seq int) TerminationValue {
 
 	var phase int = 0
 
-	c:= color.New(color.FgGreen)
+	c := color.New(color.FgGreen)
 
 	//Round 1
 	//fmt.Println("State struct: ", stateStruct)
 	var state StateValueData = StateValueData{Value: stateStruct.Value, Seq: seq, Phase: phase, CommandData: stateStruct.CommandData}
-	terminationFlag, voteValue :=roundOne(state, portNums,  seq, phase)
-	if terminationFlag == 1{
-		
-		if voteValue.Value == 0{
+	terminationFlag, voteValue := roundOne(state, portNums, seq, phase)
+	if terminationFlag == 1 {
+
+		if voteValue.Value == 0 {
 			terminationValue := TerminationValue{isNull: true, CommandData: voteValue.CommandData, phase: phase, seq: seq}
 			c.Println("reached consensus: ", terminationValue)
 			return terminationValue
-		}else{
+		} else {
 			terminationValue := TerminationValue{isNull: false, CommandData: voteValue.CommandData, phase: phase, seq: seq}
 			c.Println("reached consensus: ", terminationValue)
 			return terminationValue
 		}
-	}	
+	}
 
 	//Round 2
 	//fmt.Println("voteValue: ", voteValue)
 	var vote VoteValueData = VoteValueData{Value: voteValue.Value, Seq: seq, Phase: phase, CommandData: voteValue.CommandData}
-	terminationFlag, returnStruct :=roundTwo(vote, portNums, seq,phase)
+	terminationFlag, returnStruct := roundTwo(vote, portNums, seq, phase)
 	//fmt.Println("returnStruct: ", returnStruct)
-	if(terminationFlag == 1){
-		if returnStruct.ConsensusValue == 0{
+	if terminationFlag == 1 {
+		if returnStruct.ConsensusValue == 0 {
 			terminationValue := TerminationValue{isNull: true, CommandData: returnStruct.CommandData, phase: phase, seq: seq}
 			c.Println("reached consensus: ", terminationValue)
 			return terminationValue
-		}else{
+		} else {
 			terminationValue := TerminationValue{isNull: false, CommandData: returnStruct.CommandData, phase: phase, seq: seq}
 			c.Println("reached consensus: ", terminationValue)
 			return terminationValue
 		}
-	}	
+	}
 
-	for{
+	for {
 		phase++
 
 		state = StateValueData{Value: returnStruct.ConsensusValue, Seq: seq, Phase: phase, CommandData: returnStruct.CommandData}
-		terminationFlag, voteValue =roundOne(state, portNums,  seq, phase)
-		if terminationFlag == 1{
-			if voteValue.Value == 0{
+		terminationFlag, voteValue = roundOne(state, portNums, seq, phase)
+		if terminationFlag == 1 {
+			if voteValue.Value == 0 {
 				terminationValue := TerminationValue{isNull: true, CommandData: voteValue.CommandData, phase: phase, seq: seq}
 				c.Println("reached consensus: ", terminationValue)
 				return terminationValue
-			}else{
+			} else {
 				terminationValue := TerminationValue{isNull: false, CommandData: voteValue.CommandData, phase: phase, seq: seq}
 				c.Println("reached consensus: ", terminationValue)
 				return terminationValue
 			}
 		}
 		//fmt.Println("voteValue: ", voteValue)
-		var vote  VoteValueData = VoteValueData{Value: voteValue.Value, Seq: seq, Phase: phase, CommandData: voteValue.CommandData}
-		terminationFlag,returnStruct =roundTwo(vote, portNums, seq,phase)
+		var vote VoteValueData = VoteValueData{Value: voteValue.Value, Seq: seq, Phase: phase, CommandData: voteValue.CommandData}
+		terminationFlag, returnStruct = roundTwo(vote, portNums, seq, phase)
 		//fmt.Println("returnStruct: ", returnStruct)
-		if terminationFlag == 1{
-			if returnStruct.ConsensusValue == 0{
+		if terminationFlag == 1 {
+			if returnStruct.ConsensusValue == 0 {
 				terminationValue := TerminationValue{isNull: true, CommandData: returnStruct.CommandData, phase: phase, seq: seq}
 				c.Println("reached consensus: ", terminationValue)
-			}else{
+			} else {
 				terminationValue := TerminationValue{isNull: false, CommandData: returnStruct.CommandData, phase: phase, seq: seq}
 				c.Println("reached consensus: ", terminationValue)
 				return terminationValue

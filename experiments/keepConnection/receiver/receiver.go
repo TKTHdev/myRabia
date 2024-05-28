@@ -5,8 +5,6 @@ import (
 	"net"
 )
 
-
-
 func main() {
 	ln, err := net.Listen("tcp", ":9999")
 	if err != nil {
@@ -14,18 +12,18 @@ func main() {
 		return
 	}
 	defer ln.Close()
-	for{
+	for {
 		fmt.Println("接続待機中")
-		var s string 
+		var s string
 		fmt.Scan(&s)
-		conn,err:= ln.Accept()
+		conn, err := ln.Accept()
 		if err != nil {
 			fmt.Println("接続エラー:", err)
 			return
 		}
-		go func(conn net.Conn){
+		go func(conn net.Conn) {
 			defer conn.Close()
-			data,err:= receiveCommand(conn)
+			data, err := receiveCommand(conn)
 			if err != nil {
 				fmt.Println("コマンド受信エラー:", err)
 				return

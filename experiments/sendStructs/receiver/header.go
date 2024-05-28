@@ -1,16 +1,14 @@
 package main
 
-
-import(
+import (
+	"encoding/gob"
 	"fmt"
 	"net"
-	"encoding/gob"
 )
 
-type Command struct{
-	Op string
+type Command struct {
+	Op        string
 	Timestamp int
-
 }
 
 func receiveCommand(conn net.Conn) (Command, error) {
