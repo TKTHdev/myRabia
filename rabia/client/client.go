@@ -42,7 +42,7 @@ func main() {
 				conn, err := net.Dial("tcp", IPList[i%3]+":8080")
 				if err != nil {
 					fmt.Println("Dial error", err)
-					return
+					continue
 				}
 				defer conn.Close()
 				sendData(conn, Request{CommandData: CommandData{Op: command, Timestamp: timestamp, Seq: 0}, Redirected: false, Timestamp: 0})
