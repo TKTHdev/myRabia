@@ -4,11 +4,13 @@ import (
 	"fmt"
 	"net"
 	"sync"
+	"strings"
 )
 
 var wg sync.WaitGroup
-var replicaIPs []string
 var listener net.Listener
+var replicaIPs []string
+
 
 func main() {
 	// Set the number of replicas
@@ -77,9 +79,11 @@ func handleConnection(conn net.Conn) {
 			fmt.Println("クローズエラー:", err)
 		}
 	}(conn)
+	//get replicas public IP
+
 	fmt.Println("Connected to replica: ", conn.RemoteAddr().String())
 
-	replicaIPs = append(replicaIPs, conn.RemoteAddr().String())
+	replicaIPs = append(replicaIPs, removePort(conn.RemoteAddr().String()))
 	wg.Done()
 }
 
@@ -121,4 +125,16 @@ func portListToString() string {
 		}
 	}
 	return IPListString
+}
+
+
+func removePort(address string) string {
+	// ":"の位置を見つける
+	colonIndex := strings.LastIndex(address, ":")
+	if colonIndex == -1 {
+		// ":"が見つからなければ、そのまま返す
+		return address
+	}
+	// ":"以前の部分を切り取る
+	return address[:colonIndex]
 }
