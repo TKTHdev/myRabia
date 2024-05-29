@@ -8,8 +8,8 @@ import (
 
 var countMutex sync.Mutex
 
-func exchangeStage(command CommandData, portNums []int, seq int) (int, StateValueData) {
-	conns := setConnectionWithOtherReplicas(portNums)
+func exchangeStage(command CommandData,  seq int) (int, StateValueData) {
+	conns := setConnectionWithOtherReplicas(replicaIPs)
 	var state int
 	wg := sync.WaitGroup{}
 	exchangeSend(conns, command, &wg)

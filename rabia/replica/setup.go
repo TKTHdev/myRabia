@@ -8,11 +8,11 @@ import (
 	"time"
 )
 
-func setConnectionWithOtherReplicas(portNums []int) []net.Conn {
+func setConnectionWithOtherReplicas(IPLists []string) []net.Conn {
 	var conns []net.Conn
 
-	for _, portNum := range portNums {
-		conn, err := net.Dial("tcp", fmt.Sprintf("localhost:%d", portNum))
+	for _, IP := range IPLists {
+		conn, err := net.Dial("tcp",IP+":8080")
 		if err != nil {
 			//fmt.Printf("接続エラー (ポート番号: %d): %v\n", portNum, err)
 			continue

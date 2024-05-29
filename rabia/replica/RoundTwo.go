@@ -10,8 +10,8 @@ import (
 var RoundTwoMutex sync.Mutex
 var RoundTwoCntMutex sync.Mutex
 
-func roundTwo(vote VoteValueData, portNums []int, seq int, phase int) (int, RoundTwoReturnStruct) {
-	conns := setConnectionWithOtherReplicas(portNums)
+func roundTwo(vote VoteValueData, seq int, phase int) (int, RoundTwoReturnStruct) {
+	conns := setConnectionWithOtherReplicas(replicaIPs)
 	var returnStruct RoundTwoReturnStruct
 	var terminationValue int
 	wg := sync.WaitGroup{}
@@ -58,7 +58,7 @@ func roundTwoReceive(selfSeq int, nodeNum int, phase int, portNums []int) (int, 
 			for v, c := range cnt {
 				if c >= nodeNum/2+1 && v.Value != -1 {
 					VoteValueDataMutex.Unlock()
-					notifyTermination(setConnectionWithOtherReplicas(portNums), &sync.WaitGroup{}, selfSeq, v)
+					notifyTermination(setConnectionWithOtherReplicas(replicaIPs), &sync.WaitGroup{}, selfSeq, v)
 					return 1, v.Value, anyCommandReceived
 				}
 			}

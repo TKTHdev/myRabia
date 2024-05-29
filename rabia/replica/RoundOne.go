@@ -9,10 +9,10 @@ import (
 var RoundOneMutex sync.Mutex
 var RoundOneCntMutex sync.Mutex
 
-func roundOne(state StateValueData, portNums []int, seq int, phase int) (int, VoteValueData) {
+func roundOne(state StateValueData, seq int, phase int) (int, VoteValueData) {
 	var returnCommand CommandData
 	var voteValue int
-	conns := setConnectionWithOtherReplicas(portNums)
+	conns := setConnectionWithOtherReplicas(replicaIPs)
 	wg := sync.WaitGroup{}
 	roundOneSend(conns, state, &wg)
 	terminationFlag, voteValue, returnCommand := roundOneReceive(seq, phase, len(portNums))

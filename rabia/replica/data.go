@@ -170,7 +170,7 @@ func handleConnection(conn net.Conn) {
 			//fmt.Println("Received Request: ", data)
 			if !data.Redirected {
 				data.Redirected = true
-				broadCastData(portNums, data)
+				broadCastData(replicaIPs, data)
 			} else {
 				PQ.Push(&data.CommandData)
 			}
@@ -182,8 +182,8 @@ func handleConnection(conn net.Conn) {
 	}
 }
 
-func broadCastData(portNums []int, data Data) {
-	conns := setConnectionWithOtherReplicas(portNums)
+func broadCastData(IPLists []string, data Data) {
+	conns := setConnectionWithOtherReplicas(IPLists)
 	for _, conn := range conns {
 		sendData(conn, data)
 	}

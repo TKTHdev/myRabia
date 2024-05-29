@@ -84,7 +84,7 @@ func main() {
 		fmt.Println("cnt: ", seq)
 		var terminationFlag int
 		commandPointer.Seq = seq
-		terminationFlag, stateStruct = exchangeStage(*commandPointer, portNums, seq)
+		terminationFlag, stateStruct = exchangeStage(*commandPointer, seq)
 		if terminationFlag == 1 {
 			terminationValue := TerminationValue{isNull: false, CommandData: stateStruct.CommandData, phase: 0, seq: seq}
 			logger.Println("consensusValue: ", terminationValue)
@@ -141,7 +141,7 @@ func weakMVC(stateStruct StateValueData, portNums []int, seq int) TerminationVal
 	//Round 1
 	//fmt.Println("State struct: ", stateStruct)
 	var state StateValueData = StateValueData{Value: stateStruct.Value, Seq: seq, Phase: phase, CommandData: stateStruct.CommandData}
-	terminationFlag, voteValue := roundOne(state, portNums, seq, phase)
+	terminationFlag, voteValue := roundOne(state, seq, phase)
 	if terminationFlag == 1 {
 
 		if voteValue.Value == 0 {
@@ -158,7 +158,7 @@ func weakMVC(stateStruct StateValueData, portNums []int, seq int) TerminationVal
 	//Round 2
 	//fmt.Println("voteValue: ", voteValue)
 	var vote VoteValueData = VoteValueData{Value: voteValue.Value, Seq: seq, Phase: phase, CommandData: voteValue.CommandData}
-	terminationFlag, returnStruct := roundTwo(vote, portNums, seq, phase)
+	terminationFlag, returnStruct := roundTwo(vote,  seq, phase)
 	//fmt.Println("returnStruct: ", returnStruct)
 	if terminationFlag == 1 {
 		if returnStruct.ConsensusValue == 0 {
@@ -176,7 +176,7 @@ func weakMVC(stateStruct StateValueData, portNums []int, seq int) TerminationVal
 		phase++
 
 		state = StateValueData{Value: returnStruct.ConsensusValue, Seq: seq, Phase: phase, CommandData: returnStruct.CommandData}
-		terminationFlag, voteValue = roundOne(state, portNums, seq, phase)
+		terminationFlag, voteValue = roundOne(state, seq, phase)
 		if terminationFlag == 1 {
 			if voteValue.Value == 0 {
 				terminationValue := TerminationValue{isNull: true, CommandData: voteValue.CommandData, phase: phase, seq: seq}
@@ -190,7 +190,7 @@ func weakMVC(stateStruct StateValueData, portNums []int, seq int) TerminationVal
 		}
 		//fmt.Println("voteValue: ", voteValue)
 		var vote VoteValueData = VoteValueData{Value: voteValue.Value, Seq: seq, Phase: phase, CommandData: voteValue.CommandData}
-		terminationFlag, returnStruct = roundTwo(vote, portNums, seq, phase)
+		terminationFlag, returnStruct = roundTwo(vote, seq, phase)
 		//fmt.Println("returnStruct: ", returnStruct)
 		if terminationFlag == 1 {
 			if returnStruct.ConsensusValue == 0 {
