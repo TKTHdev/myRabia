@@ -11,8 +11,7 @@ var replicaIPs []string
 var listener net.Listener
 
 func main() {
-	//Set the number of replicas
-	//レプリカの数を決める
+	// Set the number of replicas
 	var n int
 	fmt.Println("Enter the number of replicas: ")
 	_, err := fmt.Scan(&n)
@@ -20,27 +19,27 @@ func main() {
 		return
 	}
 
-	//Create a slice of connections
-	//サーバーを起動
-	listener = initServer(listener)
+	// Initialize the server
+	listener = initServer()
+	if listener == nil {
+		fmt.Println("Server initialization failed")
+		return
+	}
 	defer func(listener net.Listener) {
 		err := listener.Close()
 		if err != nil {
 			fmt.Println("クローズエラー:", err)
 		}
 	}(listener)
-	//Accept connections from n replicas
-	//n個のレプリカからの接続を受け付ける
-	//Wait for n replicas to connect
-	//n個のレプリカが接続するのを待つ
+
+	// Accept connections from n replicas
 	acceptNConnections(listener, n)
 
-	//send the list of port numbers to the replicas
-	//レプリカにポート番号のリストを送信
+	// Send the list of port numbers to the replicas
 	sendPortNumListToReplicas()
 }
 
-func initServer(listener net.Listener) net.Listener {
+func initServer() net.Listener {
 	listener, err := net.Listen("tcp", ":8080")
 	if err != nil {
 		fmt.Println("リッスンエラー:", err)
@@ -63,17 +62,15 @@ func acceptNConnections(listener net.Listener, n int) {
 		wg.Add(1)
 		go handleConnection(conn)
 		cnt++
-		wg.Wait()
 		if cnt == n {
 			fmt.Println("All replicas connected")
 			break
 		}
 	}
+	wg.Wait()
 }
 
 func handleConnection(conn net.Conn) {
-	//Calculate the port number of the replica
-	//レプリカのポート番号を計算
 	defer func(conn net.Conn) {
 		err := conn.Close()
 		if err != nil {
@@ -83,10 +80,10 @@ func handleConnection(conn net.Conn) {
 	fmt.Println("Connected to replica: ", conn.RemoteAddr().String())
 
 	replicaIPs = append(replicaIPs, conn.RemoteAddr().String())
+	wg.Done()
 }
 
 // Send the list of port numbers to the replicas
-// レプリカにポート番号のリストを送信
 func sendPortNumListToReplicas() {
 	for _, IP := range replicaIPs {
 		wg.Add(1)
@@ -110,12 +107,11 @@ func sendPortNumListToReplicas() {
 			fmt.Printf("Port number list sent to replica %d\n", net.IPv4len)
 			wg.Done()
 		}(IP)
-		wg.Wait()
 	}
+	wg.Wait()
 }
 
 // Convert the list of port numbers to a string
-// ポート番号のリストを文字列に変換
 func portListToString() string {
 	var IPListString string
 	for i, IP := range replicaIPs {
