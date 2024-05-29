@@ -73,6 +73,9 @@ func listenAndAcceptConnectionWithProxy() []string {
 	//クライアントからのメッセージを表示
 
 	time.Sleep(1000 * time.Millisecond)
+	//\n を削除
+	message = strings.TrimRight(message, "\n")
+
 	//ポート番号リストをパース
 	IPs := strings.Split(message, ",")
 	if IPs == nil {

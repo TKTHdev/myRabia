@@ -93,7 +93,7 @@ func main() {
 			continue
 		}
 
-		consensusValue := weakMVC(stateStruct, portNums, seq)
+		consensusValue := weakMVC(stateStruct, seq)
 		logger.Println("consensusValue: ", consensusValue)
 		if !consensusValue.isNull && consensusValue.CommandData.Op == "" {
 			c := color.New(color.FgHiRed)
@@ -132,7 +132,7 @@ func main() {
 
 }
 
-func weakMVC(stateStruct StateValueData, portNums []int, seq int) TerminationValue {
+func weakMVC(stateStruct StateValueData, seq int) TerminationValue {
 
 	var phase int = 0
 
