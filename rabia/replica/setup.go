@@ -37,7 +37,7 @@ func RegisterToProxy() {
 }
 
 func listenAndAcceptConnectionWithProxy() []string {
-	listener, err := net.Listen("tcp", "8080")
+	listener, err := net.Listen("tcp", ":8080")
 	if err != nil {
 		fmt.Println("リッスンエラー:", err)
 		return nil
