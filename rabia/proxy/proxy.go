@@ -1,15 +1,13 @@
 package main
 
 import (
-	"bufio"
 	"fmt"
 	"net"
-	"strconv"
 	"sync"
 )
 
 var wg sync.WaitGroup
-var portNums []int
+var replicaIPs []string
 var listener net.Listener
 
 func main() {
@@ -63,7 +61,7 @@ func acceptNConnections(listener net.Listener, n int) {
 		}
 		fmt.Println("接続しました")
 		wg.Add(1)
-		go handleConnection(conn, cnt)
+		go handleConnection(conn)
 		cnt++
 		wg.Wait()
 		if cnt == n {
@@ -73,57 +71,27 @@ func acceptNConnections(listener net.Listener, n int) {
 	}
 }
 
-func handleConnection(conn net.Conn, portNumOffset int) {
+func handleConnection(conn net.Conn) {
 	//Calculate the port number of the replica
 	//レプリカのポート番号を計算
-	var portNum = 8081 + portNumOffset
-
 	defer func(conn net.Conn) {
 		err := conn.Close()
 		if err != nil {
 			fmt.Println("クローズエラー:", err)
 		}
 	}(conn)
+	fmt.Println("Connected to replica: ", conn.RemoteAddr().String())
 
-	//Read the message from the replica
-	//レプリカからのメッセージを読み取る
-	message, err := bufio.NewReader(conn).ReadString('\n')
-	if err != nil {
-		fmt.Println("メッセージ読み取りエラー:", err)
-		return
-	}
-	fmt.Printf("Message from replica %d\n", portNumOffset+1)
-
-	if message == "q\n" {
-		fmt.Println("クライアントが接続を終了しました")
-		return
-	}
-	//Send the port number to the replica
-	//レプリカにポート番号を送信
-	sendPortNumToReplica(conn, portNum)
-	portNums = append(portNums, portNum)
-}
-
-// Send the port number to the replica
-// レプリカにポート番号を送信
-func sendPortNumToReplica(conn net.Conn, portNum int) {
-	fmt.Println("Sending port number to replica")
-	_, i := fmt.Fprintf(conn, strconv.Itoa(portNum)+"\n")
-	if i != nil {
-		return
-	}
-	fmt.Printf("Port number %d sent to replica\n", portNum)
-	wg.Done()
+	replicaIPs = append(replicaIPs, conn.RemoteAddr().String())
 }
 
 // Send the list of port numbers to the replicas
 // レプリカにポート番号のリストを送信
 func sendPortNumListToReplicas() {
-	for _, portNum := range portNums {
+	for _, IP := range replicaIPs {
 		wg.Add(1)
-		go func(portNum int) {
-			fmt.Print("Connecting to replica ", portNum, "...")
-			conn, err := net.Dial("tcp", "localhost:"+strconv.Itoa(portNum))
+		go func(IP string) {
+			conn, err := net.Dial("tcp", IP+":8080")
 			if err != nil {
 				fmt.Println("接続エラー:", err)
 				return
@@ -135,23 +103,26 @@ func sendPortNumListToReplicas() {
 				}
 			}(conn)
 			fmt.Println("Sending port number list to replica")
-			_, err = fmt.Fprintf(conn, portListToString(portNums)+"\n")
+			_, err = fmt.Fprintf(conn, portListToString()+"\n")
 			if err != nil {
 				return
 			}
-			fmt.Printf("Port number list sent to replica %d\n", portNum)
+			fmt.Printf("Port number list sent to replica %d\n", net.IPv4len)
 			wg.Done()
-		}(portNum)
+		}(IP)
 		wg.Wait()
 	}
 }
 
 // Convert the list of port numbers to a string
 // ポート番号のリストを文字列に変換
-func portListToString(portNums []int) string {
-	var portList string
-	for _, portNum := range portNums {
-		portList += strconv.Itoa(portNum) + " "
+func portListToString() string {
+	var IPListString string
+	for i, IP := range replicaIPs {
+		IPListString += IP
+		if i < len(replicaIPs)-1 {
+			IPListString += ","
+		}
 	}
-	return portList
+	return IPListString
 }

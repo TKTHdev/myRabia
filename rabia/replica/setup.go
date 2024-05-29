@@ -4,7 +4,6 @@ import (
 	"bufio"
 	"fmt"
 	"net"
-	"strconv"
 	"strings"
 	"time"
 )
@@ -25,37 +24,20 @@ func setConnectionWithOtherReplicas(portNums []int) []net.Conn {
 	return conns
 }
 
-func sayHelloAndReceivePortNum() string {
-	conn, err := net.Dial("tcp", "localhost:8080")
+func RegisterToProxy() {
+	conn, err := net.Dial("tcp", "13.236.12.56:8080")
 	if err != nil {
 		fmt.Println("接続エラー:", err)
-		return ""
+		return
 	}
 	defer conn.Close()
 
-	message := "Hello\n"
-	_, err = fmt.Fprint(conn, message)
-	if err != nil {
-		fmt.Println("メッセージ送信エラー:", err)
-		return ""
-	}
-	fmt.Println("メッセージを送信しました")
-
-	// サーバーから、自身に割り当てられたポート番号を受け取る
-	reply, err := bufio.NewReader(conn).ReadString('\n')
-	if err != nil {
-		fmt.Println("ポート番号受信エラー:", err)
-		return ""
-	}
-	fmt.Print("サーバーからの返信(割り当てられたポート番号): ", reply)
-
-	// ポート番号を取得
-	reply = strings.TrimSpace(reply)
-	return reply
+	fmt.Println("プロキシに接続しました")
+	return
 }
 
-func listenAndAcceptConnectionWithProxy(listener net.Listener, port string) []int {
-	listener, err := net.Listen("tcp", ":"+port)
+func listenAndAcceptConnectionWithProxy() []string {
+	listener, err := net.Listen("tcp", "8080")
 	if err != nil {
 		fmt.Println("リッスンエラー:", err)
 		return nil
@@ -72,7 +54,7 @@ func listenAndAcceptConnectionWithProxy(listener net.Listener, port string) []in
 		fmt.Println("接続エラー:", err)
 		return nil
 	}
-	fmt.Println("接続しました")
+	fmt.Println("レプリカから返事を受けました")
 
 	//プロキシからポート番号リストを読み取る
 	var message string
@@ -89,38 +71,18 @@ func listenAndAcceptConnectionWithProxy(listener net.Listener, port string) []in
 		}
 	}
 	//クライアントからのメッセージを表示
-	fmt.Print("クライアントからのメッセージ: ", message)
 
 	time.Sleep(1000 * time.Millisecond)
 	//ポート番号リストをパース
-	portNums, err := parsePortList(message)
-	if portNums == nil {
+	IPs := strings.Split(message, ",")
+	if IPs == nil {
 		return nil
 	}
-	if err != nil {
-		fmt.Println(err)
-		return nil
-	}
+	fmt.Println("他のレプリカのIPリスト: ", IPs)
 
-	fmt.Println("他のレプリカのポート番号リスト: ", portNums)
-
-	return portNums
+	return IPs
 }
 
-func parsePortList(portList string) ([]int, error) {
-	var portNums []int
-
-	// スペースでポート番号文字列を分割
-	portStrings := strings.Fields(portList)
-
-	// 各ポート番号文字列を整数に変換
-	for _, portString := range portStrings {
-		portNum, err := strconv.Atoi(portString)
-		if err != nil {
-			return nil, fmt.Errorf("無効なポート番号: %s", portString)
-		}
-		portNums = append(portNums, portNum)
-	}
-
-	return portNums, nil
+func parseIPList(IPList string) ([]string, error) {
+	return strings.Split(IPList, ","), nil
 }

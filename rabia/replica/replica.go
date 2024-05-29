@@ -3,15 +3,17 @@ package main
 import (
 	"container/heap"
 	"fmt"
-	"github.com/fatih/color"
 	"log"
 	"net"
 	"os"
 	"time"
+
+	"github.com/fatih/color"
 )
 
 var listener net.Listener
 var portNums []int
+var replicaIPs []string
 
 func main() {
 
@@ -49,14 +51,15 @@ func main() {
 		fmt.Scan(&Operation)
 	*/
 
-	var port string = sayHelloAndReceivePortNum()
+	//Register to proxy
+	RegisterToProxy()
 
 	// プロキシからの接続を待ち受ける
 	// 他のレプリカのポート番号を取得
-	portNums = listenAndAcceptConnectionWithProxy(listener, port)
+	replicaIPs = listenAndAcceptConnectionWithProxy()
 
 	// 他のレプリカとの接続を確立
-	go listenAndAccept(port)
+	go listenAndAccept()
 	time.Sleep(250 * time.Millisecond)
 
 	//ここで合意アルゴリズムを実行

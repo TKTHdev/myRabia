@@ -99,8 +99,8 @@ func init() {
 
 }
 
-func listenAndAccept(port string) {
-	ln, err := net.Listen("tcp", ":"+port)
+func listenAndAccept() {
+	ln, err := net.Listen("tcp", "8080")
 	//fmt.Println("Listening on port: ", port)
 	if err != nil {
 		fmt.Println("リッスンエラー:", err)
