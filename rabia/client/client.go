@@ -3,14 +3,13 @@ package main
 import (
 	"fmt"
 	"net"
-	"strconv"
 )
 
 var StateMachine map[string]int = make(map[string]int)
 
 func main() {
 	timestamp := 0
-	portNumList := []int{8081, 8082, 8083}
+	IPList := []string{"52.63.13.55","13.237.225.199","54.253.27.126"};
 	var choose string
 	fmt.Println("[A] to automatically send commands. [M] to manually send commands: ")
 	fmt.Scan(&choose)
@@ -40,7 +39,7 @@ func main() {
 			for i := 0; i < n; i++ {
 				var command string = generateRandomCommand()
 
-				conn, err := net.Dial("tcp", "localhost:"+strconv.Itoa(portNumList[i%3]))
+				conn, err := net.Dial("tcp", IPList[i%3]+":8080")
 				if err != nil {
 					fmt.Println("Dial error", err)
 					return
