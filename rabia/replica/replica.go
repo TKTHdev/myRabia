@@ -12,7 +12,6 @@ import (
 )
 
 var listener net.Listener
-var portNums []int
 var replicaIPs []string
 
 func main() {

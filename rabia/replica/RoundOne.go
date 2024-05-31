@@ -15,7 +15,7 @@ func roundOne(state StateValueData, seq int, phase int) (int, VoteValueData) {
 	conns := setConnectionWithOtherReplicas(replicaIPs)
 	wg := sync.WaitGroup{}
 	roundOneSend(conns, state, &wg)
-	terminationFlag, voteValue, returnCommand := roundOneReceive(seq, phase, len(portNums))
+	terminationFlag, voteValue, returnCommand := roundOneReceive(seq, phase, len(replicaIPs))
 	returnVoteStruct := VoteValueData{Value: voteValue, Seq: seq, Phase: phase, CommandData: returnCommand}
 	return terminationFlag, returnVoteStruct
 }

@@ -13,7 +13,7 @@ func exchangeStage(command CommandData,  seq int) (int, StateValueData) {
 	var state int
 	wg := sync.WaitGroup{}
 	exchangeSend(conns, command, &wg)
-	terminationFlag, state, CommandData := exchangeReceive(seq, len(portNums))
+	terminationFlag, state, CommandData := exchangeReceive(seq, len(replicaIPs))
 	var returnStateValue StateValueData = StateValueData{Value: state, Seq: seq, CommandData: CommandData}
 	//fmt.Println("State: ", state)
 	return terminationFlag, returnStateValue
