@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Navigate to the myRabia/rabia/replica/proxy directory
-cd rabia/replica/proxy
+cd rabia/proxy
 
 # Build the proxy.go file
 go build 
