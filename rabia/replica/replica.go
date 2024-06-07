@@ -85,9 +85,9 @@ func main() {
 		commandPointer.Seq = seq
 		terminationFlag, stateStruct = exchangeStage(*commandPointer, seq)
 		if terminationFlag == 1 {
-			terminationValue := TerminationValue{isNull: false, CommandData: stateStruct.CommandData, phase: 0, seq: seq}
-			logger.Println("consensusValue: ", terminationValue)
-			color.Green("reached consensus: ", terminationValue, "\n")
+			//terminationValue := TerminationValue{isNull: false, CommandData: stateStruct.CommandData, phase: 0, seq: seq}
+			//logger.Println("consensusValue: ", terminationValue)
+			//color.Green("reached consensus: ", terminationValue, "\n")
 			seq++
 			continue
 		}
@@ -116,6 +116,9 @@ func main() {
 		//fmt.Println("PQ size: ", PQ.Len())
 		PQMutex.Unlock()
 		seq++
+		if seq == 100 {
+			fmt.Println("DONE")
+		}
 
 		//delete data to save memory
 
@@ -135,7 +138,7 @@ func weakMVC(stateStruct StateValueData, seq int) TerminationValue {
 
 	var phase int = 0
 
-	c := color.New(color.FgGreen)
+	//c := color.New(color.FgGreen)
 
 	//Round 1
 	//fmt.Println("State struct: ", stateStruct)
@@ -145,11 +148,11 @@ func weakMVC(stateStruct StateValueData, seq int) TerminationValue {
 
 		if voteValue.Value == 0 {
 			terminationValue := TerminationValue{isNull: true, CommandData: voteValue.CommandData, phase: phase, seq: seq}
-			c.Println("reached consensus: ", terminationValue)
+			//c.Println("reached consensus: ", terminationValue)
 			return terminationValue
 		} else {
 			terminationValue := TerminationValue{isNull: false, CommandData: voteValue.CommandData, phase: phase, seq: seq}
-			c.Println("reached consensus: ", terminationValue)
+			//c.Println("reached consensus: ", terminationValue)
 			return terminationValue
 		}
 	}
@@ -162,11 +165,11 @@ func weakMVC(stateStruct StateValueData, seq int) TerminationValue {
 	if terminationFlag == 1 {
 		if returnStruct.ConsensusValue == 0 {
 			terminationValue := TerminationValue{isNull: true, CommandData: returnStruct.CommandData, phase: phase, seq: seq}
-			c.Println("reached consensus: ", terminationValue)
+			//c.Println("reached consensus: ", terminationValue)
 			return terminationValue
 		} else {
 			terminationValue := TerminationValue{isNull: false, CommandData: returnStruct.CommandData, phase: phase, seq: seq}
-			c.Println("reached consensus: ", terminationValue)
+			//c.Println("reached consensus: ", terminationValue)
 			return terminationValue
 		}
 	}
@@ -179,11 +182,11 @@ func weakMVC(stateStruct StateValueData, seq int) TerminationValue {
 		if terminationFlag == 1 {
 			if voteValue.Value == 0 {
 				terminationValue := TerminationValue{isNull: true, CommandData: voteValue.CommandData, phase: phase, seq: seq}
-				c.Println("reached consensus: ", terminationValue)
+				//c.Println("reached consensus: ", terminationValue)
 				return terminationValue
 			} else {
 				terminationValue := TerminationValue{isNull: false, CommandData: voteValue.CommandData, phase: phase, seq: seq}
-				c.Println("reached consensus: ", terminationValue)
+				//c.Println("reached consensus: ", terminationValue)
 				return terminationValue
 			}
 		}
@@ -194,10 +197,11 @@ func weakMVC(stateStruct StateValueData, seq int) TerminationValue {
 		if terminationFlag == 1 {
 			if returnStruct.ConsensusValue == 0 {
 				terminationValue := TerminationValue{isNull: true, CommandData: returnStruct.CommandData, phase: phase, seq: seq}
-				c.Println("reached consensus: ", terminationValue)
+				//c.Println("reached consensus: ", terminationValue)
+				return terminationValue
 			} else {
 				terminationValue := TerminationValue{isNull: false, CommandData: returnStruct.CommandData, phase: phase, seq: seq}
-				c.Println("reached consensus: ", terminationValue)
+				//c.Println("reached consensus: ", terminationValue)
 				return terminationValue
 			}
 		}
