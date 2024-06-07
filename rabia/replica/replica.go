@@ -73,14 +73,14 @@ func main() {
 		logger.Println("Command: ", *commandPointer, "Dict: ", Dictionary)
 		if Dictionary[CommandTimestamp{Command: commandPointer.Op, Timestamp: commandPointer.Timestamp}] {
 			PQMutex.Unlock()
-			fmt.Println("Command already reached consensus: ", *commandPointer)
+			//fmt.Println("Command already reached consensus: ", *commandPointer)
 			delete(Dictionary, CommandTimestamp{Command: commandPointer.Op, Timestamp: commandPointer.Timestamp})
 			continue
 		}
 		logger.Println("Proposing command: ", *commandPointer)
 		PQMutex.Unlock()
 		var stateStruct StateValueData
-		fmt.Println("cnt: ", seq)
+		//fmt.Println("cnt: ", seq)
 		var terminationFlag int
 		commandPointer.Seq = seq
 		terminationFlag, stateStruct = exchangeStage(*commandPointer, seq)
@@ -113,7 +113,7 @@ func main() {
 
 		//Print the size of PQ
 		PQMutex.Lock()
-		fmt.Println("PQ size: ", PQ.Len())
+		//fmt.Println("PQ size: ", PQ.Len())
 		PQMutex.Unlock()
 		seq++
 
