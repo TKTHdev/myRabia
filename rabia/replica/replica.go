@@ -109,7 +109,7 @@ func main() {
 		if !consensusValue.isNull {
 			parseCommand(consensusValue.CommandData.Op, StateMachine)
 		}
-		c.Println("SM in seq", seq, ":", StateMachine)
+		//c.Println("SM in seq", seq, ":", StateMachine)
 
 		//Print the size of PQ
 		PQMutex.Lock()
