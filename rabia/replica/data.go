@@ -111,7 +111,7 @@ func listenAndAccept() {
 	for {
 		//fmt.Println("Waiting for connection...")
 		conn, err := ln.Accept()
-		fmt.Println("Message received from: ", conn.RemoteAddr())
+		//fmt.Println("Message received from: ", conn.RemoteAddr())
 		if err != nil {
 			//fmt.Println("接続エラー:", err)
 			continue
