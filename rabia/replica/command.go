@@ -49,10 +49,12 @@ func parseReadCommand(command string, stateMachine map[string]int) (int, error) 
 		key := parts[1]
 		value, ok := stateMachine[key]
 		if !ok {
+			fmt.Println("Variable not found: ", key)
 			return 0, fmt.Errorf("variable not found: %s", key)
 		}
 		return value, nil
 	} else {
+		fmt.Println("Invalid command format: ", command)
 		return 0, fmt.Errorf("invalid command format: %s", command)
 	}
 }
