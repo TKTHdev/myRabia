@@ -74,6 +74,10 @@ type CommandTimestamp struct {
 	Timestamp int
 }
 
+type ResponseToClient struct {
+	value int
+}
+
 var CommandDataMapList map[int][]CommandData
 var StateValueDataMapList map[SeqPhase][]StateValueData
 var VoteValueDataMapList map[SeqPhase][]VoteValueData
@@ -93,6 +97,7 @@ func init() {
 	gob.Register(VoteValueData{})
 	gob.Register(ConsensusTermination{})
 	gob.Register(Request{})
+	gob.Register(ResponseToClient{})
 
 	PQ := make(PriorityQueue, 0)
 	heap.Init(&PQ)
@@ -144,7 +149,16 @@ func handleConnection(conn net.Conn) {
 		case CommandData:
 			CommandDataMutex.Lock()
 			//fmt.Println("Received CommandData: ", data)
-			CommandDataMapList[data.Seq] = append(CommandDataMapList[data.Seq], data)
+			if data.Op[0]!='R'{
+				CommandDataMapList[data.Seq] = append(CommandDataMapList[data.Seq], data)
+			}else{
+				value, err:= parseReadCommand(data.Op, StateMachine)
+				if err!=nil{
+					fmt.Println("Error in parsing read command")
+				}
+				response := ResponseToClient{value: value}
+				sendData(conn, response)
+			}
 			//fmt.Println("CommandDataMapList: ", CommandDataMapList)
 			CommandDataMutex.Unlock()
 		case StateValueData:

@@ -14,6 +14,8 @@ import (
 var listener net.Listener
 var replicaIPs []string
 
+var StateMachine map[string]int
+
 func main() {
 
 	//init SM
@@ -107,7 +109,7 @@ func main() {
 			PQMutex.Unlock()
 		}
 		if !consensusValue.isNull {
-			parseCommand(consensusValue.CommandData.Op, StateMachine)
+			parseWriteCommand(consensusValue.CommandData.Op, StateMachine)
 		}
 		//c.Println("SM in seq", seq, ":", StateMachine)
 

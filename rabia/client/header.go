@@ -5,8 +5,6 @@ import (
 	"fmt"
 	"math/rand"
 	"net"
-	"strconv"
-	"strings"
 )
 
 func init() {
@@ -41,48 +39,28 @@ func sendData(conn net.Conn, data Data) {
 	}
 }
 
-func generateRandomCommand() string {
+func generateRandomCommand(readRatio int) string {
 	variables := []string{"x", "y", "z", "a", "b", "c"}
 	operators := []string{"=", "+", "-", "*", "%"}
 
-	variable := variables[rand.Intn(len(variables))]
-	operator := operators[rand.Intn(len(operators))]
-	value := rand.Intn(100)
-
-	return fmt.Sprintf("%s %s %d", variable, operator, value)
+	//generate read command with readRatio
+	if rand.Intn(100) < readRatio {
+		variable := variables[rand.Intn(len(variables))]
+		return fmt.Sprintf("R %s", variable)
+	}else{
+		variable := variables[rand.Intn(len(variables))]
+		operator := operators[rand.Intn(len(operators))]
+		value := rand.Intn(100)
+		return fmt.Sprintf("%s %s %d", variable, operator, value)
+	}
 }
 
-func parseCommand(command string, stateMachine map[string]int) error {
-	parts := strings.Split(command, " ")
-
-	if len(parts) == 3 {
-		variable := parts[0]
-		operator := parts[1]
-		value, err := strconv.Atoi(parts[2])
-		if err != nil {
-			return err
-		}
-
-		switch operator {
-		case "=":
-			stateMachine[variable] = value
-		case "+":
-			stateMachine[variable] += value
-		case "-":
-			stateMachine[variable] -= value
-		case "*":
-			stateMachine[variable] *= value
-		case "%":
-			if value == 0 {
-				value = 1
-			}
-			stateMachine[variable] %= value
-		default:
-			return fmt.Errorf("invalid operator: %s", operator)
-		}
-	} else {
-		return fmt.Errorf("invalid command format: %s", command)
+func receiveData(conn net.Conn) (ConsensusData, error) {
+	var data ConsensusData
+	decoder := gob.NewDecoder(conn)
+	err := decoder.Decode(&data)
+	if err != nil {
+		return ConsensusData{}, err
 	}
-
-	return nil
+	return data, nil
 }

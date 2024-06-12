@@ -6,7 +6,7 @@ import (
 	"strings"
 )
 
-func parseCommand(command string, stateMachine map[string]int) error {
+func parseWriteCommand(command string, stateMachine map[string]int) error {
 	parts := strings.Split(command, " ")
 
 	if len(parts) == 3 {
@@ -39,4 +39,20 @@ func parseCommand(command string, stateMachine map[string]int) error {
 	}
 
 	return nil
+}
+
+
+func parseReadCommand(command string, stateMachine map[string]int) (int, error) {
+	parts := strings.Split(command, " ")
+
+	if len(parts) == 2 {
+		key := parts[1]
+		value, ok := stateMachine[key]
+		if !ok {
+			return 0, fmt.Errorf("variable not found: %s", key)
+		}
+		return value, nil
+	} else {
+		return 0, fmt.Errorf("invalid command format: %s", command)
+	}
 }

@@ -11,33 +11,18 @@ func main() {
 	timestamp := 0
 	IPList := []string{"52.63.13.55","13.237.225.199","54.253.27.126"};
 	var choose string
-	fmt.Println("[A] to automatically send commands. [M] to manually send commands: ")
+	var commandNum int
+	fmt.Println("YCSB Workload [A] or [B] or [C] ?: ")
+	fmt.Println("A: 50% Read, 50% Write")
+	fmt.Println("B: 95% Read, 5% Write")
+	fmt.Println("C: 100% Read")
 	fmt.Scan(&choose)
-	for {
-
-		if choose == "M" {
-			for {
-				var command string
-				fmt.Println("Enter the command: ")
-				fmt.Scan(&command)
-
-				conn, err := net.Dial("tcp", "localhost:8081")
-				if err != nil {
-					fmt.Println("Dial error", err)
-					return
-				}
-				defer conn.Close()
-				fmt.Println("Connected to the server")
-				sendData(conn, Request{CommandData: CommandData{Op: command, Timestamp: timestamp, Seq: 0}, Redirected: false, Timestamp: 0})
-				timestamp++
-
-			}
-		} else if choose == "A" {
-			var n int
-			fmt.Println("Enter the number of commands to send: ")
-			fmt.Scan(&n)
-			for i := 0; i < n; i++ {
-				var command string = generateRandomCommand()
+	fmt.Println("How many commands do you want to run?: ")
+	fmt.Scan(&commandNum)	
+	
+	if choose == "A" {
+		for i := 0; i < commandNum; i++ {
+			var command string = generateRandomCommand(50)
 
 				conn, err := net.Dial("tcp", IPList[i%3]+":8080")
 				if err != nil {
@@ -46,10 +31,46 @@ func main() {
 				}
 				defer conn.Close()
 				sendData(conn, Request{CommandData: CommandData{Op: command, Timestamp: timestamp, Seq: 0}, Redirected: false, Timestamp: 0})
-				parseCommand(command, StateMachine)
+				if command[0] == 'R' {
+					data, err :=receiveData(conn)
+					if err != nil {
+						fmt.Println("Error in receiving data")
+					}
+					fmt.Println("Read value: ", data)
+				}
 				timestamp++
-			}
 		}
-		fmt.Println("SM: ", StateMachine)
+	}
+
+	if choose == "B" {
+		for i := 0; i < commandNum; i++ {
+			var command string = generateRandomCommand(95)
+
+				conn, err := net.Dial("tcp", IPList[i%3]+":8080")
+				if err != nil {
+					fmt.Println("Dial error", err)
+					continue
+				}
+				defer conn.Close()
+				sendData(conn, Request{CommandData: CommandData{Op: command, Timestamp: timestamp, Seq: 0}, Redirected: false, Timestamp: 0})
+				timestamp++
+		}
+	}
+	
+	if choose == "C" {
+		for i := 0; i < commandNum; i++ {
+			var command string = generateRandomCommand(100)
+
+				conn, err := net.Dial("tcp", IPList[i%3]+":8080")
+				if err != nil {
+					fmt.Println("Dial error", err)
+					continue
+				}
+				defer conn.Close()
+				sendData(conn, Request{CommandData: CommandData{Op: command, Timestamp: timestamp, Seq: 0}, Redirected: false, Timestamp: 0})
+				timestamp++
+		}
+	}else{
+		fmt.Println("Invalid input")
 	}
 }
