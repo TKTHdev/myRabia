@@ -34,6 +34,7 @@ func main() {
 				if command[0] == 'R' {
 					var data Data
 					for{
+						println(conn.RemoteAddr())
 						data, err :=receiveData(conn)
 						if err != nil {
 							fmt.Println("Error in receiving data")

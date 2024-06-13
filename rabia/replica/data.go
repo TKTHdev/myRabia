@@ -154,12 +154,12 @@ func handleConnection(conn net.Conn) {
 			}else{
 				value, err:= parseReadCommand(data.Op, StateMachine)
 				if err == "notFound"{
-					fmt.Println("here")
 					sendData(conn, ResponseToClient{Value: -1})
 				}else{
 					response := ResponseToClient{Value: value}
 					sendData(conn, response)
 				}
+				fmt.Println("Sent")
 			}
 			//fmt.Println("CommandDataMapList: ", CommandDataMapList)
 			CommandDataMutex.Unlock()
