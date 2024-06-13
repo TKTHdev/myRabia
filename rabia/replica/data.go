@@ -156,9 +156,10 @@ func handleConnection(conn net.Conn) {
 				if err == "notFound"{
 					fmt.Println("here")
 					sendData(conn, ResponseToClient{Value: -1})
+				}else{
+					response := ResponseToClient{Value: value}
+					sendData(conn, response)
 				}
-				response := ResponseToClient{Value: value}
-				sendData(conn, response)
 			}
 			//fmt.Println("CommandDataMapList: ", CommandDataMapList)
 			CommandDataMutex.Unlock()
