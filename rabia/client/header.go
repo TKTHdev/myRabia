@@ -9,6 +9,9 @@ import (
 
 func init() {
 	gob.Register(Request{})
+	gob.Register(ResponseToClient{})
+	gob.Register(ConsensusData{})
+	gob.Register(CommandData{})
 
 }
 

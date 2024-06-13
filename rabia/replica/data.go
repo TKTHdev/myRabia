@@ -132,11 +132,10 @@ func sendData(conn net.Conn, data Data) {
 		fmt.Println("データ送信エラー:", err)
 		return
 	}
+	fmt.Println("Data sent: ", data)
 }
 
 func handleConnection(conn net.Conn) {
-	defer conn.Close()
-
 	for {
 		consensusData, err := receiveData(conn)
 		if err != nil {
@@ -154,7 +153,6 @@ func handleConnection(conn net.Conn) {
 			}else{
 				value, err:= parseReadCommand(data.Op, StateMachine)
 				if err == "notFound"{
-					fmt.Println("here")
 					sendData(conn, ResponseToClient{Value: -1})
 				}
 				response := ResponseToClient{Value: value}
