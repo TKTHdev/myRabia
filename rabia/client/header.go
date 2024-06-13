@@ -7,13 +7,6 @@ import (
 	"net"
 )
 
-func init() {
-	gob.Register(Request{})
-	gob.Register(ResponseToClient{})
-	gob.Register(ConsensusData{})
-	gob.Register(CommandData{})
-
-}
 
 type Data interface{}
 
@@ -37,6 +30,14 @@ type ResponseToClient struct {
 	Value int
 }
 
+func init() {
+	gob.Register(Request{})
+	gob.Register(ResponseToClient{})
+	gob.Register(ConsensusData{})
+	gob.Register(CommandData{})
+
+}
+
 func receiveData(conn net.Conn) (ConsensusData, error) {
 	var data ConsensusData
 	fmt.Println("OKOK")
@@ -46,6 +47,7 @@ func receiveData(conn net.Conn) (ConsensusData, error) {
 		fmt.Println("データ受信エラー:", err)
 		return ConsensusData{}, err
 	}
+	fmt.Println("データ受信完了")
 	return data, nil
 }
 
