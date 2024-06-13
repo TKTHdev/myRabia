@@ -31,7 +31,7 @@ type Request struct {
 }
 
 type ResponseToClient struct {
-	value int
+	Value int
 }
 
 func receiveData(conn net.Conn) (ConsensusData, error) {

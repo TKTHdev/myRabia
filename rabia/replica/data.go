@@ -75,7 +75,7 @@ type CommandTimestamp struct {
 }
 
 type ResponseToClient struct {
-	value int
+	Value int
 }
 
 var CommandDataMapList map[int][]CommandData
@@ -154,9 +154,9 @@ func handleConnection(conn net.Conn) {
 			}else{
 				value, err:= parseReadCommand(data.Op, StateMachine)
 				if err == "notFound"{
-					sendData(conn, ResponseToClient{value: -1})
+					sendData(conn, ResponseToClient{Value: -1})
 				}
-				response := ResponseToClient{value: value}
+				response := ResponseToClient{Value: value}
 				sendData(conn, response)
 			}
 			//fmt.Println("CommandDataMapList: ", CommandDataMapList)

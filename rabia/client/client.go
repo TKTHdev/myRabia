@@ -39,7 +39,7 @@ func main() {
 					}
 					switch response := data.(type) {
 						case ResponseToClient:
-							if response.value == -1 {
+							if response.Value == -1 {
 								fmt.Println("Key not found")
 							}
 					}	
