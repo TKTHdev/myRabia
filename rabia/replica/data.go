@@ -132,7 +132,6 @@ func sendData(conn net.Conn, data Data) {
 		fmt.Println("データ送信エラー:", err)
 		return
 	}
-	fmt.Println("Data sent: ", data)
 }
 
 func handleConnection(conn net.Conn) {
@@ -154,9 +153,10 @@ func handleConnection(conn net.Conn) {
 				value, err:= parseReadCommand(data.Op, StateMachine)
 				if err == "notFound"{
 					sendData(conn, ResponseToClient{Value: -1})
+				}else{
+					response := ResponseToClient{Value: value}
+					sendData(conn, response)
 				}
-				response := ResponseToClient{Value: value}
-				sendData(conn, response)
 			}
 			//fmt.Println("CommandDataMapList: ", CommandDataMapList)
 			CommandDataMutex.Unlock()
