@@ -129,7 +129,7 @@ func sendData(conn net.Conn, data Data) {
 	encoder := gob.NewEncoder(conn)
 	err := encoder.Encode(ConsensusData{Data: data})
 	if err != nil {
-		//fmt.Println("データ送信エラー:", err)
+		fmt.Println("データ送信エラー:", err)
 		return
 	}
 }
