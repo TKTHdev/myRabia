@@ -36,6 +36,7 @@ type ResponseToClient struct {
 
 func receiveData(conn net.Conn) (ConsensusData, error) {
 	var data ConsensusData
+	fmt.Println("OKOK")
 	decoder := gob.NewDecoder(conn)
 	err := decoder.Decode(&data)
 	if err != nil {

@@ -42,9 +42,10 @@ func main() {
 							if response.Value == -1 {
 								fmt.Println("Key not found")
 							}
+							if response.Value != -1 {
+								fmt.Println("Read value: ", response.Value)
+							}
 					}	
-					fmt.Println("Read value: ", data)
-					
 				}
 				timestamp++
 		}

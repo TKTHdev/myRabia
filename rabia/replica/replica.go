@@ -26,11 +26,7 @@ func main() {
 	c.Add(color.Underline)
 
 	// ログファイルを作成
-	var logName string
-	fmt.Println("Enter log file name: ")
-	fmt.Scan(&logName)
-	logName = "log" + logName + ".txt"
-	logFile, err := os.Create("logs/" + logName)
+	logFile, err := os.Create("logs/log.txt")
 	if err != nil {
 		log.Fatal("Cannot create file", err)
 	}
