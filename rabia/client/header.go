@@ -30,6 +30,20 @@ type Request struct {
 	Timestamp   int
 }
 
+type ResponseToClient struct {
+	value int
+}
+
+func receiveData(conn net.Conn) (ConsensusData, error) {
+	var data ConsensusData
+	decoder := gob.NewDecoder(conn)
+	err := decoder.Decode(&data)
+	if err != nil {
+		return ConsensusData{}, err
+	}
+	return data, nil
+}
+
 func sendData(conn net.Conn, data Data) {
 	encoder := gob.NewEncoder(conn)
 	err := encoder.Encode(ConsensusData{Data: data})
@@ -53,14 +67,4 @@ func generateRandomCommand(readRatio int) string {
 		value := rand.Intn(100)
 		return fmt.Sprintf("%s %s %d", variable, operator, value)
 	}
-}
-
-func receiveData(conn net.Conn) (ConsensusData, error) {
-	var data ConsensusData
-	decoder := gob.NewDecoder(conn)
-	err := decoder.Decode(&data)
-	if err != nil {
-		return ConsensusData{}, err
-	}
-	return data, nil
 }

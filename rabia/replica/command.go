@@ -42,7 +42,7 @@ func parseWriteCommand(command string, stateMachine map[string]int) error {
 }
 
 
-func parseReadCommand(command string, stateMachine map[string]int) (int, error) {
+func parseReadCommand(command string, stateMachine map[string]int) (int, string) {
 	parts := strings.Split(command, " ")
 
 	if len(parts) == 2 {
@@ -50,11 +50,11 @@ func parseReadCommand(command string, stateMachine map[string]int) (int, error) 
 		value, ok := stateMachine[key]
 		if !ok {
 			fmt.Println("Variable not found: ", key)
-			return 0, fmt.Errorf("variable not found: %s", key)
+			return 0, "notFound"
 		}
-		return value, nil
+		return value, ""
 	} else {
 		fmt.Println("Invalid command format: ", command)
-		return 0, fmt.Errorf("invalid command format: %s", command)
+		return 0, "invalidFormat"	
 	}
 }

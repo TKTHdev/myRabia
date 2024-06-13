@@ -153,8 +153,8 @@ func handleConnection(conn net.Conn) {
 				CommandDataMapList[data.Seq] = append(CommandDataMapList[data.Seq], data)
 			}else{
 				value, err:= parseReadCommand(data.Op, StateMachine)
-				if err!=nil{
-					fmt.Println("Error in parsing read command")
+				if err == "notFound"{
+					sendData(conn, ResponseToClient{value: -1})
 				}
 				response := ResponseToClient{value: value}
 				sendData(conn, response)

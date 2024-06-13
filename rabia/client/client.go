@@ -32,11 +32,19 @@ func main() {
 				defer conn.Close()
 				sendData(conn, Request{CommandData: CommandData{Op: command, Timestamp: timestamp, Seq: 0}, Redirected: false, Timestamp: 0})
 				if command[0] == 'R' {
+					var data Data
 					data, err :=receiveData(conn)
 					if err != nil {
 						fmt.Println("Error in receiving data")
 					}
+					switch response := data.(type) {
+						case ResponseToClient:
+							if response.value == -1 {
+								fmt.Println("Key not found")
+							}
+					}	
 					fmt.Println("Read value: ", data)
+					
 				}
 				timestamp++
 		}
