@@ -98,6 +98,7 @@ func init() {
 	gob.Register(ConsensusTermination{})
 	gob.Register(Request{})
 	gob.Register(ResponseToClient{})
+	gob.Register(ConsensusData{})
 
 	PQ := make(PriorityQueue, 0)
 	heap.Init(&PQ)
