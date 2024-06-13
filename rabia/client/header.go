@@ -39,6 +39,7 @@ func receiveData(conn net.Conn) (ConsensusData, error) {
 	decoder := gob.NewDecoder(conn)
 	err := decoder.Decode(&data)
 	if err != nil {
+		fmt.Println("データ受信エラー:", err)
 		return ConsensusData{}, err
 	}
 	return data, nil

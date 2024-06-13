@@ -154,6 +154,7 @@ func handleConnection(conn net.Conn) {
 			}else{
 				value, err:= parseReadCommand(data.Op, StateMachine)
 				if err == "notFound"{
+					fmt.Println("here")
 					sendData(conn, ResponseToClient{Value: -1})
 				}
 				response := ResponseToClient{Value: value}
