@@ -135,6 +135,8 @@ func sendData(conn net.Conn, data Data) {
 }
 
 func handleConnection(conn net.Conn) {
+	defer conn.Close()
+
 	for {
 		consensusData, err := receiveData(conn)
 		if err != nil {
@@ -152,11 +154,11 @@ func handleConnection(conn net.Conn) {
 			}else{
 				value, err:= parseReadCommand(data.Op, StateMachine)
 				if err == "notFound"{
+					fmt.Println("here")
 					sendData(conn, ResponseToClient{Value: -1})
-				}else{
-					response := ResponseToClient{Value: value}
-					sendData(conn, response)
 				}
+				response := ResponseToClient{Value: value}
+				sendData(conn, response)
 			}
 			//fmt.Println("CommandDataMapList: ", CommandDataMapList)
 			CommandDataMutex.Unlock()
