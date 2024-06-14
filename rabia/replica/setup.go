@@ -33,7 +33,8 @@ func RegisterToProxy() string {
 	defer conn.Close()
 
 	fmt.Println("プロキシに接続しました")
-	return conn.LocalAddr().String()
+	removePort := strings.Split(conn.LocalAddr().String(), ":")
+	return removePort[0]
 }
 
 func listenAndAcceptConnectionWithProxy() []string {

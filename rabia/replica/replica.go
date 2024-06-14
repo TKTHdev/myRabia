@@ -50,6 +50,7 @@ func main() {
 
 	//Register to proxy
 	ownIP = RegisterToProxy()
+	
 
 	// プロキシからの接続を待ち受ける
 	// 他のレプリカのポート番号を取得
@@ -110,7 +111,7 @@ func main() {
 		c.Println("SM in seq", seq, ":", StateMachine)
 
 		fmt.Println("IP: ", ownIP)
-		if ownIP == consensusValue.CommandData.ClientAddr {
+		if ownIP == consensusValue.CommandData.ReplicaAddr {
 			terminationChannelMutex.Lock()
 			terminationChannel <- ResponseToClient{Value: 0, ClientAddr: ownIP}
 			terminationChannelMutex.Unlock()
