@@ -150,20 +150,7 @@ func handleConnection(conn net.Conn) {
 		case CommandData:
 			CommandDataMutex.Lock()
 			//fmt.Println("Received CommandData: ", data)
-			if data.Op[0]!='R'{
 				CommandDataMapList[data.Seq] = append(CommandDataMapList[data.Seq], data)
-			}else{
-				value, err:= parseReadCommand(data.Op, StateMachine)
-				if err == "notFound"{
-					fmt.Println("Addresses of client and server: ", conn.RemoteAddr(), conn.LocalAddr())
-					response :=  ResponseToClient{Value: -1}
-					sendData(conn, response)
-				}else{
-					response := ResponseToClient{Value: value}
-					sendData(conn, response)
-				}
-				fmt.Println("Sent")
-			}
 			//fmt.Println("CommandDataMapList: ", CommandDataMapList)
 			CommandDataMutex.Unlock()
 		case StateValueData:
@@ -187,6 +174,21 @@ func handleConnection(conn net.Conn) {
 		case Request:
 			PQMutex.Lock()
 			//fmt.Println("Received Request: ", data)
+			
+			if data.CommandData.Op[0] == 'R' {
+				value, err:= parseReadCommand(data.CommandData.Op, StateMachine)
+				if err == "notFound"{
+					fmt.Printf("remote address %s\n", conn.RemoteAddr())
+					response :=  ResponseToClient{Value: -1}
+					sendData(conn, response)
+				}else{
+					response := ResponseToClient{Value: value}
+					sendData(conn, response)
+				}
+				fmt.Println("Sent")
+				break
+			}
+
 			if !data.Redirected {
 				data.Redirected = true
 				broadCastData(replicaIPs, data)
