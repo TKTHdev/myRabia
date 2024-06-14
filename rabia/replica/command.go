@@ -37,15 +37,12 @@ func parseWriteCommand(command string, stateMachine map[string]int) error {
 	} else {
 		return fmt.Errorf("invalid command format: %s", command)
 	}
-
 	return nil
 }
-
 
 func parseReadCommand(command string, stateMachine map[string]int) (int, string) {
 	parts := strings.Split(command, " ")
 	fmt.Println(stateMachine)
-
 	if len(parts) == 2 {
 		key := parts[1]
 		fmt.Println("Key, Value : ", key, stateMachine[key])

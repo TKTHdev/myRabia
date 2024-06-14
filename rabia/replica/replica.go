@@ -13,12 +13,12 @@ import (
 
 var replicaIPs []string
 var ownIP string
-var StateMachine map[string]int
+
+var StateMachine map[string]int = make(map[string]int)
 
 func main() {
 
 	//init SM
-	StateMachine := make(map[string]int)
 
 	//color output
 	c := color.New(color.FgCyan)
