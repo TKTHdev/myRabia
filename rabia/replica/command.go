@@ -44,6 +44,7 @@ func parseWriteCommand(command string, stateMachine map[string]int) error {
 
 func parseReadCommand(command string, stateMachine map[string]int) (int, string) {
 	parts := strings.Split(command, " ")
+	fmt.Println(stateMachine)
 
 	if len(parts) == 2 {
 		key := parts[1]
