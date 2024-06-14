@@ -6,6 +6,7 @@ import (
 	"log"
 	"net"
 	"os"
+	"strings"
 	"time"
 
 	"github.com/fatih/color"
@@ -111,8 +112,9 @@ func main() {
 		c.Println("SM in seq", seq, ":", StateMachine)
 
 		fmt.Println("IP: ", ownIP)
-		fmt.Println("IP2", consensusValue.CommandData.ReplicaAddr)	
-		if ownIP == consensusValue.CommandData.ReplicaAddr {
+		IP2 := strings.Split(consensusValue.CommandData.ReplicaAddr, ":")[0]
+		fmt.Println("IP2", IP2)	
+		if ownIP == IP2 {
 			terminationChannelMutex.Lock()
 			terminationChannel <- ResponseToClient{Value: 0, ClientAddr: ownIP}
 			terminationChannelMutex.Unlock()
