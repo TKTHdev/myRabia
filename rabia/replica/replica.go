@@ -115,6 +115,7 @@ func main() {
 		IP2 := strings.Split(consensusValue.CommandData.ReplicaAddr, ":")[0]
 		fmt.Println("IP2", IP2)	
 		if ownIP == IP2 {
+			fmt.Println("Sending response to client")
 			terminationChannelMutex.Lock()
 			terminationChannel <- ResponseToClient{Value: 0, ClientAddr: ownIP}
 			terminationChannelMutex.Unlock()
