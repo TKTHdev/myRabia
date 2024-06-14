@@ -7,7 +7,6 @@ import (
 	"net"
 )
 
-
 type Data interface{}
 
 type ConsensusData struct {
@@ -20,15 +19,23 @@ type CommandData struct {
 	Seq       int
 }
 
+
+
 type Request struct {
 	CommandData CommandData
 	Redirected  bool
 	Timestamp   int
 }
 
+type CommandTimestamp struct {
+	Command   string
+	Timestamp int
+}
+
 type ResponseToClient struct {
 	Value int
 }
+
 
 func init() {
 	gob.Register(Request{})

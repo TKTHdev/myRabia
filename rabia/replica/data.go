@@ -155,6 +155,7 @@ func handleConnection(conn net.Conn) {
 			}else{
 				value, err:= parseReadCommand(data.Op, StateMachine)
 				if err == "notFound"{
+					fmt.Printf("remote address %s\n", conn.RemoteAddr())
 					response :=  ResponseToClient{Value: -1}
 					sendData(conn, response)
 				}else{

@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"net"
-	"encoding/gob"
 )
 
 var StateMachine map[string]int = make(map[string]int)
@@ -34,8 +33,8 @@ func main() {
 				sendData(conn, Request{CommandData: CommandData{Op: command, Timestamp: timestamp, Seq: 0}, Redirected: false, Timestamp: 0})
 				if command[0] == 'R' {
 					var data ConsensusData
-					decoder := gob.NewDecoder(conn)
-					err := decoder.Decode(&data)
+					fmt.Printf("ownd address %s\n", conn.LocalAddr())
+					data, err :=receiveData(conn)
 					if err != nil {
 						fmt.Println("Error in receiving data")
 					}
