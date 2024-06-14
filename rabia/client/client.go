@@ -24,32 +24,32 @@ func main() {
 		for i := 0; i < commandNum; i++ {
 			var command string = generateRandomCommand(50)
 
-				conn, err := net.Dial("tcp", IPList[i%3]+":8080")
+			conn, err := net.Dial("tcp", IPList[i%3]+":8080")
+			if err != nil {
+				fmt.Println("Dial error", err)
+				continue
+			}
+			defer conn.Close()
+			sendData(conn, Request{CommandData: CommandData{Op: command, Timestamp: timestamp, Seq: 0}, Redirected: false, Timestamp: 0})
+			if command[0] == 'R' {
+				var data ConsensusData
+				data, err :=receiveData(conn)
 				if err != nil {
-					fmt.Println("Dial error", err)
-					continue
+					fmt.Println("Error in receiving data")
 				}
-				defer conn.Close()
-				sendData(conn, Request{CommandData: CommandData{Op: command, Timestamp: timestamp, Seq: 0}, Redirected: false, Timestamp: 0})
-				if command[0] == 'R' {
-					var data ConsensusData
-					data, err :=receiveData(conn)
-					if err != nil {
-						fmt.Println("Error in receiving data")
-					}
-					response := data.Data
-					switch response := response.(type) {
-						case ResponseToClient:
-							if response.Value == -1 {
-								fmt.Println("Key not found")
-							}
-							if response.Value != -1 {
-								fmt.Println("Read value: ", response.Value)
-							}
-					}
+				response := data.Data
+				switch response := response.(type) {
+					case ResponseToClient:
+						if response.Value == -1 {
+							fmt.Println("Key not found")
+						}
+						if response.Value != -1 {
+							fmt.Println("Read value: ", response.Value)
+						}
 				}
+			}
+			timestamp++
 		}
-				timestamp++
 	}
 
 	if choose == "B" {
