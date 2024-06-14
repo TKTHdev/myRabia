@@ -17,6 +17,8 @@ type CommandData struct {
 	Op        string
 	Timestamp int
 	Seq       int
+	ClientAddr string
+	ReplicaAddr string
 }
 
 

@@ -13,6 +13,9 @@ var StateValueDataMutex sync.Mutex
 var VoteValueDataMutex sync.Mutex
 var ConsensusTerminationMutex sync.Mutex
 var PQMutex sync.Mutex
+var terminationChannelMutex sync.Mutex
+
+var terminationChannel = make(chan ResponseToClient)
 
 type Data interface{}
 
@@ -24,8 +27,9 @@ type CommandData struct {
 	Op        string
 	Timestamp int
 	Seq       int
+	ClientAddr string
+	ReplicaAddr string
 }
-
 type StateValueData struct {
 	Value       int
 	Seq         int
@@ -76,6 +80,7 @@ type CommandTimestamp struct {
 
 type ResponseToClient struct {
 	Value int
+	ClientAddr string
 }
 
 var CommandDataMapList map[int][]CommandData
@@ -187,6 +192,22 @@ func handleConnection(conn net.Conn) {
 			}else if !data.Redirected {
 				data.Redirected = true
 				broadCastData(replicaIPs, data)
+				//Wait for termination
+				for{
+					terminationChannelMutex.Lock()
+					// if the channel has something
+					if len(terminationChannel) > 0 {
+						ResponseToClient := <-terminationChannel
+						fmt.Println("ResponseToClient: ", ResponseToClient)
+						if ResponseToClient.ClientAddr == data.CommandData.ClientAddr{
+							sendData(conn, ResponseToClient)
+							break;
+						}else{
+							terminationChannel <- ResponseToClient
+						}
+					}
+					terminationChannelMutex.Unlock()
+				}	
 			} else {
 				PQ.Push(&data.CommandData)
 			}
@@ -229,40 +250,14 @@ func deleteData(seq int, phase int) {
 	VoteValueDataMutex.Unlock()
 }
 
-//Unused now
-//Measure the size of the map data structure
-
-/*
-func printCommandDataMapListSize() {
-    CommandDataMutex.Lock()
-    var totalSize int
-    for _, value := range CommandDataMapList {
-        size := len(value)
-        totalSize += size
-    }
-    fmt.Printf("Total Size: %d\n", totalSize)
-    CommandDataMutex.Unlock()
+func getOwnIp() string {
+	conn, err := net.Dial("tcp", "8.8.8.8:80")
+	if err != nil {
+		fmt.Println(err)
+	}
+	defer conn.Close()
+	localAddr := conn.LocalAddr().(*net.TCPAddr)
+	return localAddr.IP.String()
 }
 
-func printStateValueDataMapListSize() {
-    StateValueDataMutex.Lock()
-    var totalSize int
-    for _, value := range StateValueDataMapList {
-        size := len(value)
-        totalSize += size
-    }
-    fmt.Printf("Total Size: %d\n", totalSize)
-    StateValueDataMutex.Unlock()
-}
 
-func printVoteValueDataMapListSize() {
-    VoteValueDataMutex.Lock()
-    var totalSize int
-    for _, value := range VoteValueDataMapList {
-        size := len(value)
-        totalSize += size
-    }
-    fmt.Printf("Total Size: %d\n", totalSize)
-    VoteValueDataMutex.Unlock()
-}
-*/

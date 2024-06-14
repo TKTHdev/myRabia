@@ -30,7 +30,7 @@ func main() {
 				continue
 			}
 			defer conn.Close()
-			sendData(conn, Request{CommandData: CommandData{Op: command, Timestamp: timestamp, Seq: 0}, Redirected: false, Timestamp: 0})
+			sendData(conn, Request{CommandData: CommandData{Op: command, Timestamp: timestamp, Seq: 0, ClientAddr: conn.LocalAddr().String(), ReplicaAddr: conn.RemoteAddr().String()}, Redirected: false, Timestamp: 0})
 			if command[0] == 'R' {
 				var data ConsensusData
 				data, err :=receiveData(conn)
@@ -47,8 +47,22 @@ func main() {
 							fmt.Println("Read value: ", response.Value)
 						}
 				}
+			}else{
+				var data ConsensusData
+				data, err :=receiveData(conn)
+				if err != nil {
+					fmt.Println("Error in receiving data")
+				}
+				response := data.Data
+				switch response := response.(type) {
+					case ResponseToClient:
+						if response.Value == 0 {
+							fmt.Println("Write successful")
+						}else{
+							fmt.Println("Write unsuccessful")
+						}
+				}
 			}
-			timestamp++
 		}
 	}
 

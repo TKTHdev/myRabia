@@ -109,14 +109,20 @@ func main() {
 		}
 		c.Println("SM in seq", seq, ":", StateMachine)
 
+		IP := getOwnIp()
+		fmt.Println("IP: ", IP)
+		if IP == consensusValue.CommandData.ClientAddr {
+			terminationChannelMutex.Lock()
+			terminationChannel <- ResponseToClient{Value: 0, ClientAddr: IP}
+			terminationChannelMutex.Unlock()
+		}
+
 		//Print the size of PQ
 		PQMutex.Lock()
 		fmt.Println("PQ size: ", PQ.Len())
 		PQMutex.Unlock()
 		seq++
-		if seq == 100 {
-			fmt.Println("DONE")
-		}
+	
 
 		//delete data to save memory
 
