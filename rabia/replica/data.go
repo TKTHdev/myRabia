@@ -196,21 +196,23 @@ func handleConnection(conn net.Conn) {
 				data.CommandData.ClientAddr = conn.RemoteAddr().String()
 				broadCastData(replicaIPs, data)
 				//Wait for termination
-				for{
-					terminationChannelMutex.Lock()
-					// if the channel has something
-					if len(terminationChannel) > 0 {
-						ResponseToClient := <-terminationChannel
-						fmt.Println("ResponseToClient: ", ResponseToClient)
-						if ResponseToClient.ClientAddr == data.CommandData.ClientAddr{
-							sendData(conn, ResponseToClient)
-							break;
-						}else{
-							terminationChannel <- ResponseToClient
+				go func (){
+					for{
+						terminationChannelMutex.Lock()
+						// if the channel has something
+						if len(terminationChannel) > 0 {
+							ResponseToClient := <-terminationChannel
+							fmt.Println("ResponseToClient: ", ResponseToClient)
+							if ResponseToClient.ClientAddr == data.CommandData.ClientAddr{
+								sendData(conn, ResponseToClient)
+								break;
+							}else{
+								terminationChannel <- ResponseToClient
+							}
 						}
+						terminationChannelMutex.Unlock()
 					}
-					terminationChannelMutex.Unlock()
-				}	
+				}()	
 			} else {
 				PQ.Push(&data.CommandData)
 			}
