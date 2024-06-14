@@ -22,7 +22,7 @@ func main() {
 	
 	if choose == "A" {
 		for i := 0; i < commandNum; i++ {
-			var command string = generateRandomCommand(100)
+			var command string = generateRandomCommand(0)
 
 			conn, err := net.Dial("tcp", IPList[i%3]+":8080")
 			if err != nil {
