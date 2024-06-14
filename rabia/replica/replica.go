@@ -83,9 +83,9 @@ func main() {
 		commandPointer.Seq = seq
 		terminationFlag, stateStruct = exchangeStage(*commandPointer, seq)
 		if terminationFlag == 1 {
-			//terminationValue := TerminationValue{isNull: false, CommandData: stateStruct.CommandData, phase: 0, seq: seq}
-			//logger.Println("consensusValue: ", terminationValue)
-			//color.Green("reached consensus: ", terminationValue, "\n")
+			terminationValue := TerminationValue{isNull: false, CommandData: stateStruct.CommandData, phase: 0, seq: seq}
+			logger.Println("consensusValue: ", terminationValue)
+			color.Green("reached consensus: ", terminationValue, "\n")
 			seq++
 			continue
 		}
@@ -107,7 +107,7 @@ func main() {
 		if !consensusValue.isNull {
 			parseWriteCommand(consensusValue.CommandData.Op, StateMachine)
 		}
-		//c.Println("SM in seq", seq, ":", StateMachine)
+		c.Println("SM in seq", seq, ":", StateMachine)
 
 		//Print the size of PQ
 		PQMutex.Lock()
