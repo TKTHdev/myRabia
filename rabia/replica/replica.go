@@ -119,6 +119,7 @@ func main() {
 			terminationChannelMutex.Lock()
 			terminationChannel <- ResponseToClient{Value: 0, ClientAddr: ownIP}
 			terminationChannelMutex.Unlock()
+			fmt.Println("Inserted responce to channel")
 		}
 
 		//Print the size of PQ
