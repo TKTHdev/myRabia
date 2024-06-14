@@ -91,6 +91,9 @@ func main() {
 		}
 
 		consensusValue := weakMVC(stateStruct, seq)
+
+
+
 		logger.Println("consensusValue: ", consensusValue)
 		if !consensusValue.isNull && consensusValue.CommandData.Op == "" {
 			c := color.New(color.FgHiRed)
@@ -115,9 +118,10 @@ func main() {
 		if ownIP == IP2 {
 			fmt.Println("Sending response to client")
 			terminationChannelMutex.Lock()
+			fmt.Println("I am here!!")
 			responseSlice = append(responseSlice, ResponseToClient{Value: 0, ClientAddr: consensusValue.CommandData.ClientAddr})
 			terminationChannelMutex.Unlock()
-			fmt.Println("Inserted responce to channel")
+			fmt.Println("Inserted response to slice")
 		}
 
 		//Print the size of PQ
