@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"net"
+	"encoding/gob"
 )
 
 var StateMachine map[string]int = make(map[string]int)
@@ -33,16 +34,24 @@ func main() {
 				sendData(conn, Request{CommandData: CommandData{Op: command, Timestamp: timestamp, Seq: 0}, Redirected: false, Timestamp: 0})
 				if command[0] == 'R' {
 					var data ConsensusData
-					data, err :=receiveData(conn)
+					decoder := gob.NewDecoder(conn)
+					err := decoder.Decode(&data)
 					if err != nil {
 						fmt.Println("Error in receiving data")
 					}
-					var responce ResponseToClient = data.Data.(ResponseToClient)
-					fmt.Println("Response: ", responce.Value)
-						
+					response := data.Data
+					switch response := response.(type) {
+						case ResponseToClient:
+							if response.Value == -1 {
+								fmt.Println("Key not found")
+							}
+							if response.Value != -1 {
+								fmt.Println("Read value: ", response.Value)
+							}
+					}
 				}
-				timestamp++
 		}
+				timestamp++
 	}
 
 	if choose == "B" {
