@@ -24,16 +24,16 @@ func setConnectionWithOtherReplicas(IPLists []string) []net.Conn {
 	return conns
 }
 
-func RegisterToProxy() {
+func RegisterToProxy() string {
 	conn, err := net.Dial("tcp", "13.236.12.56:8080")
 	if err != nil {
 		fmt.Println("接続エラー:", err)
-		return
+		return ""
 	}
 	defer conn.Close()
 
 	fmt.Println("プロキシに接続しました")
-	return
+	return conn.LocalAddr().String()
 }
 
 func listenAndAcceptConnectionWithProxy() []string {

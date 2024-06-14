@@ -13,7 +13,7 @@ import (
 
 var listener net.Listener
 var replicaIPs []string
-
+var ownIP string
 var StateMachine map[string]int
 
 func main() {
@@ -49,7 +49,7 @@ func main() {
 	*/
 
 	//Register to proxy
-	RegisterToProxy()
+	ownIP = RegisterToProxy()
 
 	// プロキシからの接続を待ち受ける
 	// 他のレプリカのポート番号を取得
@@ -109,11 +109,10 @@ func main() {
 		}
 		c.Println("SM in seq", seq, ":", StateMachine)
 
-		IP := getOwnIp()
-		fmt.Println("IP: ", IP)
-		if IP == consensusValue.CommandData.ClientAddr {
+		fmt.Println("IP: ", ownIP)
+		if ownIP == consensusValue.CommandData.ClientAddr {
 			terminationChannelMutex.Lock()
-			terminationChannel <- ResponseToClient{Value: 0, ClientAddr: IP}
+			terminationChannel <- ResponseToClient{Value: 0, ClientAddr: ownIP}
 			terminationChannelMutex.Unlock()
 		}
 

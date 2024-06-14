@@ -14,7 +14,6 @@ var VoteValueDataMutex sync.Mutex
 var ConsensusTerminationMutex sync.Mutex
 var PQMutex sync.Mutex
 var terminationChannelMutex sync.Mutex
-
 var terminationChannel = make(chan ResponseToClient)
 
 type Data interface{}
@@ -89,6 +88,8 @@ var VoteValueDataMapList map[SeqPhase][]VoteValueData
 var ConsensusTerminationMapList map[int][]ConsensusTermination
 var Dictionary map[CommandTimestamp]bool
 var PQ PriorityQueue
+
+
 
 func init() {
 	CommandDataMapList = make(map[int][]CommandData)
@@ -194,7 +195,7 @@ func handleConnection(conn net.Conn) {
 				broadCastData(replicaIPs, data)
 				//Wait for termination
 				for{
-					//fmt.Println("Waiting for termination")
+					fmt.Println("Waiting for termination")
 					terminationChannelMutex.Lock()
 					// if the channel has something
 					if len(terminationChannel) > 0 {
@@ -250,15 +251,3 @@ func deleteData(seq int, phase int) {
 	delete(VoteValueDataMapList, SeqPhase{Seq: seq, Phase: phase})
 	VoteValueDataMutex.Unlock()
 }
-
-func getOwnIp() string {
-	conn, err := net.Dial("tcp", "8.8.8.8:80")
-	if err != nil {
-		fmt.Println(err)
-	}
-	defer conn.Close()
-	localAddr := conn.LocalAddr().(*net.TCPAddr)
-	return localAddr.IP.String()
-}
-
-
