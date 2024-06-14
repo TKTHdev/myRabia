@@ -192,6 +192,8 @@ func handleConnection(conn net.Conn) {
 				}
 			}else if !data.Redirected {
 				data.Redirected = true
+				data.CommandData.ReplicaAddr = ownIP
+				data.CommandData.ClientAddr = conn.RemoteAddr().String()
 				broadCastData(replicaIPs, data)
 				//Wait for termination
 				for{

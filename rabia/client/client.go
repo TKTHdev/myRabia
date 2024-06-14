@@ -30,7 +30,7 @@ func main() {
 				continue
 			}
 			defer conn.Close()
-			sendData(conn, Request{CommandData: CommandData{Op: command, Timestamp: timestamp, Seq: 0, ClientAddr: conn.LocalAddr().String(), ReplicaAddr: conn.RemoteAddr().String()}, Redirected: false, Timestamp: 0})
+			sendData(conn, Request{CommandData: CommandData{Op: command, Timestamp: timestamp, Seq: 0, ClientAddr: conn.LocalAddr().String()}, Redirected: false, Timestamp: 0})
 			if command[0] == 'R' {
 				var data ConsensusData
 				data, err :=receiveData(conn)
