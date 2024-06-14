@@ -83,9 +83,51 @@ func main() {
 		commandPointer.Seq = seq
 		terminationFlag, stateStruct = exchangeStage(*commandPointer, seq)
 		if terminationFlag == 1 {
-			terminationValue := TerminationValue{isNull: false, CommandData: stateStruct.CommandData, phase: 0, seq: seq}
-			logger.Println("consensusValue: ", terminationValue)
-			color.Green("reached consensus: ", terminationValue, "\n")
+			consensusValue := TerminationValue{isNull: false, CommandData: stateStruct.CommandData, phase: 0, seq: seq}
+			logger.Println("consensusValue: ", consensusValue)
+			color.Green("reached consensus: ", consensusValue, "\n")
+
+
+			logger.Println("consensusValue: ", consensusValue)
+			if !consensusValue.isNull && consensusValue.CommandData.Op == "" {
+				c := color.New(color.FgHiRed)
+				c.Println("This should not happen!")
+			}
+			if consensusValue.CommandData != *commandPointer || consensusValue.isNull {
+				PQMutex.Lock()
+				c := color.New(color.FgYellow)
+				c.Println("Adding to dictionary: ", consensusValue.CommandData)
+				PQ.Push(commandPointer)
+				Dictionary[CommandTimestamp{Command: consensusValue.CommandData.Op, Timestamp: consensusValue.CommandData.Timestamp}] = true
+				PQMutex.Unlock()
+			}
+			if !consensusValue.isNull {
+				parseWriteCommand(consensusValue.CommandData.Op, StateMachine)
+			}
+			c.Println("SM in seq", seq, ":", StateMachine)
+
+			fmt.Println("IP: ", ownIP)
+			IP2 := strings.Split(consensusValue.CommandData.ReplicaAddr, ":")[0]
+			fmt.Println("IP2", IP2)	
+			if ownIP == IP2 {
+				fmt.Println("Sending response to client")
+				terminationChannelMutex.Lock()
+				responseSlice = append(responseSlice, ResponseToClient{Value: 0, ClientAddr: consensusValue.CommandData.ClientAddr})
+				terminationChannelMutex.Unlock()
+				fmt.Println("Inserted response to slice")
+			}
+
+			//Print the size of PQ
+			PQMutex.Lock()
+			fmt.Println("PQ size: ", PQ.Len())
+			PQMutex.Unlock()
+
+
+
+
+
+
+
 			seq++
 			continue
 		}
@@ -118,7 +160,6 @@ func main() {
 		if ownIP == IP2 {
 			fmt.Println("Sending response to client")
 			terminationChannelMutex.Lock()
-			fmt.Println("I am here!!")
 			responseSlice = append(responseSlice, ResponseToClient{Value: 0, ClientAddr: consensusValue.CommandData.ClientAddr})
 			terminationChannelMutex.Unlock()
 			fmt.Println("Inserted response to slice")
