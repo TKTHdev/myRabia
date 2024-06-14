@@ -68,7 +68,7 @@ func main() {
 
 	if choose == "B" {
 		for i := 0; i < commandNum; i++ {
-			var command string = generateRandomCommand(5)
+			var command string = generateRandomCommand(95)
 
 			conn, err := net.Dial("tcp", IPList[i%3]+":8080")
 			if err != nil {
@@ -114,7 +114,7 @@ func main() {
 
 	if choose == "C" {
 		for i := 0; i < commandNum; i++ {
-			var command string = generateRandomCommand(0)
+			var command string = generateRandomCommand(100)
 
 			conn, err := net.Dial("tcp", IPList[i%3]+":8080")
 			if err != nil {
