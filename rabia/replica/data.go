@@ -195,7 +195,6 @@ func handleConnection(conn net.Conn) {
 				broadCastData(replicaIPs, data)
 				//Wait for termination
 				for{
-					fmt.Println("Waiting for termination")
 					terminationChannelMutex.Lock()
 					// if the channel has something
 					if len(terminationChannel) > 0 {
