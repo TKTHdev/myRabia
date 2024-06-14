@@ -42,10 +42,8 @@ func parseWriteCommand(command string, stateMachine map[string]int) error {
 
 func parseReadCommand(command string, stateMachine map[string]int) (int, string) {
 	parts := strings.Split(command, " ")
-	fmt.Println(stateMachine)
 	if len(parts) == 2 {
 		key := parts[1]
-		fmt.Println("Key, Value : ", key, stateMachine[key])
 		value, ok := stateMachine[key]
 		if !ok {
 			fmt.Println("Variable not found: ", key)
