@@ -111,6 +111,7 @@ func main() {
 		c.Println("SM in seq", seq, ":", StateMachine)
 
 		fmt.Println("IP: ", ownIP)
+		fmt.Println("IP2", consensusValue.CommandData.ReplicaAddr)	
 		if ownIP == consensusValue.CommandData.ReplicaAddr {
 			terminationChannelMutex.Lock()
 			terminationChannel <- ResponseToClient{Value: 0, ClientAddr: ownIP}
