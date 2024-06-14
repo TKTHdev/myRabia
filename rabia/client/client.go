@@ -33,7 +33,6 @@ func main() {
 				sendData(conn, Request{CommandData: CommandData{Op: command, Timestamp: timestamp, Seq: 0}, Redirected: false, Timestamp: 0})
 				if command[0] == 'R' {
 					var data ConsensusData
-					fmt.Println("Addresses of client and server: ", conn.LocalAddr(), conn.RemoteAddr())
 					data, err :=receiveData(conn)
 					if err != nil {
 						fmt.Println("Error in receiving data")

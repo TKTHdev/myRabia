@@ -178,14 +178,12 @@ func handleConnection(conn net.Conn) {
 			if data.CommandData.Op[0] == 'R' {
 				value, err:= parseReadCommand(data.CommandData.Op, StateMachine)
 				if err == "notFound"{
-					fmt.Printf("remote address %s\n", conn.RemoteAddr())
 					response :=  ResponseToClient{Value: -1}
 					sendData(conn, response)
 				}else{
 					response := ResponseToClient{Value: value}
 					sendData(conn, response)
 				}
-				fmt.Println("Sent")
 				break
 			}
 
