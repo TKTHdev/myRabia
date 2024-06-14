@@ -115,7 +115,7 @@ func main() {
 		if ownIP == IP2 {
 			fmt.Println("Sending response to client")
 			terminationChannelMutex.Lock()
-			respnnseSlice = append(respnnseSlice, ResponseToClient{Value: 0, ClientAddr: consensusValue.CommandData.ClientAddr})
+			responseSlice = append(responseSlice, ResponseToClient{Value: 0, ClientAddr: consensusValue.CommandData.ClientAddr})
 			terminationChannelMutex.Unlock()
 			fmt.Println("Inserted responce to channel")
 		}
