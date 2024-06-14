@@ -14,7 +14,8 @@ var VoteValueDataMutex sync.Mutex
 var ConsensusTerminationMutex sync.Mutex
 var PQMutex sync.Mutex
 var terminationChannelMutex sync.Mutex
-var terminationChannel = make(chan ResponseToClient)
+
+var respnnseSlice []ResponseToClient
 
 type Data interface{}
 
@@ -200,14 +201,12 @@ func handleConnection(conn net.Conn) {
 					for{
 						terminationChannelMutex.Lock()
 						// if the channel has something
-						if len(terminationChannel) > 0 {
-							ResponseToClient := <-terminationChannel
-							fmt.Println("ResponseToClient: ", ResponseToClient)
+						if len(respnnseSlice) > 0 {
+							ResponseToClient := respnnseSlice[0]
 							if ResponseToClient.ClientAddr == data.CommandData.ClientAddr{
 								sendData(conn, ResponseToClient)
+								respnnseSlice = respnnseSlice[1:]
 								break;
-							}else{
-								terminationChannel <- ResponseToClient
 							}
 						}
 						terminationChannelMutex.Unlock()

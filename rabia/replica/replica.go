@@ -4,7 +4,6 @@ import (
 	"container/heap"
 	"fmt"
 	"log"
-	"net"
 	"os"
 	"strings"
 	"time"
@@ -12,7 +11,6 @@ import (
 	"github.com/fatih/color"
 )
 
-var listener net.Listener
 var replicaIPs []string
 var ownIP string
 var StateMachine map[string]int
@@ -117,7 +115,7 @@ func main() {
 		if ownIP == IP2 {
 			fmt.Println("Sending response to client")
 			terminationChannelMutex.Lock()
-			terminationChannel <- ResponseToClient{Value: 0, ClientAddr: ownIP}
+			respnnseSlice = append(respnnseSlice, ResponseToClient{Value: 0, ClientAddr: consensusValue.CommandData.ClientAddr})
 			terminationChannelMutex.Unlock()
 			fmt.Println("Inserted responce to channel")
 		}
