@@ -184,10 +184,7 @@ func handleConnection(conn net.Conn) {
 					response := ResponseToClient{Value: value}
 					sendData(conn, response)
 				}
-				break
-			}
-
-			if !data.Redirected {
+			}else if !data.Redirected {
 				data.Redirected = true
 				broadCastData(replicaIPs, data)
 			} else {
