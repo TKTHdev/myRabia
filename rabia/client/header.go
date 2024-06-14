@@ -75,7 +75,7 @@ func generateRandomCommand(readRatio int) string {
 	//generate read command with readRatio
 	if rand.Intn(100) < readRatio {
 		variable := variables[rand.Intn(len(variables))]
-		return fmt.Sprintf("R%s", variable)
+		return fmt.Sprintf("R %s", variable)
 	}else{
 		variable := variables[rand.Intn(len(variables))]
 		operator := operators[rand.Intn(len(operators))]
