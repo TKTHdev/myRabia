@@ -9,7 +9,7 @@ var StateMachine map[string]int = make(map[string]int)
 
 func main() {
 	timestamp := 0
-	IPList := []string{"52.63.13.55","13.237.225.199","54.253.27.126"};
+	IPList := []string{"52.62.115.28","52.65.112.127","52.64.108.149"};
 	var choose string
 	var commandNum int
 	fmt.Println("YCSB Workload [A] or [B] or [C] ?: ")

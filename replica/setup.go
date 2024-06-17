@@ -25,7 +25,7 @@ func setConnectionWithOtherReplicas(IPLists []string) []net.Conn {
 }
 
 func RegisterToProxy() string {
-	conn, err := net.Dial("tcp", "13.236.12.56:8080")
+	conn, err := net.Dial("tcp", "13.237.227.47:8080")
 	if err != nil {
 		fmt.Println("接続エラー:", err)
 		return ""

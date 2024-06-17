@@ -1,6 +1,6 @@
 #!/bin/bash 
 # Navigate to the myRabia/rabia/replica directory
-cd rabia/replica
+cd replica
 
 # Build the replica.go file
 go build 

@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Navigate to the myRabia/rabia/client directory
-cd rabia/client
+cd client
 
 # Build the client.go file
 go build
