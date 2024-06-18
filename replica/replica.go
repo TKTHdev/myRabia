@@ -14,16 +14,12 @@ import (
 var replicaIPs []string
 var ownIP string
 
-
-
 var StateMachine map[string]int = make(map[string]int)
 
 func main() {
 
-
 	var seq int = 0
 	var nullCnt int = 0
-
 
 	//init SM
 
@@ -37,7 +33,6 @@ func main() {
 		log.Fatal("Cannot create file", err)
 	}
 	defer logFile.Close()
-	logger := log.New(logFile, "", log.LstdFlags)
 
 	//Choose the interval
 
@@ -56,7 +51,6 @@ func main() {
 
 	//Register to proxy
 	ownIP = RegisterToProxy()
-	
 
 	// プロキシからの接続を待ち受ける
 	// 他のレプリカのポート番号を取得
@@ -74,111 +68,102 @@ func main() {
 			continue
 		}
 		commandPointer := heap.Pop(&PQ).(*CommandData)
-		logger.Println("Command: ", *commandPointer, "Dict: ", Dictionary)
 		if Dictionary[CommandTimestamp{Command: commandPointer.Op, Timestamp: commandPointer.Timestamp}] {
 			PQMutex.Unlock()
-			fmt.Println("Command already reached consensus: ", *commandPointer)
+			// fmt.Println("Command already reached consensus: ", *commandPointer)
 			delete(Dictionary, CommandTimestamp{Command: commandPointer.Op, Timestamp: commandPointer.Timestamp})
 			continue
 		}
-		logger.Println("Proposing command: ", *commandPointer)
 		PQMutex.Unlock()
 		var stateStruct StateValueData
-		fmt.Println("cnt: ", seq)
+		// fmt.Println("cnt: ", seq)
 		var terminationFlag int
 		commandPointer.Seq = seq
 		terminationFlag, stateStruct = exchangeStage(*commandPointer, seq)
 		if terminationFlag == 1 {
 			consensusValue := TerminationValue{isNull: false, CommandData: stateStruct.CommandData, phase: 0, seq: seq}
-			logger.Println("consensusValue: ", consensusValue)
-			color.Green("reached consensus: ", consensusValue, "\n")
+			// color.Green("reached consensus: ", consensusValue, "\n")
 
-
-			logger.Println("consensusValue: ", consensusValue)
 			if !consensusValue.isNull && consensusValue.CommandData.Op == "" {
-				c := color.New(color.FgHiRed)
-				c.Println("This should not happen!")
+				// c := color.New(color.FgHiRed)
+				// c.Println("This should not happen!")
 			}
 			if consensusValue.CommandData != *commandPointer || consensusValue.isNull {
 				PQMutex.Lock()
-				c := color.New(color.FgYellow)
-				c.Println("Adding to dictionary: ", consensusValue.CommandData)
+				// c := color.New(color.FgYellow)
+				// c.Println("Adding to dictionary: ", consensusValue.CommandData)
 				PQ.Push(commandPointer)
 				Dictionary[CommandTimestamp{Command: consensusValue.CommandData.Op, Timestamp: consensusValue.CommandData.Timestamp}] = true
 				PQMutex.Unlock()
 			}
 			if !consensusValue.isNull {
 				parseWriteCommand(consensusValue.CommandData.Op, StateMachine)
-			}else{
+			} else {
 				nullCnt++
 			}
 
-			c.Println("SM in seq", seq, ":", StateMachine)
+			// c.Println("SM in seq", seq, ":", StateMachine)
 
-			fmt.Println("IP: ", ownIP)
+			// fmt.Println("IP: ", ownIP)
 			IP2 := strings.Split(consensusValue.CommandData.ReplicaAddr, ":")[0]
-			fmt.Println("IP2", IP2)	
+			// fmt.Println("IP2", IP2)
 			if ownIP == IP2 {
-				fmt.Println("Sending response to client")
+				// fmt.Println("Sending response to client")
 				terminationChannelMutex.Lock()
 				responseSlice = append(responseSlice, ResponseToClient{Value: 0, ClientAddr: consensusValue.CommandData.ClientAddr})
 				terminationChannelMutex.Unlock()
-				fmt.Println("Inserted response to slice")
+				// fmt.Println("Inserted response to slice")
 			}
 
 			//Print the size of PQ
 			PQMutex.Lock()
-			fmt.Println("PQ size: ", PQ.Len())
+			// fmt.Println("PQ size: ", PQ.Len())
 			PQMutex.Unlock()
 
 			seq++
-			fmt.Println("null cnt:", nullCnt)
-			fmt.Println("non-null percentage: ", (float64(seq-nullCnt)/float64(seq))*100)
+			// fmt.Println("null cnt:", nullCnt)
+			// fmt.Println("non-null percentage: ", (float64(seq-nullCnt)/float64(seq))*100)
 			continue
 		}
 
 		consensusValue := weakMVC(stateStruct, seq)
 
-
-
-		logger.Println("consensusValue: ", consensusValue)
 		if !consensusValue.isNull && consensusValue.CommandData.Op == "" {
-			c := color.New(color.FgHiRed)
-			c.Println("This should not happen!")
+			// c := color.New(color.FgHiRed)
+			// c.Println("This should not happen!")
 		}
 		if consensusValue.CommandData != *commandPointer || consensusValue.isNull {
 			PQMutex.Lock()
-			c := color.New(color.FgYellow)
-			c.Println("Adding to dictionary: ", consensusValue.CommandData)
+			// c := color.New(color.FgYellow)
+			// c.Println("Adding to dictionary: ", consensusValue.CommandData)
 			PQ.Push(commandPointer)
 			Dictionary[CommandTimestamp{Command: consensusValue.CommandData.Op, Timestamp: consensusValue.CommandData.Timestamp}] = true
 			PQMutex.Unlock()
 		}
 		if !consensusValue.isNull {
 			parseWriteCommand(consensusValue.CommandData.Op, StateMachine)
-		}else{
+		} else {
 			nullCnt++
 		}
-		c.Println("SM in seq", seq, ":", StateMachine)
+		// c.Println("SM in seq", seq, ":", StateMachine)
 
-		fmt.Println("IP: ", ownIP)
 		IP2 := strings.Split(consensusValue.CommandData.ReplicaAddr, ":")[0]
-		fmt.Println("IP2", IP2)	
 		if ownIP == IP2 {
-			fmt.Println("Sending response to client")
+			// fmt.Println("Sending response to client")
 			terminationChannelMutex.Lock()
 			responseSlice = append(responseSlice, ResponseToClient{Value: 0, ClientAddr: consensusValue.CommandData.ClientAddr})
 			terminationChannelMutex.Unlock()
-			fmt.Println("Inserted response to slice")
+			// fmt.Println("Inserted response to slice")
 		}
 
 		//Print the size of PQ
 		PQMutex.Lock()
-		fmt.Println("PQ size: ", PQ.Len())
+		// fmt.Println("PQ size: ", PQ.Len())
 		PQMutex.Unlock()
 		seq++
-		fmt.Println("null cnt:", nullCnt)
-		fmt.Println("non-null percentage: ", (float64(seq-nullCnt)/float64(seq))*100)
+		// fmt.Println("null cnt:", nullCnt)
+		// fmt.Println("non-null percentage: ", (float64(seq-nullCnt)/float64(seq))*100)
+		fmt.Println(seq)
 	}
 }
 
@@ -189,7 +174,7 @@ func weakMVC(stateStruct StateValueData, seq int) TerminationValue {
 	//c := color.New(color.FgGreen)
 
 	//Round 1
-	fmt.Println("State struct: ", stateStruct)
+	// fmt.Println("State struct: ", stateStruct)
 	var state StateValueData = StateValueData{Value: stateStruct.Value, Seq: seq, Phase: phase, CommandData: stateStruct.CommandData}
 	terminationFlag, voteValue := roundOne(state, seq, phase)
 	if terminationFlag == 1 {
@@ -206,9 +191,9 @@ func weakMVC(stateStruct StateValueData, seq int) TerminationValue {
 	}
 
 	//Round 2
-	fmt.Println("voteValue: ", voteValue)
+	// fmt.Println("voteValue: ", voteValue)
 	var vote VoteValueData = VoteValueData{Value: voteValue.Value, Seq: seq, Phase: phase, CommandData: voteValue.CommandData}
-	terminationFlag, returnStruct := roundTwo(vote,  seq, phase)
+	terminationFlag, returnStruct := roundTwo(vote, seq, phase)
 	//fmt.Println("returnStruct: ", returnStruct)
 	if terminationFlag == 1 {
 		if returnStruct.ConsensusValue == 0 {
@@ -238,7 +223,7 @@ func weakMVC(stateStruct StateValueData, seq int) TerminationValue {
 				return terminationValue
 			}
 		}
-		fmt.Println("voteValue: ", voteValue)
+		// fmt.Println("voteValue: ", voteValue)
 		var vote VoteValueData = VoteValueData{Value: voteValue.Value, Seq: seq, Phase: phase, CommandData: voteValue.CommandData}
 		terminationFlag, returnStruct = roundTwo(vote, seq, phase)
 		//fmt.Println("returnStruct: ", returnStruct)
