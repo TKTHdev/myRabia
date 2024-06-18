@@ -14,9 +14,16 @@ import (
 var replicaIPs []string
 var ownIP string
 
+
+
 var StateMachine map[string]int = make(map[string]int)
 
 func main() {
+
+
+	var seq int = 0
+	var nullCnt int = 0
+
 
 	//init SM
 
@@ -60,7 +67,6 @@ func main() {
 	time.Sleep(250 * time.Millisecond)
 
 	//ここで合意アルゴリズムを実行
-	var seq int = 0
 	for {
 		PQMutex.Lock()
 		if PQ.Len() == 0 {
@@ -122,13 +128,9 @@ func main() {
 			fmt.Println("PQ size: ", PQ.Len())
 			PQMutex.Unlock()
 
-
-
-
-
-
-
 			seq++
+			fmt.Println("null cnt:", nullCnt)
+			fmt.Println("non-null percentage: ", (float64(seq-nullCnt)/float64(seq))*100)
 			continue
 		}
 
@@ -170,20 +172,9 @@ func main() {
 		fmt.Println("PQ size: ", PQ.Len())
 		PQMutex.Unlock()
 		seq++
-	
-
-		//delete data to save memory
-
-		/*
-			for _,v:= range PQ {
-				fmt.Print(*v)
-			}
-			fmt.Println()
-		*/
-		//deleteData(seq, 0)
-		//time.Sleep(time.Duration(interval) * time.Millisecond)
+		fmt.Println("null cnt:", nullCnt)
+		fmt.Println("non-null percentage: ", (float64(seq-nullCnt)/float64(seq))*100)
 	}
-
 }
 
 func weakMVC(stateStruct StateValueData, seq int) TerminationValue {
