@@ -52,7 +52,7 @@ func receiveData(conn net.Conn) (ConsensusData, error) {
 		fmt.Println("データ受信エラー:", err)
 		return ConsensusData{}, err
 	}
-	fmt.Println("データ受信完了")
+	//fmt.Println("データ受信完了")
 	return data, nil
 }
 

@@ -44,7 +44,7 @@ func main() {
 						fmt.Println("Key not found")
 					}
 					if response.Value != -1 {
-						fmt.Println("Read value: ", response.Value)
+						//fmt.Println("Read value: ", response.Value)
 					}
 				}
 			} else {
@@ -57,12 +57,13 @@ func main() {
 				switch response := response.(type) {
 				case ResponseToClient:
 					if response.Value == 0 {
-						fmt.Println("Write successful")
+						//fmt.Println("Write successful")
 					} else {
 						fmt.Println("Write unsuccessful")
 					}
 				}
 			}
+			fmt.Println("Command ", i+1, " completed")
 		}
 	}
 
