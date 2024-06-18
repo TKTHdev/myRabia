@@ -24,10 +24,10 @@ type ConsensusData struct {
 }
 
 type CommandData struct {
-	Op        string
-	Timestamp int
-	Seq       int
-	ClientAddr string
+	Op          string
+	Timestamp   int
+	Seq         int
+	ClientAddr  string
 	ReplicaAddr string
 }
 type StateValueData struct {
@@ -79,7 +79,7 @@ type CommandTimestamp struct {
 }
 
 type ResponseToClient struct {
-	Value int
+	Value      int
 	ClientAddr string
 }
 
@@ -89,8 +89,6 @@ var VoteValueDataMapList map[SeqPhase][]VoteValueData
 var ConsensusTerminationMapList map[int][]ConsensusTermination
 var Dictionary map[CommandTimestamp]bool
 var PQ PriorityQueue
-
-
 
 func init() {
 	CommandDataMapList = make(map[int][]CommandData)
@@ -181,36 +179,36 @@ func handleConnection(conn net.Conn) {
 		case Request:
 			PQMutex.Lock()
 			//fmt.Println("Received Request: ", data)
-			
+
 			if data.CommandData.Op[0] == 'R' {
-				value, err:= parseReadCommand(data.CommandData.Op, StateMachine)
-				if err == "notFound"{
-					response :=  ResponseToClient{Value: -1}
+				value, err := parseReadCommand(data.CommandData.Op, StateMachine)
+				if err == "notFound" {
+					response := ResponseToClient{Value: -1}
 					sendData(conn, response)
-				}else{
+				} else {
 					response := ResponseToClient{Value: value}
 					sendData(conn, response)
 				}
-			}else if !data.Redirected {
+			} else if !data.Redirected {
 				data.Redirected = true
 				data.CommandData.ReplicaAddr = ownIP
 				data.CommandData.ClientAddr = conn.RemoteAddr().String()
 				broadCastData(replicaIPs, data)
 				//Wait for termination
-				go func (){
-					for{
+				go func() {
+					for {
 						if len(responseSlice) > 0 {
 							ResponseToClient := responseSlice[0]
-							if ResponseToClient.ClientAddr == data.CommandData.ClientAddr{
+							if ResponseToClient.ClientAddr == data.CommandData.ClientAddr {
 								sendData(conn, ResponseToClient)
 								responseSlice = responseSlice[1:]
-								break;
-							}else{
+								break
+							} else {
 								responseSlice = append(responseSlice, ResponseToClient)
 							}
 						}
 					}
-				}()	
+				}()
 			} else {
 				PQ.Push(&data.CommandData)
 			}

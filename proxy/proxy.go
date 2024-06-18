@@ -3,14 +3,13 @@ package main
 import (
 	"fmt"
 	"net"
-	"sync"
 	"strings"
+	"sync"
 )
 
 var wg sync.WaitGroup
 var listener net.Listener
 var replicaIPs []string
-
 
 func main() {
 	// Set the number of replicas
@@ -126,7 +125,6 @@ func portListToString() string {
 	}
 	return IPListString
 }
-
 
 func removePort(address string) string {
 	// ":"の位置を見つける

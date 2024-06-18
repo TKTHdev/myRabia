@@ -52,6 +52,6 @@ func parseReadCommand(command string, stateMachine map[string]int) (int, string)
 		return value, ""
 	} else {
 		fmt.Println("Invalid command format: ", command)
-		return 0, "invalidFormat"	
+		return 0, "invalidFormat"
 	}
 }

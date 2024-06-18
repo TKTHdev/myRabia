@@ -1,0 +1,53 @@
+Date : 2024-06-17 16:49:15
+Directory : /home/Jamiroq/Documents/GitHub/myRabia
+Total : 20 files,  1124 codes, 114 comments, 214 blanks, all 1452 lines
+
+Languages
++------------------+------------+------------+------------+------------+------------+
+| language         | files      | code       | comment    | blank      | total      |
++------------------+------------+------------+------------+------------+------------+
+| go               |         11 |      1,068 |         94 |        178 |      1,340 |
+| Python           |          1 |         23 |          8 |         12 |         43 |
+| Go Module File   |          3 |         12 |          0 |          8 |         20 |
+| Go Checksum File |          1 |         11 |          0 |          1 |         12 |
+| Shell Script     |          3 |          9 |         12 |         14 |         35 |
+| Markdown         |          1 |          1 |          0 |          1 |          2 |
++------------------+------------+------------+------------+------------+------------+
+
+Directories
++-----------------------------------------------------------------+------------+------------+------------+------------+------------+
+| path                                                            | files      | code       | comment    | blank      | total      |
++-----------------------------------------------------------------+------------+------------+------------+------------+------------+
+| .                                                               |         20 |      1,124 |        114 |        214 |      1,452 |
+| . (Files)                                                       |          4 |         10 |         12 |         15 |         37 |
+| client                                                          |          3 |        221 |          1 |         27 |        249 |
+| proxy                                                           |          2 |        115 |         10 |         19 |        144 |
+| replica                                                         |         11 |        778 |         91 |        153 |      1,022 |
++-----------------------------------------------------------------+------------+------------+------------+------------+------------+
+
+Files
++-----------------------------------------------------------------+------------------+------------+------------+------------+------------+
+| filename                                                        | language         | code       | comment    | blank      | total      |
++-----------------------------------------------------------------+------------------+------------+------------+------------+------------+
+| /home/Jamiroq/Documents/GitHub/myRabia/README.md                | Markdown         |          1 |          0 |          1 |          2 |
+| /home/Jamiroq/Documents/GitHub/myRabia/client/client.go         | go               |        151 |          0 |          9 |        160 |
+| /home/Jamiroq/Documents/GitHub/myRabia/client/go.mod            | Go Module File   |          2 |          0 |          2 |          4 |
+| /home/Jamiroq/Documents/GitHub/myRabia/client/header.go         | go               |         68 |          1 |         16 |         85 |
+| /home/Jamiroq/Documents/GitHub/myRabia/proxy/go.mod             | Go Module File   |          2 |          0 |          2 |          4 |
+| /home/Jamiroq/Documents/GitHub/myRabia/proxy/proxy.go           | go               |        113 |         10 |         17 |        140 |
+| /home/Jamiroq/Documents/GitHub/myRabia/replica/PriorityQueue.go | go               |         22 |          0 |          8 |         30 |
+| /home/Jamiroq/Documents/GitHub/myRabia/replica/RoundOne.go      | go               |         64 |          5 |          7 |         76 |
+| /home/Jamiroq/Documents/GitHub/myRabia/replica/RoundTwo.go      | go               |         93 |          8 |         13 |        114 |
+| /home/Jamiroq/Documents/GitHub/myRabia/replica/command.go       | go               |         52 |          0 |          5 |         57 |
+| /home/Jamiroq/Documents/GitHub/myRabia/replica/compareLog.py    | Python           |         23 |          8 |         12 |         43 |
+| /home/Jamiroq/Documents/GitHub/myRabia/replica/data.go          | go               |        205 |         14 |         36 |        255 |
+| /home/Jamiroq/Documents/GitHub/myRabia/replica/exchangeStage.go | go               |         55 |          5 |          7 |         67 |
+| /home/Jamiroq/Documents/GitHub/myRabia/replica/go.mod           | Go Module File   |          8 |          0 |          4 |         12 |
+| /home/Jamiroq/Documents/GitHub/myRabia/replica/go.sum           | Go Checksum File |         11 |          0 |          1 |         12 |
+| /home/Jamiroq/Documents/GitHub/myRabia/replica/replica.go       | go               |        173 |         44 |         46 |        263 |
+| /home/Jamiroq/Documents/GitHub/myRabia/replica/setup.go         | go               |         72 |          7 |         14 |         93 |
+| /home/Jamiroq/Documents/GitHub/myRabia/runClient.sh             | Shell Script     |          3 |          4 |          5 |         12 |
+| /home/Jamiroq/Documents/GitHub/myRabia/runProxy.sh              | Shell Script     |          3 |          4 |          5 |         12 |
+| /home/Jamiroq/Documents/GitHub/myRabia/runReplica.sh            | Shell Script     |          3 |          4 |          4 |         11 |
+| Total                                                           |                  |      1,124 |        114 |        214 |      1,452 |
++-----------------------------------------------------------------+------------------+------------+------------+------------+------------+

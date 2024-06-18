@@ -8,7 +8,7 @@ import (
 
 var countMutex sync.Mutex
 
-func exchangeStage(command CommandData,  seq int) (int, StateValueData) {
+func exchangeStage(command CommandData, seq int) (int, StateValueData) {
 	conns := setConnectionWithOtherReplicas(replicaIPs)
 	var state int
 	wg := sync.WaitGroup{}

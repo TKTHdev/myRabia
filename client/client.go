@@ -9,7 +9,7 @@ var StateMachine map[string]int = make(map[string]int)
 
 func main() {
 	timestamp := 0
-	IPList := []string{"52.62.115.28","52.65.112.127","52.64.108.149"};
+	IPList := []string{"52.62.115.28", "52.65.112.127", "52.64.108.149"}
 	var choose string
 	var commandNum int
 	fmt.Println("YCSB Workload [A] or [B] or [C] ?: ")
@@ -18,8 +18,8 @@ func main() {
 	fmt.Println("C: 100% Read")
 	fmt.Scan(&choose)
 	fmt.Println("How many commands do you want to run?: ")
-	fmt.Scan(&commandNum)	
-	
+	fmt.Scan(&commandNum)
+
 	if choose == "A" {
 		for i := 0; i < commandNum; i++ {
 			var command string = generateRandomCommand(50)
@@ -33,34 +33,34 @@ func main() {
 			sendData(conn, Request{CommandData: CommandData{Op: command, Timestamp: timestamp, Seq: 0, ClientAddr: conn.LocalAddr().String()}, Redirected: false, Timestamp: 0})
 			if command[0] == 'R' {
 				var data ConsensusData
-				data, err :=receiveData(conn)
+				data, err := receiveData(conn)
 				if err != nil {
 					fmt.Println("Error in receiving data")
 				}
 				response := data.Data
 				switch response := response.(type) {
-					case ResponseToClient:
-						if response.Value == -1 {
-							fmt.Println("Key not found")
-						}
-						if response.Value != -1 {
-							fmt.Println("Read value: ", response.Value)
-						}
+				case ResponseToClient:
+					if response.Value == -1 {
+						fmt.Println("Key not found")
+					}
+					if response.Value != -1 {
+						fmt.Println("Read value: ", response.Value)
+					}
 				}
-			}else{
+			} else {
 				var data ConsensusData
-				data, err :=receiveData(conn)
+				data, err := receiveData(conn)
 				if err != nil {
 					fmt.Println("Error in receiving data")
 				}
 				response := data.Data
 				switch response := response.(type) {
-					case ResponseToClient:
-						if response.Value == 0 {
-							fmt.Println("Write successful")
-						}else{
-							fmt.Println("Write unsuccessful")
-						}
+				case ResponseToClient:
+					if response.Value == 0 {
+						fmt.Println("Write successful")
+					} else {
+						fmt.Println("Write unsuccessful")
+					}
 				}
 			}
 		}
@@ -79,34 +79,34 @@ func main() {
 			sendData(conn, Request{CommandData: CommandData{Op: command, Timestamp: timestamp, Seq: 0, ClientAddr: conn.LocalAddr().String()}, Redirected: false, Timestamp: 0})
 			if command[0] == 'R' {
 				var data ConsensusData
-				data, err :=receiveData(conn)
+				data, err := receiveData(conn)
 				if err != nil {
 					fmt.Println("Error in receiving data")
 				}
 				response := data.Data
 				switch response := response.(type) {
-					case ResponseToClient:
-						if response.Value == -1 {
-							fmt.Println("Key not found")
-						}
-						if response.Value != -1 {
-							fmt.Println("Read value: ", response.Value)
-						}
+				case ResponseToClient:
+					if response.Value == -1 {
+						fmt.Println("Key not found")
+					}
+					if response.Value != -1 {
+						fmt.Println("Read value: ", response.Value)
+					}
 				}
-			}else{
+			} else {
 				var data ConsensusData
-				data, err :=receiveData(conn)
+				data, err := receiveData(conn)
 				if err != nil {
 					fmt.Println("Error in receiving data")
 				}
 				response := data.Data
 				switch response := response.(type) {
-					case ResponseToClient:
-						if response.Value == 0 {
-							fmt.Println("Write successful")
-						}else{
-							fmt.Println("Write unsuccessful")
-						}
+				case ResponseToClient:
+					if response.Value == 0 {
+						fmt.Println("Write successful")
+					} else {
+						fmt.Println("Write unsuccessful")
+					}
 				}
 			}
 		}
@@ -125,34 +125,34 @@ func main() {
 			sendData(conn, Request{CommandData: CommandData{Op: command, Timestamp: timestamp, Seq: 0, ClientAddr: conn.LocalAddr().String()}, Redirected: false, Timestamp: 0})
 			if command[0] == 'R' {
 				var data ConsensusData
-				data, err :=receiveData(conn)
+				data, err := receiveData(conn)
 				if err != nil {
 					fmt.Println("Error in receiving data")
 				}
 				response := data.Data
 				switch response := response.(type) {
-					case ResponseToClient:
-						if response.Value == -1 {
-							fmt.Println("Key not found")
-						}
-						if response.Value != -1 {
-							fmt.Println("Read value: ", response.Value)
-						}
+				case ResponseToClient:
+					if response.Value == -1 {
+						fmt.Println("Key not found")
+					}
+					if response.Value != -1 {
+						fmt.Println("Read value: ", response.Value)
+					}
 				}
-			}else{
+			} else {
 				var data ConsensusData
-				data, err :=receiveData(conn)
+				data, err := receiveData(conn)
 				if err != nil {
 					fmt.Println("Error in receiving data")
 				}
 				response := data.Data
 				switch response := response.(type) {
-					case ResponseToClient:
-						if response.Value == 0 {
-							fmt.Println("Write successful")
-						}else{
-							fmt.Println("Write unsuccessful")
-						}
+				case ResponseToClient:
+					if response.Value == 0 {
+						fmt.Println("Write successful")
+					} else {
+						fmt.Println("Write unsuccessful")
+					}
 				}
 			}
 		}

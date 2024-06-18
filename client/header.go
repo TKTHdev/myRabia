@@ -14,14 +14,12 @@ type ConsensusData struct {
 }
 
 type CommandData struct {
-	Op        string
-	Timestamp int
-	Seq       int
-	ClientAddr string
+	Op          string
+	Timestamp   int
+	Seq         int
+	ClientAddr  string
 	ReplicaAddr string
 }
-
-
 
 type Request struct {
 	CommandData CommandData
@@ -37,7 +35,6 @@ type CommandTimestamp struct {
 type ResponseToClient struct {
 	Value int
 }
-
 
 func init() {
 	gob.Register(Request{})
@@ -76,7 +73,7 @@ func generateRandomCommand(readRatio int) string {
 	if rand.Intn(100) < readRatio {
 		variable := variables[rand.Intn(len(variables))]
 		return fmt.Sprintf("R %s", variable)
-	}else{
+	} else {
 		variable := variables[rand.Intn(len(variables))]
 		operator := operators[rand.Intn(len(operators))]
 		value := rand.Intn(100)

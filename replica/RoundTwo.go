@@ -24,7 +24,7 @@ func roundTwo(vote VoteValueData, seq int, phase int) (int, RoundTwoReturnStruct
 	return terminationFlag, returnStruct
 }
 
-func roundTwoReceive(selfSeq int, nodeNum int, phase int ) (int, int, CommandData) {
+func roundTwoReceive(selfSeq int, nodeNum int, phase int) (int, int, CommandData) {
 	for {
 		VoteValueDataMutex.Lock()
 		var anyCommandReceived CommandData
