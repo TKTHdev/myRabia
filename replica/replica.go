@@ -16,10 +16,11 @@ var ownIP string
 
 var StateMachine map[string]int = make(map[string]int)
 
-var nullCnt int = 0
-var seq int = 0
 
 func main() {
+
+	var nullCnt int = 0
+	var seq int = 0
 
 	//init SM
 
@@ -103,7 +104,7 @@ func main() {
 
 			//Print the size of PQ
 			seq++
-			report()
+			report(nullCnt, seq)
 		}
 
 		consensusValue := weakMVC(stateStruct, seq)
@@ -135,7 +136,7 @@ func main() {
 
 		//Print the size of PQ
 		seq++
-		report()
+		report(nullCnt, seq)
 
 	}
 
@@ -213,6 +214,6 @@ func weakMVC(stateStruct StateValueData, seq int) TerminationValue {
 	}
 }
 
-func report(){
+func report(nullCnt int, seq int){
 	fmt.Println("nullCount: ", nullCnt, "Percentage of non-null consensus: ", (1-float64(nullCnt)/float64(seq))*100, "%")
 }
