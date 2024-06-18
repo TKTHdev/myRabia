@@ -109,7 +109,10 @@ func main() {
 			}
 			if !consensusValue.isNull {
 				parseWriteCommand(consensusValue.CommandData.Op, StateMachine)
+			}else{
+				nullCnt++
 			}
+
 			c.Println("SM in seq", seq, ":", StateMachine)
 
 			fmt.Println("IP: ", ownIP)
@@ -153,6 +156,8 @@ func main() {
 		}
 		if !consensusValue.isNull {
 			parseWriteCommand(consensusValue.CommandData.Op, StateMachine)
+		}else{
+			nullCnt++
 		}
 		c.Println("SM in seq", seq, ":", StateMachine)
 
