@@ -32,7 +32,20 @@ func main() {
 	defer logFile.Close()
 	logger := log.New(logFile, "", log.LstdFlags)
 
+	//Choose the interval
 
+	/*
+		var interval int
+		fmt.Println("Enter the interval: ")
+		fmt.Scan(&interval)
+	*/
+
+	// サーバーに接続し、自身に割り当てられたポート番号を受け取る
+	/*
+		var Operation string
+		fmt.Println("Operation: ")
+		fmt.Scan(&Operation)
+	*/
 
 	//Register to proxy
 	ownIP = RegisterToProxy()
@@ -128,7 +141,20 @@ func main() {
 		}
 
 		//Print the size of PQ
+		PQMutex.Lock()
+		PQMutex.Unlock()
 		seq++
+
+		//delete data to save memory
+
+		/*
+			for _,v:= range PQ {
+				fmt.Print(*v)
+			}
+			fmt.Println()
+		*/
+		//deleteData(seq, 0)
+		//time.Sleep(time.Duration(interval) * time.Millisecond)
 	}
 
 }
