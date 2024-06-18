@@ -49,6 +49,7 @@ func main() {
 
 	//Register to proxy
 	ownIP = RegisterToProxy()
+	
 
 	// プロキシからの接続を待ち受ける
 	// 他のレプリカのポート番号を取得
@@ -83,8 +84,11 @@ func main() {
 		terminationFlag, stateStruct = exchangeStage(*commandPointer, seq)
 		if terminationFlag == 1 {
 			consensusValue := TerminationValue{isNull: false, CommandData: stateStruct.CommandData, phase: 0, seq: seq}
-			//color.Green("reached consensus: ", consensusValue, "\n")
+			logger.Println("consensusValue: ", consensusValue)
+			color.Green("reached consensus: ", consensusValue, "\n")
 
+
+			logger.Println("consensusValue: ", consensusValue)
 			if !consensusValue.isNull && consensusValue.CommandData.Op == "" {
 				c := color.New(color.FgHiRed)
 				c.Println("This should not happen!")
@@ -102,18 +106,35 @@ func main() {
 			}
 			c.Println("SM in seq", seq, ":", StateMachine)
 
+			fmt.Println("IP: ", ownIP)
 			IP2 := strings.Split(consensusValue.CommandData.ReplicaAddr, ":")[0]
+			fmt.Println("IP2", IP2)	
 			if ownIP == IP2 {
+				fmt.Println("Sending response to client")
 				terminationChannelMutex.Lock()
 				responseSlice = append(responseSlice, ResponseToClient{Value: 0, ClientAddr: consensusValue.CommandData.ClientAddr})
 				terminationChannelMutex.Unlock()
+				fmt.Println("Inserted response to slice")
 			}
 
 			//Print the size of PQ
+			PQMutex.Lock()
+			fmt.Println("PQ size: ", PQ.Len())
+			PQMutex.Unlock()
+
+
+
+
+
+
+
 			seq++
+			continue
 		}
 
 		consensusValue := weakMVC(stateStruct, seq)
+
+
 
 		logger.Println("consensusValue: ", consensusValue)
 		if !consensusValue.isNull && consensusValue.CommandData.Op == "" {
@@ -133,17 +154,23 @@ func main() {
 		}
 		c.Println("SM in seq", seq, ":", StateMachine)
 
+		fmt.Println("IP: ", ownIP)
 		IP2 := strings.Split(consensusValue.CommandData.ReplicaAddr, ":")[0]
+		fmt.Println("IP2", IP2)	
 		if ownIP == IP2 {
+			fmt.Println("Sending response to client")
 			terminationChannelMutex.Lock()
 			responseSlice = append(responseSlice, ResponseToClient{Value: 0, ClientAddr: consensusValue.CommandData.ClientAddr})
 			terminationChannelMutex.Unlock()
+			fmt.Println("Inserted response to slice")
 		}
 
 		//Print the size of PQ
 		PQMutex.Lock()
+		fmt.Println("PQ size: ", PQ.Len())
 		PQMutex.Unlock()
 		seq++
+	
 
 		//delete data to save memory
 
@@ -166,6 +193,7 @@ func weakMVC(stateStruct StateValueData, seq int) TerminationValue {
 	//c := color.New(color.FgGreen)
 
 	//Round 1
+	fmt.Println("State struct: ", stateStruct)
 	var state StateValueData = StateValueData{Value: stateStruct.Value, Seq: seq, Phase: phase, CommandData: stateStruct.CommandData}
 	terminationFlag, voteValue := roundOne(state, seq, phase)
 	if terminationFlag == 1 {
@@ -182,8 +210,9 @@ func weakMVC(stateStruct StateValueData, seq int) TerminationValue {
 	}
 
 	//Round 2
+	fmt.Println("voteValue: ", voteValue)
 	var vote VoteValueData = VoteValueData{Value: voteValue.Value, Seq: seq, Phase: phase, CommandData: voteValue.CommandData}
-	terminationFlag, returnStruct := roundTwo(vote, seq, phase)
+	terminationFlag, returnStruct := roundTwo(vote,  seq, phase)
 	//fmt.Println("returnStruct: ", returnStruct)
 	if terminationFlag == 1 {
 		if returnStruct.ConsensusValue == 0 {
@@ -213,6 +242,7 @@ func weakMVC(stateStruct StateValueData, seq int) TerminationValue {
 				return terminationValue
 			}
 		}
+		fmt.Println("voteValue: ", voteValue)
 		var vote VoteValueData = VoteValueData{Value: voteValue.Value, Seq: seq, Phase: phase, CommandData: voteValue.CommandData}
 		terminationFlag, returnStruct = roundTwo(vote, seq, phase)
 		//fmt.Println("returnStruct: ", returnStruct)
