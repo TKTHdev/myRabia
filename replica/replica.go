@@ -16,6 +16,9 @@ var ownIP string
 
 var StateMachine map[string]int = make(map[string]int)
 
+var nullCnt int = 0
+var seq int = 0
+
 func main() {
 
 	//init SM
@@ -32,20 +35,6 @@ func main() {
 	defer logFile.Close()
 	logger := log.New(logFile, "", log.LstdFlags)
 
-	//Choose the interval
-
-	/*
-		var interval int
-		fmt.Println("Enter the interval: ")
-		fmt.Scan(&interval)
-	*/
-
-	// サーバーに接続し、自身に割り当てられたポート番号を受け取る
-	/*
-		var Operation string
-		fmt.Println("Operation: ")
-		fmt.Scan(&Operation)
-	*/
 
 	//Register to proxy
 	ownIP = RegisterToProxy()
@@ -59,7 +48,6 @@ func main() {
 	time.Sleep(250 * time.Millisecond)
 
 	//ここで合意アルゴリズムを実行
-	var seq int = 0
 	for {
 		PQMutex.Lock()
 		if PQ.Len() == 0 {
@@ -100,6 +88,10 @@ func main() {
 			if !consensusValue.isNull {
 				parseWriteCommand(consensusValue.CommandData.Op, StateMachine)
 			}
+
+			if consensusValue.isNull {
+				nullCnt++
+			} 
 			c.Println("SM in seq", seq, ":", StateMachine)
 
 			IP2 := strings.Split(consensusValue.CommandData.ReplicaAddr, ":")[0]
@@ -111,6 +103,7 @@ func main() {
 
 			//Print the size of PQ
 			seq++
+			report()
 		}
 
 		consensusValue := weakMVC(stateStruct, seq)
@@ -141,20 +134,9 @@ func main() {
 		}
 
 		//Print the size of PQ
-		PQMutex.Lock()
-		PQMutex.Unlock()
 		seq++
+		report()
 
-		//delete data to save memory
-
-		/*
-			for _,v:= range PQ {
-				fmt.Print(*v)
-			}
-			fmt.Println()
-		*/
-		//deleteData(seq, 0)
-		//time.Sleep(time.Duration(interval) * time.Millisecond)
 	}
 
 }
@@ -229,4 +211,8 @@ func weakMVC(stateStruct StateValueData, seq int) TerminationValue {
 		}
 		deleteData(seq, phase)
 	}
+}
+
+func report(){
+	fmt.Println("nullCount: ", nullCnt, "Percentage of non-null consensus: ", (1-float64(nullCnt)/float64(seq))*100, "%")
 }
