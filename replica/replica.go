@@ -16,11 +16,7 @@ var ownIP string
 
 var StateMachine map[string]int = make(map[string]int)
 
-
 func main() {
-
-	var nullCnt int = 0
-	var seq int = 0
 
 	//init SM
 
@@ -37,6 +33,7 @@ func main() {
 	logger := log.New(logFile, "", log.LstdFlags)
 
 
+
 	//Register to proxy
 	ownIP = RegisterToProxy()
 
@@ -49,6 +46,7 @@ func main() {
 	time.Sleep(250 * time.Millisecond)
 
 	//ここで合意アルゴリズムを実行
+	var seq int = 0
 	for {
 		PQMutex.Lock()
 		if PQ.Len() == 0 {
@@ -89,10 +87,6 @@ func main() {
 			if !consensusValue.isNull {
 				parseWriteCommand(consensusValue.CommandData.Op, StateMachine)
 			}
-
-			if consensusValue.isNull {
-				nullCnt++
-			} 
 			c.Println("SM in seq", seq, ":", StateMachine)
 
 			IP2 := strings.Split(consensusValue.CommandData.ReplicaAddr, ":")[0]
@@ -104,7 +98,6 @@ func main() {
 
 			//Print the size of PQ
 			seq++
-			report(nullCnt, seq)
 		}
 
 		consensusValue := weakMVC(stateStruct, seq)
@@ -136,8 +129,6 @@ func main() {
 
 		//Print the size of PQ
 		seq++
-		report(nullCnt, seq)
-
 	}
 
 }
@@ -212,8 +203,4 @@ func weakMVC(stateStruct StateValueData, seq int) TerminationValue {
 		}
 		deleteData(seq, phase)
 	}
-}
-
-func report(nullCnt int, seq int){
-	fmt.Println("nullCount: ", nullCnt, "Percentage of non-null consensus: ", (1-float64(nullCnt)/float64(seq))*100, "%")
 }
