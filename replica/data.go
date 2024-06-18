@@ -197,6 +197,7 @@ func handleConnection(conn net.Conn) {
 				//Wait for termination
 				go func() {
 					for {
+						terminationChannelMutex.Lock()	
 						if len(responseSlice) > 0 {
 							ResponseToClient := responseSlice[0]
 							if ResponseToClient.ClientAddr == data.CommandData.ClientAddr {
@@ -207,6 +208,7 @@ func handleConnection(conn net.Conn) {
 								responseSlice = append(responseSlice, ResponseToClient)
 							}
 						}
+						terminationChannelMutex.Unlock()
 					}
 				}()
 			} else {

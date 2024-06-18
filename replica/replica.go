@@ -46,7 +46,7 @@ func main() {
 	/*
 		var Operation string
 		fmt.Println("Operation: ")
-		fmt.Scan(&Operation)
+		fmt.Scan(&Operation)/
 	*/
 
 	//Register to proxy
@@ -93,6 +93,7 @@ func main() {
 				// c := color.New(color.FgYellow)
 				// c.Println("Adding to dictionary: ", consensusValue.CommandData)
 				PQ.Push(commandPointer)
+				
 				Dictionary[CommandTimestamp{Command: consensusValue.CommandData.Op, Timestamp: consensusValue.CommandData.Timestamp}] = true
 				PQMutex.Unlock()
 			}
