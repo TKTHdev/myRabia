@@ -210,7 +210,6 @@ func handleConnection(conn net.Conn) {
 							}
 						}
 						terminationChannelMutex.Unlock()
-						fmt.Println("DOne")
 					}
 				}()
 			} else {
