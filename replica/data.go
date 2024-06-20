@@ -202,7 +202,7 @@ func handleConnection(conn net.Conn) {
 							fmt.Println("here")
 							ResponseToClient := responseSlice[0]
 							if ResponseToClient.ClientAddr == data.CommandData.ClientAddr {
-								sendData(conn, ResponseToClient)
+								go sendData(conn, ResponseToClient)
 								responseSlice = responseSlice[1:]
 								break
 							} else {
