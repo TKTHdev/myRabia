@@ -205,6 +205,7 @@ func handleConnection(conn net.Conn) {
 								go sendData(conn, ResponseToClient)
 								fmt.Println("Sentttt")
 								responseSlice = responseSlice[1:]
+								terminationChannelMutex.Unlock()
 								break
 							} else {
 								responseSlice = append(responseSlice, ResponseToClient)
