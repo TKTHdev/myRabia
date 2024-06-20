@@ -199,11 +199,9 @@ func handleConnection(conn net.Conn) {
 					for {
 						terminationChannelMutex.Lock()	
 						if len(responseSlice) > 0 {
-							fmt.Println("here")
 							ResponseToClient := responseSlice[0]
 							if ResponseToClient.ClientAddr == data.CommandData.ClientAddr {
 								go sendData(conn, ResponseToClient)
-								fmt.Println("Sentttt")
 								responseSlice = responseSlice[1:]
 								terminationChannelMutex.Unlock()
 								break
