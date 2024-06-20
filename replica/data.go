@@ -208,9 +208,8 @@ func handleConnection(conn net.Conn) {
 							} else {
 								responseSlice = append(responseSlice, ResponseToClient)
 							}
-						}else{
-							terminationChannelMutex.Unlock()
 						}
+						terminationChannelMutex.Unlock()
 					}
 				}()
 			} else {
