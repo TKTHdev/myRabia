@@ -206,12 +206,14 @@ func removeIPs(replicaIPMap map[string][]string, IP1 string , IP2 string) map[st
 
 
 func removeIP(IPs []string, IP string) []string {
-	for i, v := range IPs {
-		if v == IP {
-			return append(IPs[:i], IPs[i+1:]...)
+	//remove IP from IPs
+	var newIPs []string
+	for _, ip := range IPs {
+		if ip != IP {
+			newIPs = append(newIPs, ip)
 		}
 	}
-	return IPs
+	return newIPs
 }
 
 // Convert the list of port numbers to a string
