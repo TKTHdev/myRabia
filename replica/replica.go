@@ -64,6 +64,25 @@ func main() {
 	for {
 		PQMutex.Lock()
 		if PQ.Len() == 0 {
+			if ConsensusTerminationMapList[seq] != nil {
+				ConsensusTerminationMutex.Lock()
+				terminationValue := ConsensusTerminationMapList[seq][0]
+				ConsensusTerminationMutex.Unlock()
+				consensusValue := TerminationValue{isNull: terminationValue.Value == 0, CommandData: terminationValue.CommandData, phase: 0, seq: seq}
+				notifyTermination(setConnectionWithOtherReplicas(replicaIPs),seq, consensusValue)
+				color.Green("reached consensus: ", consensusValue, "\n")
+				if !consensusValue.isNull && consensusValue.CommandData.Op == "" {
+					 c := color.New(color.FgHiRed)
+					 c.Println("This should not happen!")
+				}
+				if !consensusValue.isNull {
+					parseWriteCommand(consensusValue.CommandData.Op, StateMachine)
+				} else {
+					nullCnt++
+				}
+				c.Println("SM in seq", seq, ":", StateMachine)
+				seq++
+			}
 			PQMutex.Unlock()
 			continue
 		}
@@ -262,4 +281,14 @@ func notifyTermination(conns []net.Conn,  seq int, termination TerminationValue)
 			}
 		}(conn)
 	}
+}
+
+func checkTermination(seq int) bool {
+	ConsensusTerminationMutex.Lock()
+	if len(ConsensusTerminationMapList[seq]) != 0 {
+		ConsensusTerminationMutex.Unlock()
+		return true
+	}
+	ConsensusTerminationMutex.Unlock()
+	return false
 }
