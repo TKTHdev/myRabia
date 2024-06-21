@@ -177,7 +177,6 @@ func handleConnection(conn net.Conn) {
 			ConsensusTerminationMutex.Unlock()
 
 		case Request:
-			PQMutex.Lock()
 			//fmt.Println("Received Request: ", data)
 
 			if data.CommandData.Op[0] == 'R' {
@@ -213,10 +212,11 @@ func handleConnection(conn net.Conn) {
 					}
 				}()
 			} else {
+				PQMutex.Lock()
 				fmt.Println("received redirected request: " + data.CommandData.Op)
 				PQ.Push(&data.CommandData)
+				PQMutex.Unlock()
 			}
-			PQMutex.Unlock()
 
 		default:
 			fmt.Println("未知のデータ型です:", data)
