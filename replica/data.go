@@ -213,6 +213,7 @@ func handleConnection(conn net.Conn) {
 					}
 				}()
 			} else {
+				fmt.Println("received redirected request: " + data.CommandData.Op)
 				PQ.Push(&data.CommandData)
 			}
 			PQMutex.Unlock()
