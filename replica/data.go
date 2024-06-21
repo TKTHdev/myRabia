@@ -223,6 +223,9 @@ func handleConnection(conn net.Conn) {
 	}
 }
 
+
+
+
 func broadCastData(IPLists []string, data Data) {
 	conns := setConnectionWithOtherReplicas(IPLists)
 	for _, conn := range conns {
