@@ -129,7 +129,7 @@ func sendPortNumListToReplicas() {
 			if err != nil {
 				return
 			}
-			fmt.Printf("Port number list sent to replica %d\n", net.IPv4len)
+			fmt.Printf("Port number list sent to replica %s\n", IP)
 			wg.Done()
 		}(IP)
 	}
@@ -159,10 +159,10 @@ func sendPortNumListToReplicasWithDisconnection(num int) {
 	fmt.Println("replicaIPMap: ", replicaIPMap)
 
 	//send port number list to replicas
-	for IP, IPs := range replicaIPMap {
+	for IP, _ := range replicaIPMap {
 		wg.Add(1)
 		fmt.Println("IP: ", IP)
-		go func(IP string, IPs []string) {
+		go func(IP string) {
 			conn, err := net.Dial("tcp", IP+":8080")
 			if err != nil {
 				fmt.Println("接続エラー:", err)
@@ -181,8 +181,9 @@ func sendPortNumListToReplicasWithDisconnection(num int) {
 			}
 			fmt.Printf("Port number list sent to replica %d\n", net.IPv4len)
 			wg.Done()
-		}(IP, IPs)
+		}(IP)
 	}
+	wg.Wait()
 }
 
 
