@@ -5,6 +5,8 @@ import (
 	"net"
 	"strings"
 	"sync"
+	"math/rand"
+
 )
 
 var wg sync.WaitGroup
@@ -36,8 +38,28 @@ func main() {
 	// Accept connections from n replicas
 	acceptNConnections(listener, n)
 
+
+	fmt.Println("Internet disconnection test? [Y]/[N]")
+	var disconnectionTest string
+	_, err = fmt.Scan(&disconnectionTest)
+	if err != nil {
+		return
+	}
+	if disconnectionTest == "Y" {
+		fmt.Println("How many disconnections do you want to test?")
+		var num int
+		_, err = fmt.Scan(&num)
+		if err != nil {
+			return
+		}
+		sendPortNumListToReplicasWithDisconnection(num)		
+	}else{
+		sendPortNumListToReplicas()
+	}
 	// Send the list of port numbers to the replicas
-	sendPortNumListToReplicas()
+
+	
+
 }
 
 func initServer() net.Listener {
@@ -112,6 +134,80 @@ func sendPortNumListToReplicas() {
 		}(IP)
 	}
 	wg.Wait()
+}
+
+func sendPortNumListToReplicasWithDisconnection(num int) {
+	//make list of replicas for each replicas
+	var replicaIPMap = make(map[string][]string)
+	for _, IP := range replicaIPs {
+		replicaIPMap[IP] = replicaIPs
+	}	
+	//choose random replicas to disconnect
+	for i := 0; i < num; i++ {
+		var IP1, IP2 string
+		for{
+			IP1 = replicaIPs[rand.Intn(len(replicaIPs))]
+			IP2 = replicaIPs[rand.Intn(len(replicaIPs))]
+			if IP1 != IP2 {
+				break
+			}
+		}
+		//disconnect IP1 and IP2
+		replicaIPMap = removeIPs(replicaIPMap, IP1, IP2)
+	}
+
+	//send port number list to replicas
+	for IP, IPs := range replicaIPMap {
+		wg.Add(1)
+		go func(IP string, IPs []string) {
+			conn, err := net.Dial("tcp", IP+":8080")
+			if err != nil {
+				fmt.Println("接続エラー:", err)
+				return
+			}
+			defer func(conn net.Conn) {
+				err := conn.Close()
+				if err != nil {
+					fmt.Println("クローズエラー:", err)
+				}
+			}(conn)
+			fmt.Println("Sending port number list to replica")
+			_, err = fmt.Fprintf(conn, portListToString()+"\n")
+			if err != nil {
+				return
+			}
+			fmt.Printf("Port number list sent to replica %d\n", net.IPv4len)
+			wg.Done()
+		}(IP, IPs)
+	}
+}
+
+
+func removeIPs(replicaIPMap map[string][]string, IP1 string , IP2 string) map[string][]string {
+	for _, IP := range replicaIPMap[IP1] {
+		if IP == IP2 {
+			replicaIPMap[IP1] = removeIP(replicaIPMap[IP1], IP)
+			break
+		}
+	}
+
+	for _, IP := range replicaIPMap[IP2] {
+		if IP == IP1 {
+			replicaIPMap[IP2] = removeIP(replicaIPMap[IP2], IP)
+			break
+		}
+	}
+	return replicaIPMap
+}
+
+
+func removeIP(IPs []string, IP string) []string {
+	for i, v := range IPs {
+		if v == IP {
+			return append(IPs[:i], IPs[i+1:]...)
+		}
+	}
+	return IPs
 }
 
 // Convert the list of port numbers to a string
