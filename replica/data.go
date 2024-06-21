@@ -242,9 +242,9 @@ func handleConnection(conn net.Conn) {
 func broadCastData(IPLists []string, data Data) {
 	//remove self IP from IPLists
 	IPs := IPLists
-	for i, ip := range IPs {
-		if ip == stringIP{
-			IPs = append(IPs[:i], IPs[i+1:]...)
+	for _, ip := range IPs {
+		if ip != stringIP{
+			IPs = append(IPs , ip)
 		}
 	}
 	fmt.Println("broadcasting to replicas: ", IPs)
