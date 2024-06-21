@@ -60,7 +60,6 @@ func roundTwoReceive(selfSeq int, nodeNum int, phase int) (int, int, CommandData
 			for v, c := range cnt {
 				if c >= nodeNum/2+1 && v.Value != -1 {
 					VoteValueDataMutex.Unlock()
-					notifyTermination(setConnectionWithOtherReplicas(replicaIPs), &sync.WaitGroup{}, selfSeq, v)
 					return 1, v.Value, anyCommandReceived
 				}
 			}
@@ -75,6 +74,7 @@ func roundTwoReceive(selfSeq int, nodeNum int, phase int) (int, int, CommandData
 			//fmt.Println("coin flip: ",stateCoinFlip)
 			c := color.New(color.FgHiRed)
 			c.Println("coin flip: ", stateCoinFlip)
+
 			VoteValueDataMutex.Unlock()
 			return 0, stateCoinFlip, anyCommandReceived
 		}
@@ -93,16 +93,7 @@ func roundTwoSend(conns []net.Conn, vote VoteValueData, wg *sync.WaitGroup) {
 	}
 }
 
-func notifyTermination(conns []net.Conn, wg *sync.WaitGroup, seq int, termination VoteValueData) {
-	for _, conn := range conns {
-		wg.Add(1)
-		go func(conn net.Conn) {
 
-			defer wg.Done()
-			sendData(conn, ConsensusTermination{Seq: seq, Value: termination.Value, CommandData: termination.CommandData})
-		}(conn)
-	}
-}
 
 func CommonCoinFlip(seq, phase int) int {
 	seed := int64(seq*1000 + phase)
