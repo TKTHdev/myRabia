@@ -12,13 +12,14 @@ func setConnectionWithOtherReplicas(IPLists []string) []net.Conn {
 	var conns []net.Conn
 
 	for _, IP := range IPLists {
-		conn, err := net.Dial("tcp", IP+":8080")
-		if err != nil {
-			fmt.Printf("接続エラー  %d: %v\n", conn, err)
-			continue
+		if IP[0]!= 'N' {
+			conn, err := net.Dial("tcp", IP+":8080")
+			if err != nil {
+				fmt.Printf("接続エラー  %d: %v\n", conn, err)
+				continue
+			}
+			conns = append(conns, conn)
 		}
-
-		conns = append(conns, conn)
 	}
 	//fmt.Println(conns)
 	return conns

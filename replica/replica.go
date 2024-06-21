@@ -116,10 +116,7 @@ func main() {
 				// fmt.Println("Inserted response to slice")
 			}
 
-			//Print the size of PQ
-			PQMutex.Lock()
-			// fmt.Println("PQ size: ", PQ.Len())
-			PQMutex.Unlock()
+			
 
 			seq++
 			// fmt.Println("null cnt:", nullCnt)

@@ -211,6 +211,8 @@ func removeIP(IPs []string, IP string) []string {
 	for _, ip := range IPs {
 		if ip != IP {
 			newIPs = append(newIPs, ip)
+		}else{
+			newIPs = append(newIPs, "N"+ip)
 		}
 	}
 	return newIPs
