@@ -18,6 +18,8 @@ var terminationChannelMutex sync.Mutex
 
 var responseSlice []ResponseToClient
 
+var stringIP string
+
 type Data interface{}
 
 type ConsensusData struct {
@@ -110,6 +112,11 @@ func init() {
 	PQ := make(PriorityQueue, 0)
 	heap.Init(&PQ)
 
+	selfIP, err := pubip.Get()
+	if err != nil {
+		fmt.Println("Error getting own IP: ", err)
+	}
+	stringIP = selfIP.String()
 }
 
 func listenAndAccept() {
@@ -194,6 +201,9 @@ func handleConnection(conn net.Conn) {
 				data.Redirected = true
 				data.CommandData.ReplicaAddr = ownIP
 				data.CommandData.ClientAddr = conn.RemoteAddr().String()
+				PQMutex.Lock()
+				PQ.Push(&data.CommandData)
+				PQMutex.Unlock()
 				broadCastData(replicaIPs, data)
 				//Wait for termination
 				go func() {
@@ -230,7 +240,14 @@ func handleConnection(conn net.Conn) {
 
 
 func broadCastData(IPLists []string, data Data) {
-	conns := setConnectionWithOtherReplicas(IPLists)
+	//remove self IP from IPLists
+	IPs := IPLists
+	for i, ip := range IPs {
+		if ip == stringIP{
+			IPs = append(IPs[:i], IPs[i+1:]...)
+		}
+	}
+	conns := setConnectionWithOtherReplicas(IPs)
 	fmt.Println("broadcast to replicas: ", conns)
 	for _, conn := range conns {
 		sendData(conn, data)
