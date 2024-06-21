@@ -267,6 +267,8 @@ func weakMVC(stateStruct StateValueData, seq int) TerminationValue {
 			}
 		}
 		deleteData(seq, phase)
+		c := color.New(color.FgHiRed)
+		c.Println("No consensus reached in phase: ", phase)
 	}
 }
 

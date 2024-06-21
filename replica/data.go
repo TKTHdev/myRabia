@@ -133,7 +133,6 @@ func listenAndAccept() {
 
 func sendData(conn net.Conn, data Data) {
 	encoder := gob.NewEncoder(conn)
-	fmt.Println("Sending data: ", data, " to ", conn.RemoteAddr())
 	err := encoder.Encode(ConsensusData{Data: data})
 	if err != nil {
 		fmt.Println("データ送信エラー:", err)
