@@ -241,7 +241,7 @@ func handleConnection(conn net.Conn) {
 
 func broadCastData(IPLists []string, data Data) {
 	//remove self IP from IPLists
-	IPs := IPLists
+	var IPs []string
 	for _, ip := range IPLists {
 		if ip != stringIP{
 			IPs = append(IPs , ip)
