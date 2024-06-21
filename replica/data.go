@@ -247,6 +247,7 @@ func broadCastData(IPLists []string, data Data) {
 			IPs = append(IPs[:i], IPs[i+1:]...)
 		}
 	}
+	fmt.Println("broadcasting to replicas: ", IPs)
 	conns := setConnectionWithOtherReplicas(IPs)
 	fmt.Println("broadcast to replicas: ", conns)
 	for _, conn := range conns {
