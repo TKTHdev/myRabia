@@ -5,6 +5,8 @@ import (
 	//"fmt"
 	"math/rand"
 	"sync"
+
+	"github.com/fatih/color"
 )
 
 var RoundTwoMutex sync.Mutex
@@ -71,6 +73,8 @@ func roundTwoReceive(selfSeq int, nodeNum int, phase int) (int, int, CommandData
 			}
 			stateCoinFlip := CommonCoinFlip(selfSeq, phase)
 			//fmt.Println("coin flip: ",stateCoinFlip)
+			c := color.New(color.FgHiRed)
+			c.Println("coin flip: ", stateCoinFlip)
 			VoteValueDataMutex.Unlock()
 			return 0, stateCoinFlip, anyCommandReceived
 		}
