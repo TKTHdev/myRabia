@@ -142,10 +142,11 @@ func main() {
 				terminationChannelMutex.Unlock()
 				// fmt.Println("Inserted response to slice")
 			}
-
 			PQMutex.Lock()
 			fmt.Println("PQ len: ", PQ.Len())
 			PQMutex.Unlock()
+
+		
 
 			seq++
 			// fmt.Println("null cnt:", nullCnt)
@@ -184,7 +185,9 @@ func main() {
 		}
 
 		c.Println("SM in seq", seq, ":", StateMachine)
-
+		PQMutex.Lock()
+		fmt.Println("PQ len: ", PQ.Len())
+		PQMutex.Unlock()
 		seq++
 		// fmt.Println("null cnt:", nullCnt)
 		// fmt.Println("non-null percentage: ", (float64(seq-nullCnt)/float64(seq))*100)
