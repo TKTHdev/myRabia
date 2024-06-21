@@ -64,8 +64,8 @@ func main() {
 	for {
 		PQMutex.Lock()
 		if PQ.Len() == 0 {
+			ConsensusTerminationMutex.Lock()
 			if ConsensusTerminationMapList[seq] != nil {
-				ConsensusTerminationMutex.Lock()
 				terminationValue := ConsensusTerminationMapList[seq][0]
 				ConsensusTerminationMutex.Unlock()
 				consensusValue := TerminationValue{isNull: terminationValue.Value == 0, CommandData: terminationValue.CommandData, phase: 0, seq: seq}
@@ -83,6 +83,7 @@ func main() {
 				c.Println("SM in seq", seq, ":", StateMachine)
 				seq++
 			}
+			ConsensusTerminationMutex.Unlock()
 			PQMutex.Unlock()
 			continue
 		}
