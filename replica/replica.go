@@ -70,7 +70,7 @@ func main() {
 		commandPointer := heap.Pop(&PQ).(*CommandData)
 		if Dictionary[CommandTimestamp{Command: commandPointer.Op, Timestamp: commandPointer.Timestamp}] {
 			PQMutex.Unlock()
-			// fmt.Println("Command already reached consensus: ", *commandPointer)
+			fmt.Println("Command already reached consensus: ", *commandPointer)
 			delete(Dictionary, CommandTimestamp{Command: commandPointer.Op, Timestamp: commandPointer.Timestamp})
 			continue
 		}
@@ -82,7 +82,7 @@ func main() {
 		terminationFlag, stateStruct = exchangeStage(*commandPointer, seq)
 		if terminationFlag == 1 {
 			consensusValue := TerminationValue{isNull: false, CommandData: stateStruct.CommandData, phase: 0, seq: seq}
-			// color.Green("reached consensus: ", consensusValue, "\n")
+			 color.Green("reached consensus: ", consensusValue, "\n")
 
 			if !consensusValue.isNull && consensusValue.CommandData.Op == "" {
 				// c := color.New(color.FgHiRed)
@@ -103,7 +103,7 @@ func main() {
 				nullCnt++
 			}
 
-			// c.Println("SM in seq", seq, ":", StateMachine)
+			c.Println("SM in seq", seq, ":", StateMachine)
 
 			// fmt.Println("IP: ", ownIP)
 			IP2 := strings.Split(consensusValue.CommandData.ReplicaAddr, ":")[0]
@@ -175,7 +175,7 @@ func weakMVC(stateStruct StateValueData, seq int) TerminationValue {
 	//c := color.New(color.FgGreen)
 
 	//Round 1
-	// fmt.Println("State struct: ", stateStruct)
+	 fmt.Println("State struct: ", stateStruct)
 	var state StateValueData = StateValueData{Value: stateStruct.Value, Seq: seq, Phase: phase, CommandData: stateStruct.CommandData}
 	terminationFlag, voteValue := roundOne(state, seq, phase)
 	if terminationFlag == 1 {
@@ -192,18 +192,19 @@ func weakMVC(stateStruct StateValueData, seq int) TerminationValue {
 	}
 
 	//Round 2
-	// fmt.Println("voteValue: ", voteValue)
+	 fmt.Println("voteValue: ", voteValue)
 	var vote VoteValueData = VoteValueData{Value: voteValue.Value, Seq: seq, Phase: phase, CommandData: voteValue.CommandData}
 	terminationFlag, returnStruct := roundTwo(vote, seq, phase)
 	//fmt.Println("returnStruct: ", returnStruct)
 	if terminationFlag == 1 {
+		c := color.New(color.FgGreen)
 		if returnStruct.ConsensusValue == 0 {
 			terminationValue := TerminationValue{isNull: true, CommandData: returnStruct.CommandData, phase: phase, seq: seq}
-			//c.Println("reached consensus: ", terminationValue)
+			c.Println("reached consensus: ", terminationValue)
 			return terminationValue
 		} else {
 			terminationValue := TerminationValue{isNull: false, CommandData: returnStruct.CommandData, phase: phase, seq: seq}
-			//c.Println("reached consensus: ", terminationValue)
+			c.Println("reached consensus: ", terminationValue)
 			return terminationValue
 		}
 	}
@@ -214,28 +215,30 @@ func weakMVC(stateStruct StateValueData, seq int) TerminationValue {
 		state = StateValueData{Value: returnStruct.ConsensusValue, Seq: seq, Phase: phase, CommandData: returnStruct.CommandData}
 		terminationFlag, voteValue = roundOne(state, seq, phase)
 		if terminationFlag == 1 {
+			c := color.New(color.FgGreen)
 			if voteValue.Value == 0 {
 				terminationValue := TerminationValue{isNull: true, CommandData: voteValue.CommandData, phase: phase, seq: seq}
-				//c.Println("reached consensus: ", terminationValue)
+				c.Println("reached consensus: ", terminationValue)
 				return terminationValue
 			} else {
 				terminationValue := TerminationValue{isNull: false, CommandData: voteValue.CommandData, phase: phase, seq: seq}
-				//c.Println("reached consensus: ", terminationValue)
+				c.Println("reached consensus: ", terminationValue)
 				return terminationValue
 			}
 		}
-		// fmt.Println("voteValue: ", voteValue)
+		 fmt.Println("voteValue: ", voteValue)
 		var vote VoteValueData = VoteValueData{Value: voteValue.Value, Seq: seq, Phase: phase, CommandData: voteValue.CommandData}
 		terminationFlag, returnStruct = roundTwo(vote, seq, phase)
-		//fmt.Println("returnStruct: ", returnStruct)
+		fmt.Println("returnStruct: ", returnStruct)
 		if terminationFlag == 1 {
+			c := color.New(color.FgGreen)
 			if returnStruct.ConsensusValue == 0 {
 				terminationValue := TerminationValue{isNull: true, CommandData: returnStruct.CommandData, phase: phase, seq: seq}
-				//c.Println("reached consensus: ", terminationValue)
+				c.Println("reached consensus: ", terminationValue)
 				return terminationValue
 			} else {
 				terminationValue := TerminationValue{isNull: false, CommandData: returnStruct.CommandData, phase: phase, seq: seq}
-				//c.Println("reached consensus: ", terminationValue)
+				c.Println("reached consensus: ", terminationValue)
 				return terminationValue
 			}
 		}
