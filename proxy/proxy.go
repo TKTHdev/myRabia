@@ -156,6 +156,8 @@ func sendPortNumListToReplicasWithDisconnection(num int) {
 		replicaIPMap = removeIPs(replicaIPMap, IP1, IP2)
 	}
 
+	fmt.Println("replicaIPMap: ", replicaIPMap)
+
 	//send port number list to replicas
 	for IP, IPs := range replicaIPMap {
 		wg.Add(1)
