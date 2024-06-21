@@ -81,8 +81,14 @@ func main() {
 		commandPointer.Seq = seq
 		terminationFlag, stateStruct = exchangeStage(*commandPointer, seq)
 		if terminationFlag == 1 {
-			consensusValue := TerminationValue{isNull: false, CommandData: stateStruct.CommandData, phase: 0, seq: seq}
-			notifyTermination(setConnectionWithOtherReplicas(replicaIPs),seq, consensusValue)
+			var consensusValue TerminationValue
+			if stateStruct.Value == 0 {
+				consensusValue = TerminationValue{isNull: true, CommandData: stateStruct.CommandData, phase: 0, seq: seq}
+				notifyTermination(setConnectionWithOtherReplicas(replicaIPs),seq, consensusValue)
+			}else{
+				consensusValue = TerminationValue{isNull: false, CommandData: stateStruct.CommandData, phase: 0, seq: seq}
+				notifyTermination(setConnectionWithOtherReplicas(replicaIPs),seq, consensusValue)
+			}
 			 color.Green("reached consensus: ", consensusValue, "\n")
 
 			if !consensusValue.isNull && consensusValue.CommandData.Op == "" {
