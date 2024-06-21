@@ -179,14 +179,14 @@ func weakMVC(stateStruct StateValueData, seq int) TerminationValue {
 	var state StateValueData = StateValueData{Value: stateStruct.Value, Seq: seq, Phase: phase, CommandData: stateStruct.CommandData}
 	terminationFlag, voteValue := roundOne(state, seq, phase)
 	if terminationFlag == 1 {
-
+		c := color.New(color.FgGreen)
 		if voteValue.Value == 0 {
 			terminationValue := TerminationValue{isNull: true, CommandData: voteValue.CommandData, phase: phase, seq: seq}
-			//c.Println("reached consensus: ", terminationValue)
+			c.Println("reached consensus: ", terminationValue)
 			return terminationValue
 		} else {
 			terminationValue := TerminationValue{isNull: false, CommandData: voteValue.CommandData, phase: phase, seq: seq}
-			//c.Println("reached consensus: ", terminationValue)
+			c.Println("reached consensus: ", terminationValue)
 			return terminationValue
 		}
 	}
