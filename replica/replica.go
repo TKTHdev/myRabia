@@ -70,6 +70,7 @@ func main() {
 				consensusValue := TerminationValue{isNull: terminationValue.Value == 0, CommandData: terminationValue.CommandData, phase: 0, seq: seq}
 				notifyTermination(setConnectionWithOtherReplicas(replicaIPs),seq, consensusValue)
 				color.Green("reached consensus: ", consensusValue, "\n")
+				Dictionary[CommandTimestamp{Command: consensusValue.CommandData.Op, Timestamp: consensusValue.CommandData.Timestamp}] = true
 				if !consensusValue.isNull && consensusValue.CommandData.Op == "" {
 					 c := color.New(color.FgHiRed)
 					 c.Println("This should not happen!")
@@ -234,6 +235,7 @@ func weakMVC(stateStruct StateValueData, seq int) TerminationValue {
 	for {
 		phase++
 
+		
 		state = StateValueData{Value: returnStruct.ConsensusValue, Seq: seq, Phase: phase, CommandData: returnStruct.CommandData}
 		terminationFlag, voteValue = roundOne(state, seq, phase)
 		if terminationFlag == 1 {
