@@ -80,6 +80,7 @@ func main() {
 			sendData(conn, Request{CommandData: CommandData{Op: command, Timestamp: timestamp, Seq: 0, ClientAddr: conn.LocalAddr().String()}, Redirected: false, Timestamp: 0})
 			if command[0] == 'R' {
 				var data ConsensusData
+				fmt.Println("READ")
 				data, err := receiveData(conn)
 				if err != nil {
 					fmt.Println("Error in receiving data")
@@ -96,6 +97,7 @@ func main() {
 				}
 			} else {
 				var data ConsensusData
+				fmt.Println("WRITE")
 				data, err := receiveData(conn)
 				if err != nil {
 					fmt.Println("Error in receiving data")
