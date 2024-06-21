@@ -125,7 +125,7 @@ func sendPortNumListToReplicas() {
 				}
 			}(conn)
 			fmt.Println("Sending port number list to replica")
-			_, err = fmt.Fprintf(conn, portListToString()+"\n")
+			_, err = fmt.Fprintf(conn, portListToString(replicaIPs)+"\n")
 			if err != nil {
 				return
 			}
@@ -172,7 +172,7 @@ func sendPortNumListToReplicasWithDisconnection(num int) {
 				}
 			}(conn)
 			fmt.Println("Sending port number list to replica")
-			_, err = fmt.Fprintf(conn, portListToString()+"\n")
+			_, err = fmt.Fprintf(conn, portListToString(replicaIPMap[IP])+"\n")
 			if err != nil {
 				return
 			}
@@ -211,9 +211,9 @@ func removeIP(IPs []string, IP string) []string {
 }
 
 // Convert the list of port numbers to a string
-func portListToString() string {
+func portListToString(IPs []string) string {
 	var IPListString string
-	for i, IP := range replicaIPs {
+	for i, IP := range IPs {
 		IPListString += IP
 		if i < len(replicaIPs)-1 {
 			IPListString += ","
