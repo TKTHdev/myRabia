@@ -228,7 +228,7 @@ func handleConnection(conn net.Conn) {
 
 func broadCastData(IPLists []string, data Data) {
 	conns := setConnectionWithOtherReplicas(IPLists)
-	fmt.Println("connected to replicas: ", conns)
+	fmt.Println("broadcast to replicas: ", conns)
 	for _, conn := range conns {
 		sendData(conn, data)
 	}
