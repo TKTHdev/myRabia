@@ -210,6 +210,7 @@ func handleConnection(conn net.Conn) {
 				//Wait for termination
 				go func() {
 					response:=<-replyChannel
+					fmt.Println("Response received: ", response)
 					sendData(conn, response)
 				}()
 			} else {
