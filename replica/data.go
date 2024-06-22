@@ -114,7 +114,8 @@ func init() {
 
 	selfIP, err := pubip.Get()
 	if err != nil {
-		fmt.Println("Error getting own IP: ", err)
+		fmt.Println("IPアドレスの取得エラー:", err)
+		return
 	}
 	stringIP = selfIP.String()
 }
@@ -201,6 +202,9 @@ func handleConnection(conn net.Conn) {
 				data.Redirected = true
 				data.CommandData.ReplicaAddr = ownIP
 				data.CommandData.ClientAddr = conn.RemoteAddr().String()
+				PQMutex.Lock()
+				PQ.Push(&data.CommandData)
+				PQMutex.Unlock()
 				broadCastData(replicaIPs, data)
 				//Wait for termination
 				go func() {
