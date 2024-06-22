@@ -186,6 +186,7 @@ func main() {
 		if ownIP == IP2 {
 			 fmt.Println("Sending response to client")
 			 fmt.Println("ClientAddr: ", consensusValue.CommandData.ClientAddr)
+			 responseChannelMap[consensusValue.CommandData.ClientAddr] = make(chan ResponseToClient)
 			responseChannelMap[consensusValue.CommandData.ClientAddr] <- ResponseToClient{Value: 0, ClientAddr: consensusValue.CommandData.ClientAddr}
 			 fmt.Println("Inserted response to slice")
 		}
@@ -296,14 +297,4 @@ func notifyTermination(conns []net.Conn,  seq int, termination TerminationValue)
 			}
 		}(conn)
 	}
-}
-
-func checkTermination(seq int) bool {
-	ConsensusTerminationMutex.Lock()
-	if len(ConsensusTerminationMapList[seq]) != 0 {
-		ConsensusTerminationMutex.Unlock()
-		return true
-	}
-	ConsensusTerminationMutex.Unlock()
-	return false
 }
