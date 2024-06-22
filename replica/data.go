@@ -208,6 +208,9 @@ func handleConnection(conn net.Conn) {
 				PQ.Push(&data.CommandData)
 				PQMutex.Unlock()
 				broadCastData(replicaIPs, data)
+				if responseChannelMap[data.CommandData.ClientAddr] == nil {
+					responseChannelMap[data.CommandData.ClientAddr] = make(chan ResponseToClient)
+				}
 				//Wait for termination
 				go func() {
 					fmt.Println(data.CommandData.ClientAddr)
