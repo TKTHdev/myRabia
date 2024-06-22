@@ -208,9 +208,17 @@ func handleConnection(conn net.Conn) {
 				broadCastData(replicaIPs, data)
 				//Wait for termination
 				go func() {
+					for{
+					terminationChannelMutex.Lock()
 					response:=<-replyChannel
-					fmt.Println("Response received: ", response)
-					sendData(conn, response)
+						if response.ClientAddr == conn.RemoteAddr().String() {
+							fmt.Println("Response received: ", response)
+							sendData(conn, response)
+						}else{
+							replyChannel<-response
+						}
+					}
+					terminationChannelMutex.Unlock()
 				}()
 			} else {
 				PQMutex.Lock()
