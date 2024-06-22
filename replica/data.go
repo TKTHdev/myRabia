@@ -130,9 +130,9 @@ func listenAndAccept() {
 	defer ln.Close()
 
 	for {
-		//fmt.Println("Waiting for connection...")
+		fmt.Println("Waiting for connection...")
 		conn, err := ln.Accept()
-		//fmt.Println("Message received from: ", conn.RemoteAddr())
+		fmt.Println("Message received from: ", conn.RemoteAddr())
 		if err != nil {
 			//fmt.Println("接続エラー:", err)
 			continue
@@ -156,7 +156,7 @@ func handleConnection(conn net.Conn) {
 	for {
 		consensusData, err := receiveData(conn)
 		if err != nil {
-			//fmt.Println("データ受信エラー:", err)
+			fmt.Println("データ受信エラー:", err)
 			return
 		}
 		data := consensusData.Data
@@ -187,7 +187,7 @@ func handleConnection(conn net.Conn) {
 			ConsensusTerminationMutex.Unlock()
 
 		case Request:
-			//fmt.Println("Received Request: ", data)
+			fmt.Println("Received Request: ", data)
 
 			if data.CommandData.Op[0] == 'R' {
 				value, err := parseReadCommand(data.CommandData.Op, StateMachine)
