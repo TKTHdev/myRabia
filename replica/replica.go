@@ -81,8 +81,20 @@ func main() {
 					nullCnt++
 				}
 				c.Println("SM in seq", seq, ":", StateMachine)
+
+				IP2 := strings.Split(terminationValue.CommandData.ReplicaAddr, ":")[0]
+
+				if ownIP == IP2 {
+					// fmt.Println("Sending response to client")
+					terminationChannelMutex.Lock()
+					responseSlice = append(responseSlice, ResponseToClient{Value: 0, ClientAddr: consensusValue.CommandData.ClientAddr})
+					terminationChannelMutex.Unlock()
+					// fmt.Println("Inserted response to slice")
+				}
+
 				seq++
 			}
+
 			ConsensusTerminationMutex.Unlock()
 			PQMutex.Unlock()
 			continue
