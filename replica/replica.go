@@ -87,7 +87,7 @@ func main() {
 
 				if ownIP == IP2 {
 					// fmt.Println("Sending response to client")
-					replyChannel <- ResponseToClient{Value: 0, ClientAddr: terminationValue.CommandData.ClientAddr}
+					responseChannelMap[terminationValue.CommandData.ClientAddr] <- ResponseToClient{Value: 0, ClientAddr: terminationValue.CommandData.ClientAddr}
 					// fmt.Println("Inserted response to slice")
 				}
 
@@ -146,7 +146,7 @@ func main() {
 			// fmt.Println("IP2", IP2)
 			if ownIP == IP2 {
 				// fmt.Println("Sending response to client")
-				replyChannel <- ResponseToClient{Value: 0, ClientAddr: consensusValue.CommandData.ClientAddr}
+				responseChannelMap[consensusValue.CommandData.ClientAddr] <- ResponseToClient{Value: 0, ClientAddr: consensusValue.CommandData.ClientAddr}
 				// fmt.Println("Inserted response to slice")
 			}
 			PQMutex.Lock()
@@ -185,7 +185,7 @@ func main() {
 		IP2 := strings.Split(consensusValue.CommandData.ReplicaAddr, ":")[0]
 		if ownIP == IP2 {
 			// fmt.Println("Sending response to client")
-			replyChannel <- ResponseToClient{Value: 0, ClientAddr: consensusValue.CommandData.ClientAddr}
+			responseChannelMap[consensusValue.CommandData.ClientAddr] <- ResponseToClient{Value: 0, ClientAddr: consensusValue.CommandData.ClientAddr}
 			// fmt.Println("Inserted response to slice")
 		}
 

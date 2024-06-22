@@ -14,9 +14,9 @@ var StateValueDataMutex sync.Mutex
 var VoteValueDataMutex sync.Mutex
 var ConsensusTerminationMutex sync.Mutex
 var PQMutex sync.Mutex
-var terminationChannelMutex sync.Mutex
-var responseSlice []ResponseToClient
 var stringIP string
+
+var responseChannelMap map[string]chan ResponseToClient
 
 
 
@@ -208,15 +208,9 @@ func handleConnection(conn net.Conn) {
 				broadCastData(replicaIPs, data)
 				//Wait for termination
 				go func() {
-					for{
-						response:=<-replyChannel
-							if response.ClientAddr == conn.RemoteAddr().String() {
-								fmt.Println("Response received: ", response)
-								sendData(conn, response)
-							}else{
-								replyChannel<-response
-							}
-					}
+						response:=<-responseChannelMap[data.CommandData.ClientAddr]
+						fmt.Println("Response received: ", response)
+						sendData(conn, response)
 				}()
 			} else {
 				PQMutex.Lock()
