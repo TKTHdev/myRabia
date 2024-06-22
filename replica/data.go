@@ -217,8 +217,8 @@ func handleConnection(conn net.Conn) {
 						}else{
 							replyChannel<-response
 						}
-					}
 					terminationChannelMutex.Unlock()
+					}
 				}()
 			} else {
 				PQMutex.Lock()
