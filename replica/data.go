@@ -157,7 +157,6 @@ func handleConnection(conn net.Conn) {
 	for {
 		consensusData, err := receiveData(conn)
 		if err != nil {
-			fmt.Println("データ受信エラー:", err)
 			return
 		}
 		data := consensusData.Data
