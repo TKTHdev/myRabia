@@ -59,6 +59,7 @@ func main() {
 	// 他のレプリカとの接続を確立
 	go listenAndAccept()
 	time.Sleep(250 * time.Millisecond)
+	go replyToClient()
 
 	//ここで合意アルゴリズムを実行
 	for {

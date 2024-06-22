@@ -206,24 +206,6 @@ func handleConnection(conn net.Conn) {
 				PQMutex.Unlock()
 				broadCastData(replicaIPs, data)
 				//Wait for termination
-				go func() {
-					for {
-						fmt.Println("Waiting for termination")
-						terminationChannelMutex.Lock()	
-						if len(responseSlice) > 0 {
-							ResponseToClient := responseSlice[0]
-							if ResponseToClient.ClientAddr == data.CommandData.ClientAddr {
-								go sendData(conn, ResponseToClient)
-								responseSlice = responseSlice[1:]
-								terminationChannelMutex.Unlock()
-								break
-							} else {
-								responseSlice = append(responseSlice, ResponseToClient)
-							}
-						}
-						terminationChannelMutex.Unlock()
-					}
-				}()
 			} else {
 				PQMutex.Lock()
 				fmt.Println("received redirected request: " + data.CommandData.Op)
@@ -237,7 +219,24 @@ func handleConnection(conn net.Conn) {
 	}
 }
 
+func replyToClient() {
+	for{
+		terminationChannelMutex.Lock()
 
+		if len(responseSlice) > 0 {
+			ResponseToClient := responseSlice[0]
+			responseSlice = responseSlice[1:]
+			conn, err := net.Dial("tcp", ResponseToClient.ClientAddr)
+			if err != nil {
+				fmt.Println("Dial error", err)
+				continue
+			}
+			sendData(conn, ResponseToClient)
+			conn.Close()
+		}
+		terminationChannelMutex.Unlock()
+	}
+}
 
 
 
