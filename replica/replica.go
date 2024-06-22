@@ -64,6 +64,7 @@ func main() {
 	for {
 		PQMutex.Lock()
 		if PQ.Len() == 0 {
+			PQMutex.Unlock()
 			ConsensusTerminationMutex.Lock()
 			if ConsensusTerminationMapList[seq] != nil {
 				terminationValue := ConsensusTerminationMapList[seq][0]
@@ -96,17 +97,15 @@ func main() {
 			}
 
 			ConsensusTerminationMutex.Unlock()
-			PQMutex.Unlock()
 			continue
 		}
+		PQMutex.Unlock()
 		commandPointer := heap.Pop(&PQ).(*CommandData)
 		if Dictionary[CommandTimestamp{Command: commandPointer.Op, Timestamp: commandPointer.Timestamp}] {
-			PQMutex.Unlock()
 			fmt.Println("Command already reached consensus: ", *commandPointer)
 			delete(Dictionary, CommandTimestamp{Command: commandPointer.Op, Timestamp: commandPointer.Timestamp})
 			continue
 		}
-		PQMutex.Unlock()
 		var stateStruct StateValueData
 		// fmt.Println("cnt: ", seq)
 		var terminationFlag int
