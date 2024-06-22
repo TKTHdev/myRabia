@@ -209,15 +209,13 @@ func handleConnection(conn net.Conn) {
 				//Wait for termination
 				go func() {
 					for{
-					terminationChannelMutex.Lock()
-					response:=<-replyChannel
-						if response.ClientAddr == conn.RemoteAddr().String() {
-							fmt.Println("Response received: ", response)
-							sendData(conn, response)
-						}else{
-							replyChannel<-response
-						}
-					terminationChannelMutex.Unlock()
+						response:=<-replyChannel
+							if response.ClientAddr == conn.RemoteAddr().String() {
+								fmt.Println("Response received: ", response)
+								sendData(conn, response)
+							}else{
+								replyChannel<-response
+							}
 					}
 				}()
 			} else {
