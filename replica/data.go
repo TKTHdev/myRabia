@@ -208,9 +208,10 @@ func handleConnection(conn net.Conn) {
 				broadCastData(replicaIPs, data)
 				//Wait for termination
 				go func() {
-						response:=<-responseChannelMap[data.CommandData.ClientAddr]
-						fmt.Println("Response received: ", response)
-						sendData(conn, response)
+					response := <-responseChannelMap[data.CommandData.ClientAddr]
+					fmt.Println("Response to client: ", response)
+					sendData(conn, response)
+
 				}()
 			} else {
 				PQMutex.Lock()
