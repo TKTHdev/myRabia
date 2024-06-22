@@ -208,6 +208,7 @@ func handleConnection(conn net.Conn) {
 				//Wait for termination
 				go func() {
 					for {
+						fmt.Println("Waiting for termination")
 						terminationChannelMutex.Lock()	
 						if len(responseSlice) > 0 {
 							ResponseToClient := responseSlice[0]
@@ -235,6 +236,7 @@ func handleConnection(conn net.Conn) {
 		}
 	}
 }
+
 
 
 
