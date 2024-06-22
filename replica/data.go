@@ -15,10 +15,12 @@ var VoteValueDataMutex sync.Mutex
 var ConsensusTerminationMutex sync.Mutex
 var PQMutex sync.Mutex
 var terminationChannelMutex sync.Mutex
-
 var responseSlice []ResponseToClient
-
 var stringIP string
+
+
+
+var replyChannel = make(chan ResponseToClient)	
 
 type Data interface{}
 
@@ -206,6 +208,10 @@ func handleConnection(conn net.Conn) {
 				PQMutex.Unlock()
 				broadCastData(replicaIPs, data)
 				//Wait for termination
+				go func() {
+					response:=<-replyChannel
+					sendData(conn, response)
+				}()
 			} else {
 				PQMutex.Lock()
 				fmt.Println("received redirected request: " + data.CommandData.Op)
@@ -218,26 +224,6 @@ func handleConnection(conn net.Conn) {
 		}
 	}
 }
-
-func replyToClient() {
-	for{
-		terminationChannelMutex.Lock()
-
-		if len(responseSlice) > 0 {
-			ResponseToClient := responseSlice[0]
-			responseSlice = responseSlice[1:]
-			conn, err := net.Dial("tcp", ResponseToClient.ClientAddr)
-			if err != nil {
-				fmt.Println("Dial error", err)
-				continue
-			}
-			sendData(conn, ResponseToClient)
-			conn.Close()
-		}
-		terminationChannelMutex.Unlock()
-	}
-}
-
 
 
 func broadCastData(IPLists []string, data Data) {
