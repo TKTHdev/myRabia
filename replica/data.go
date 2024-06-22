@@ -20,7 +20,6 @@ var responseChannelMap map[string]chan ResponseToClient
 
 
 
-var replyChannel = make(chan ResponseToClient)	
 
 type Data interface{}
 
@@ -120,6 +119,9 @@ func init() {
 		return
 	}
 	stringIP = selfIP.String()
+
+
+	responseChannelMap = make(map[string]chan ResponseToClient)
 }
 
 func listenAndAccept() {
