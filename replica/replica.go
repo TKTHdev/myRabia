@@ -88,7 +88,7 @@ func main() {
 				if ownIP == IP2 {
 					// fmt.Println("Sending response to client")
 					terminationChannelMutex.Lock()
-					responseSlice = append(responseSlice, ResponseToClient{Value: 0, ClientAddr: consensusValue.CommandData.ClientAddr})
+					replyChannel <- ResponseToClient{Value: 0, ClientAddr: terminationValue.CommandData.ClientAddr}
 					terminationChannelMutex.Unlock()
 					// fmt.Println("Inserted response to slice")
 				}
@@ -149,7 +149,7 @@ func main() {
 			if ownIP == IP2 {
 				// fmt.Println("Sending response to client")
 				terminationChannelMutex.Lock()
-				responseSlice = append(responseSlice, ResponseToClient{Value: 0, ClientAddr: consensusValue.CommandData.ClientAddr})
+					replyChannel <- ResponseToClient{Value: 0, ClientAddr: consensusValue.CommandData.ClientAddr}
 				terminationChannelMutex.Unlock()
 				// fmt.Println("Inserted response to slice")
 			}
@@ -190,7 +190,7 @@ func main() {
 		if ownIP == IP2 {
 			// fmt.Println("Sending response to client")
 			terminationChannelMutex.Lock()
-			responseSlice = append(responseSlice, ResponseToClient{Value: 0, ClientAddr: consensusValue.CommandData.ClientAddr})
+			replyChannel <- ResponseToClient{Value: 0, ClientAddr: consensusValue.CommandData.ClientAddr}
 			terminationChannelMutex.Unlock()
 			// fmt.Println("Inserted response to slice")
 		}
