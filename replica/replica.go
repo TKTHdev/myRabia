@@ -101,6 +101,7 @@ func main() {
 		commandPointer := heap.Pop(&PQ).(*CommandData)
 		if Dictionary[CommandTimestamp{Command: commandPointer.Op, Timestamp: commandPointer.Timestamp}] {
 			fmt.Println("Command already reached consensus: ", *commandPointer)
+			fmt.Println("Dictionary: ", Dictionary)
 			delete(Dictionary, CommandTimestamp{Command: commandPointer.Op, Timestamp: commandPointer.Timestamp})
 			continue
 		}
