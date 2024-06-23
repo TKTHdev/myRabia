@@ -64,6 +64,7 @@ func main() {
 				}
 			}
 			fmt.Println("Command ", i+1, " completed")
+			timestamp++
 		}
 	}
 
