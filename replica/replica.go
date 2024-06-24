@@ -100,6 +100,7 @@ func main() {
 		}
 		PQMutex.Unlock()
 		commandPointer := heap.Pop(&PQ).(*CommandData)
+		fmt.Println("Command: ", *commandPointer)
 		if Dictionary[CommandTimestamp{Command: commandPointer.Op, Timestamp: commandPointer.Timestamp}] {
 			//fmt.Println("Command already reached consensus: ", *commandPointer)
 			//fmt.Println("Dictionary: ", Dictionary)
@@ -130,8 +131,8 @@ func main() {
 				PQMutex.Lock()
 				// c := color.New(color.FgYellow)
 				c.Println("Adding to dictionary: ", consensusValue.CommandData)
-				fmt.Println(PQ)
 				PQ.Push(commandPointer)
+				fmt.Println(PQ)
 				
 				Dictionary[CommandTimestamp{Command: consensusValue.CommandData.Op, Timestamp: consensusValue.CommandData.Timestamp}] = true
 				PQMutex.Unlock()
