@@ -18,14 +18,13 @@ func (pq PriorityQueue) Swap(i, j int) {
 	pq[i], pq[j] = pq[j], pq[i]
 }
 
+
+
 func (pq *PriorityQueue) Push(x interface{}) {
-	item := x.(*CommandData)
-	*pq = append(*pq, item)
-	if len(*pq) == 1 {
-		return 
-	}
-	heap.Fix(pq, pq.Len()-1)
+	*pq = append(*pq, x.(*CommandData))
+	heap.Push(pq, x)
 }
+
 
 func (pq *PriorityQueue) Pop() interface{} {
 	old := *pq
