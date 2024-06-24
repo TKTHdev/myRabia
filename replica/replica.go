@@ -132,7 +132,6 @@ func main() {
 				// c := color.New(color.FgYellow)
 				c.Println("Adding to dictionary: ", consensusValue.CommandData)
 				PQ.Push(commandPointer)
-				printEachCommandsPQ()
 				
 				Dictionary[CommandTimestamp{Command: consensusValue.CommandData.Op, Timestamp: consensusValue.CommandData.Timestamp}] = true
 				PQMutex.Unlock()
@@ -173,7 +172,6 @@ func main() {
 			PQMutex.Lock()
 			c := color.New(color.FgYellow)
 			c.Println("Adding to dictionary: ", consensusValue.CommandData)
-			printEachCommandsPQ()
 			PQ.Push(commandPointer)
 			Dictionary[CommandTimestamp{Command: consensusValue.CommandData.Op, Timestamp: consensusValue.CommandData.Timestamp}] = true
 			PQMutex.Unlock()
@@ -300,8 +298,3 @@ func notifyTermination(conns []net.Conn,  seq int, termination TerminationValue)
 }
 
 
-func printEachCommandsPQ() {
-	for i := 0; i < PQ.Len(); i++ {
-		fmt.Println(PQ[i])
-	}
-}
