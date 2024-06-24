@@ -1,7 +1,7 @@
 package main
 
 import (
-	"fmt"
+	//"fmt"
 	"net"
 	"sync"
 )
@@ -10,7 +10,7 @@ var countMutex sync.Mutex
 
 func exchangeStage(command CommandData, seq int) (int, StateValueData) {
 	conns := setConnectionWithOtherReplicas(replicaIPs)
-	fmt.Println("Sending Command: ", command)
+	//fmt.Println("Sending Command: ", command)
 	var state int
 	wg := sync.WaitGroup{}
 	exchangeSend(conns, command, &wg)
