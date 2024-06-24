@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"math/rand"
 	"net"
+	"time"
 )
 
 type Data interface{}
@@ -15,7 +16,7 @@ type ConsensusData struct {
 
 type CommandData struct {
 	Op          string
-	Timestamp   int
+	Timestamp   time.Time
 	Seq         int
 	ClientAddr  string
 	ReplicaAddr string

@@ -4,6 +4,7 @@ import (
 	"container/heap"
 	"encoding/gob"
 	"fmt"
+	"time"
 	"net"
 	"sync"
 	"github.com/chyeh/pubip"
@@ -29,7 +30,7 @@ type ConsensusData struct {
 
 type CommandData struct {
 	Op          string
-	Timestamp   int
+	Timestamp   time.Time
 	Seq         int
 	ClientAddr  string
 	ReplicaAddr string
@@ -79,7 +80,7 @@ type Request struct {
 
 type CommandTimestamp struct {
 	Command   string
-	Timestamp int
+	Timestamp time.Time
 }
 
 type ResponseToClient struct {

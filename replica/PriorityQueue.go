@@ -1,13 +1,15 @@
 package main
 
-import "container/heap"
+import(
+	"container/heap"
+)
 
 type PriorityQueue []*CommandData
 
 func (pq PriorityQueue) Len() int { return len(pq) }
 
 func (pq PriorityQueue) Less(i, j int) bool {
-	return pq[i].Timestamp < pq[j].Timestamp
+	return pq[i].Timestamp.Before(pq[j].Timestamp)
 }
 
 func (pq PriorityQueue) Swap(i, j int) {

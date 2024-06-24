@@ -3,162 +3,77 @@ package main
 import (
 	"fmt"
 	"net"
+	"time"
 )
 
 var StateMachine map[string]int = make(map[string]int)
+var IPList = []string{"52.62.115.28", "52.65.112.127", "52.64.108.149"}
 
 func main() {
-	timestamp := 0
-	IPList := []string{"52.62.115.28", "52.65.112.127", "52.64.108.149"}
-	var choose string
+	fmt.Println("YCSB [A] or [B] or [C] ?")
+	var command string
+	fmt.Scanln(&command)
+	fmt.Println("Number of commands?")
 	var commandNum int
-	fmt.Println("YCSB Workload [A] or [B] or [C] ?: ")
-	fmt.Println("A: 50% Read, 50% Write")
-	fmt.Println("B: 95% Read, 5% Write")
-	fmt.Println("C: 100% Read")
-	fmt.Scan(&choose)
-	fmt.Println("How many commands do you want to run?: ")
-	fmt.Scan(&commandNum)
+	fmt.Scanln(&commandNum)
+	YCSB(command, commandNum)
+}
 
-	if choose == "A" {
-		for i := 0; i < commandNum; i++ {
-			var command string = generateRandomCommand(50)
-			fmt.Println("Command: " + command)
-			conn, err := net.Dial("tcp", IPList[i%3]+":8080")
-			if err != nil {
-				fmt.Println("Dial error", err)
-				continue
-			}
-			defer conn.Close()
-			sendData(conn, Request{CommandData: CommandData{Op: command, Timestamp: timestamp, Seq: 0, ClientAddr: conn.LocalAddr().String()}, Redirected: false, Timestamp: 0})
-			if command[0] == 'R' {
-				var data ConsensusData
-				data, err := receiveData(conn)
-				if err != nil {
-					fmt.Println("Error in receiving data")
-				}
-				response := data.Data
-				switch response := response.(type) {
-				case ResponseToClient:
-					if response.Value == -1 {
-						fmt.Println("Key not found")
-					}
-					if response.Value != -1 {
-						//fmt.Println("Read value: ", response.Value)
-					}
-				}
-			} else {
-				var data ConsensusData
-				data, err := receiveData(conn)
-				if err != nil {
-					fmt.Println("Error in receiving data")
-				}
-				response := data.Data
-				switch response := response.(type) {
-				case ResponseToClient:
-					if response.Value == 0 {
-						//fmt.Println("Write successful")
-					} else {
-						fmt.Println("Write unsuccessful")
-					}
-				}
-			}
-			fmt.Println("Command ", i+1, " completed")
-			timestamp++
-		}
+func YCSB(command string, commandNum int){
+
+	var readRatio int	
+
+
+	if command == "A" {
+		readRatio = 50
+	} else if command == "B" {
+		readRatio = 95
+	} else if command == "C" {
+		readRatio = 100
 	}
 
-	if choose == "B" {
-		for i := 0; i < commandNum; i++ {
-			var command string = generateRandomCommand(95)
-
-			conn, err := net.Dial("tcp", IPList[i%3]+":8080")
+	for i := 0; i < commandNum; i++ {
+		var command string = generateRandomCommand(readRatio)
+		fmt.Println("Command: " + command)
+		conn, err := net.Dial("tcp", IPList[i%3]+":8080")
+		if err != nil {
+			fmt.Println("Dial error", err)
+			continue
+		}
+		defer conn.Close()
+		sendData(conn, Request{CommandData: CommandData{Op: command, Timestamp: time.Now(), Seq: 0, ClientAddr: conn.LocalAddr().String()}, Redirected: false, Timestamp: 0})
+		if command[0] == 'R' {
+			var data ConsensusData
+			data, err := receiveData(conn)
 			if err != nil {
-				fmt.Println("Dial error", err)
-				continue
+				fmt.Println("Error in receiving data")
 			}
-			defer conn.Close()
-			sendData(conn, Request{CommandData: CommandData{Op: command, Timestamp: timestamp, Seq: 0, ClientAddr: conn.LocalAddr().String()}, Redirected: false, Timestamp: 0})
-			if command[0] == 'R' {
-				var data ConsensusData
-				fmt.Println("READ")
-				data, err := receiveData(conn)
-				if err != nil {
-					fmt.Println("Error in receiving data")
+			response := data.Data
+			switch response := response.(type) {
+			case ResponseToClient:
+				if response.Value == -1 {
+					fmt.Println("Key not found")
 				}
-				response := data.Data
-				switch response := response.(type) {
-				case ResponseToClient:
-					if response.Value == -1 {
-						fmt.Println("Key not found")
-					}
-					if response.Value != -1 {
-						fmt.Println("Read value: ", response.Value)
-					}
+				if response.Value != -1 {
+					//fmt.Println("Read value: ", response.Value)
 				}
-			} else {
-				var data ConsensusData
-				fmt.Println("WRITE")
-				data, err := receiveData(conn)
-				if err != nil {
-					fmt.Println("Error in receiving data")
-				}
-				response := data.Data
-				switch response := response.(type) {
-				case ResponseToClient:
-					if response.Value == 0 {
-						fmt.Println("Write successful")
-					} else {
-						fmt.Println("Write unsuccessful")
-					}
+			}
+		} else {
+			var data ConsensusData
+			data, err := receiveData(conn)
+			if err != nil {
+				fmt.Println("Error in receiving data")
+			}
+			response := data.Data
+			switch response := response.(type) {
+			case ResponseToClient:
+				if response.Value == 0 {
+					//fmt.Println("Write successful")
+				} else {
+					fmt.Println("Write unsuccessful")
 				}
 			}
 		}
-	}
-
-	if choose == "C" {
-		for i := 0; i < commandNum; i++ {
-			var command string = generateRandomCommand(100)
-
-			conn, err := net.Dial("tcp", IPList[i%3]+":8080")
-			if err != nil {
-				fmt.Println("Dial error", err)
-				continue
-			}
-			defer conn.Close()
-			sendData(conn, Request{CommandData: CommandData{Op: command, Timestamp: timestamp, Seq: 0, ClientAddr: conn.LocalAddr().String()}, Redirected: false, Timestamp: 0})
-			if command[0] == 'R' {
-				var data ConsensusData
-				data, err := receiveData(conn)
-				if err != nil {
-					fmt.Println("Error in receiving data")
-				}
-				response := data.Data
-				switch response := response.(type) {
-				case ResponseToClient:
-					if response.Value == -1 {
-						fmt.Println("Key not found")
-					}
-					if response.Value != -1 {
-						fmt.Println("Read value: ", response.Value)
-					}
-				}
-			} else {
-				var data ConsensusData
-				data, err := receiveData(conn)
-				if err != nil {
-					fmt.Println("Error in receiving data")
-				}
-				response := data.Data
-				switch response := response.(type) {
-				case ResponseToClient:
-					if response.Value == 0 {
-						fmt.Println("Write successful")
-					} else {
-						fmt.Println("Write unsuccessful")
-					}
-				}
-			}
-		}
+		fmt.Println("Command ", i+1, " completed")
 	}
 }
