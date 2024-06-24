@@ -301,9 +301,7 @@ func notifyTermination(conns []net.Conn,  seq int, termination TerminationValue)
 
 
 func printEachCommandsPQ() {
-	PQMutex.Lock()
 	for i := 0; i < PQ.Len(); i++ {
 		fmt.Println(PQ[i])
 	}
-	PQMutex.Unlock()
 }
