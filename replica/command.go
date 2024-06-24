@@ -4,7 +4,10 @@ import (
 	"fmt"
 	"strconv"
 	"strings"
+	"sync"
 )
+
+var SMMutex sync.Mutex
 
 func parseWriteCommand(command string, stateMachine map[string]int) error {
 	parts := strings.Split(command, " ")
@@ -17,6 +20,8 @@ func parseWriteCommand(command string, stateMachine map[string]int) error {
 			return err
 		}
 
+
+		SMMutex.Lock()
 		switch operator {
 		case "=":
 			stateMachine[variable] = value
@@ -32,8 +37,10 @@ func parseWriteCommand(command string, stateMachine map[string]int) error {
 			}
 			stateMachine[variable] %= value
 		default:
+			SMMutex.Unlock()
 			return fmt.Errorf("invalid operator: %s", operator)
 		}
+		SMMutex.Unlock()
 	} else {
 		return fmt.Errorf("invalid command format: %s", command)
 	}
@@ -44,7 +51,9 @@ func parseReadCommand(command string, stateMachine map[string]int) (int, string)
 	parts := strings.Split(command, " ")
 	if len(parts) == 2 {
 		key := parts[1]
+		SMMutex.Lock()
 		value, ok := stateMachine[key]
+		SMMutex.Unlock()
 		if !ok {
 			fmt.Println("Variable not found: ", key)
 			return 0, "notFound"
