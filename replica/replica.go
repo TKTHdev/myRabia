@@ -205,7 +205,7 @@ func weakMVC(stateStruct StateValueData, seq int) TerminationValue {
 	//c := color.New(color.FgGreen)
 
 	//Round 1
-	 fmt.Println("State struct: ", stateStruct)
+	//fmt.Println("State struct: ", stateStruct)
 	var state StateValueData = StateValueData{Value: stateStruct.Value, Seq: seq, Phase: phase, CommandData: stateStruct.CommandData}
 	terminationFlag, voteValue := roundOne(state, seq, phase)
 	if terminationFlag == 1 {

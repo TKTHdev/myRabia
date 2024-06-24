@@ -101,7 +101,6 @@ func init() {
 	VoteValueDataMapList = make(map[SeqPhase][]VoteValueData)
 	ConsensusTerminationMapList = make(map[int][]ConsensusTermination)
 	Dictionary = make(map[CommandTimestamp]bool)
-	fmt.Println(pubip.Get())
 
 	gob.Register(CommandData{})
 	gob.Register(StateValueData{})
