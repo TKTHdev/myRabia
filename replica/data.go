@@ -211,13 +211,11 @@ func handleConnection(conn net.Conn) {
 					responseChannelMap[data.CommandData.ClientAddr] = make(chan ResponseToClient)
 				}
 				//Wait for termination
-				go func() {
-					//fmt.Println(data.CommandData.ClientAddr)
-					response := <-responseChannelMap[data.CommandData.ClientAddr]
-					//fmt.Println("Response to client: ", response)
-					sendData(conn, response)
+				//fmt.Println(data.CommandData.ClientAddr)
+				response := <-responseChannelMap[data.CommandData.ClientAddr]
+				//fmt.Println("Response to client: ", response)
+				sendData(conn, response)
 
-				}()
 			} else {
 				PQMutex.Lock()
 				//fmt.Println("received redirected request: " + data.CommandData.Op)
