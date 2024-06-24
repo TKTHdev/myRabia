@@ -63,6 +63,7 @@ func main() {
 	//ここで合意アルゴリズムを実行
 	for {
 		PQMutex.Lock()
+		fmt.Println(Dictionary)
 		if PQ.Len() == 0 {
 			PQMutex.Unlock()
 			ConsensusTerminationMutex.Lock()
