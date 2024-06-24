@@ -139,7 +139,7 @@ func main() {
 				PQMutex.Lock()
 				// c := color.New(color.FgYellow)
 				c.Println("Adding to dictionary: ", consensusValue.CommandData)
-				PQ.Push(commandPointer)
+				heap.Push(&PQ, commandPointer)
 				
 				if !consensusValue.isNull {
 					Dictionary[OpTimestamp{Op: consensusValue.CommandData.Op, Timestamp:consensusValue.CommandData.Timestamp}] = true
@@ -182,7 +182,7 @@ func main() {
 			PQMutex.Lock()
 			c := color.New(color.FgYellow)
 			c.Println("Adding to dictionary: ", consensusValue.CommandData)
-			PQ.Push(commandPointer)
+			heap.Push(&PQ, commandPointer)
 			PQMutex.Unlock()
 			if !consensusValue.isNull {
 				Dictionary[OpTimestamp{Op: consensusValue.CommandData.Op, Timestamp: consensusValue.CommandData.Timestamp}] = true

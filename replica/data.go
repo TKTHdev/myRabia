@@ -205,7 +205,7 @@ func handleConnection(conn net.Conn) {
 				data.CommandData.ReplicaAddr = ownIP
 				data.CommandData.ClientAddr = conn.RemoteAddr().String()
 				PQMutex.Lock()
-				PQ.Push(&data.CommandData)
+				heap.Push(&PQ, &data.CommandData)
 				PQMutex.Unlock()
 				broadCastData(replicaIPs, data)
 				if responseChannelMap[data.CommandData.ClientAddr] == nil {
@@ -222,7 +222,7 @@ func handleConnection(conn net.Conn) {
 			} else {
 				PQMutex.Lock()
 				//fmt.Println("received redirected request: " + data.CommandData.Op)
-				PQ.Push(&data.CommandData)
+				heap.Push(&PQ, &data.CommandData)
 				PQMutex.Unlock()
 			}
 
