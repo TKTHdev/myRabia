@@ -23,6 +23,9 @@ func YCSB(command string, commandNum int){
 
 	var readRatio int	
 
+	fmt.Println("Replica? 1, 2 or 3?")
+	var replica int
+	fmt.Scanln(&replica)
 
 	if command == "A" {
 		readRatio = 50
@@ -35,7 +38,7 @@ func YCSB(command string, commandNum int){
 	for i := 0; i < commandNum; i++ {
 		var command string = generateRandomCommand(readRatio)
 		fmt.Println("Command: " + command)
-		conn, err := net.Dial("tcp", IPList[i%3]+":8080")
+		conn, err := net.Dial("tcp", IPList[replica-1]+":8080")
 		if err != nil {
 			fmt.Println("Dial error", err)
 			continue

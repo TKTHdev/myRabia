@@ -100,6 +100,7 @@ func main() {
 		}
 		PQMutex.Unlock()
 		commandPointer := heap.Pop(&PQ).(*CommandData)
+		fmt.Println("Command: ", *commandPointer)
 		if Dictionary[CommandTimestamp{Command: commandPointer.Op, Timestamp: commandPointer.Timestamp}] {
 			//fmt.Println("Command already reached consensus: ", *commandPointer)
 			//fmt.Println("Dictionary: ", Dictionary)
@@ -296,4 +297,13 @@ func notifyTermination(conns []net.Conn,  seq int, termination TerminationValue)
 			}
 		}(conn)
 	}
+}
+
+
+func printEachCommandsPQ() {
+	PQMutex.Lock()
+	for i := 0; i < PQ.Len(); i++ {
+		fmt.Println(PQ[i])
+	}
+	PQMutex.Unlock()
 }
