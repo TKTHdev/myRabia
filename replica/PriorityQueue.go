@@ -21,6 +21,9 @@ func (pq PriorityQueue) Swap(i, j int) {
 func (pq *PriorityQueue) Push(x interface{}) {
 	item := x.(*CommandData)
 	*pq = append(*pq, item)
+	if len(*pq) == 1 {
+		return 
+	}
 	heap.Fix(pq, pq.Len()-1)
 }
 
