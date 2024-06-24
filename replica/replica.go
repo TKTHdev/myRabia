@@ -108,6 +108,7 @@ func main() {
 		PQMutex.Unlock()
 		commandPointer := heap.Pop(&PQ).(*CommandData)
 		fmt.Println("Command: ", *commandPointer)
+		fmt.Println("Dictionary: ", Dictionary)
 		if Dictionary[CommandTimestamp{Command: *commandPointer, Timestamp: commandPointer.Timestamp}] {
 			//fmt.Println("Command already reached consensus: ", *commandPointer)
 			//fmt.Println("Dictionary: ", Dictionary)
