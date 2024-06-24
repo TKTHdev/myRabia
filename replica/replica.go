@@ -73,7 +73,7 @@ func main() {
 				color.Green("reached consensus: ", consensusValue, "\n")
 
 				if !consensusValue.isNull{
-					Dictionary[CommandTimestamp{Command: consensusValue.CommandData, Timestamp: consensusValue.CommandData.Timestamp}] = true
+					Dictionary[OpTimestamp{Op: consensusValue.CommandData.Op, Timestamp: consensusValue.CommandData.Timestamp}] = true
 				}
 
 
@@ -109,10 +109,10 @@ func main() {
 		commandPointer := heap.Pop(&PQ).(*CommandData)
 		fmt.Println("Command: ", *commandPointer)
 		fmt.Println("Dictionary: ", Dictionary)
-		if Dictionary[CommandTimestamp{Command: *commandPointer, Timestamp: commandPointer.Timestamp}] {
+		if Dictionary[OpTimestamp{Op: commandPointer.Op, Timestamp: commandPointer.Timestamp}] {
 			//fmt.Println("Command already reached consensus: ", *commandPointer)
 			//fmt.Println("Dictionary: ", Dictionary)
-			delete(Dictionary, CommandTimestamp{Command: *commandPointer, Timestamp: commandPointer.Timestamp})
+			delete(Dictionary, OpTimestamp{Op: commandPointer.Op, Timestamp: commandPointer.Timestamp})
 			continue
 		}
 		var stateStruct StateValueData
@@ -142,7 +142,7 @@ func main() {
 				PQ.Push(commandPointer)
 				
 				if !consensusValue.isNull {
-					Dictionary[CommandTimestamp{Command: consensusValue.CommandData, Timestamp:consensusValue.CommandData.Timestamp}] = true
+					Dictionary[OpTimestamp{Op: consensusValue.CommandData.Op, Timestamp:consensusValue.CommandData.Timestamp}] = true
 				}
 				PQMutex.Unlock()
 			}
@@ -185,7 +185,7 @@ func main() {
 			PQ.Push(commandPointer)
 			PQMutex.Unlock()
 			if !consensusValue.isNull {
-				Dictionary[CommandTimestamp{Command: consensusValue.CommandData, Timestamp: consensusValue.CommandData.Timestamp}] = true
+				Dictionary[OpTimestamp{Op: consensusValue.CommandData.Op, Timestamp: consensusValue.CommandData.Timestamp}] = true
 			}
 		}
 		if !consensusValue.isNull {
