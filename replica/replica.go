@@ -69,7 +69,7 @@ func main() {
 			if ConsensusTerminationMapList[seq] != nil {
 				terminationValue := ConsensusTerminationMapList[seq][0]
 				consensusValue := TerminationValue{isNull: terminationValue.Value == 0, CommandData: terminationValue.CommandData, phase: 0, seq: seq}
-				//notifyTermination(setConnectionWithOtherReplicas(replicaIPs),seq, consensusValue)
+				notifyTermination(setConnectionWithOtherReplicas(replicaIPs),seq, consensusValue)
 				//color.Green("reached consensus: ", consensusValue, "\n")
 				Dictionary[CommandTimestamp{Command: consensusValue.CommandData.Op, Timestamp: consensusValue.CommandData.Timestamp}] = true
 				if !consensusValue.isNull && consensusValue.CommandData.Op == "" {
@@ -115,10 +115,10 @@ func main() {
 			var consensusValue TerminationValue
 			if stateStruct.Value == 0 {
 				consensusValue = TerminationValue{isNull: true, CommandData: stateStruct.CommandData, phase: 0, seq: seq}
-				//notifyTermination(setConnectionWithOtherReplicas(replicaIPs),seq, consensusValue)
+				notifyTermination(setConnectionWithOtherReplicas(replicaIPs),seq, consensusValue)
 			}else{
 				consensusValue = TerminationValue{isNull: false, CommandData: stateStruct.CommandData, phase: 0, seq: seq}
-				//notifyTermination(setConnectionWithOtherReplicas(replicaIPs),seq, consensusValue)
+				notifyTermination(setConnectionWithOtherReplicas(replicaIPs),seq, consensusValue)
 			}
 			//color.Green("reached consensus: ", consensusValue, "\n")
 
@@ -211,12 +211,12 @@ func weakMVC(stateStruct StateValueData, seq int) TerminationValue {
 	if terminationFlag == 1 {
 		if voteValue.Value == 0 {
 			terminationValue := TerminationValue{isNull: true, CommandData: voteValue.CommandData, phase: phase, seq: seq}
-			//notifyTermination(setConnectionWithOtherReplicas(replicaIPs),seq, terminationValue)
+			notifyTermination(setConnectionWithOtherReplicas(replicaIPs),seq, terminationValue)
 			//c.Println("reached consensus: ", terminationValue)
 			return terminationValue
 		} else {
 			terminationValue := TerminationValue{isNull: false, CommandData: voteValue.CommandData, phase: phase, seq: seq}
-			//notifyTermination(setConnectionWithOtherReplicas(replicaIPs),seq, terminationValue)
+			notifyTermination(setConnectionWithOtherReplicas(replicaIPs),seq, terminationValue)
 			//c.Println("reached consensus: ", terminationValue)
 			return terminationValue
 		}
@@ -230,12 +230,12 @@ func weakMVC(stateStruct StateValueData, seq int) TerminationValue {
 	if terminationFlag == 1 {
 		if returnStruct.ConsensusValue == 0 {
 			terminationValue := TerminationValue{isNull: true, CommandData: returnStruct.CommandData, phase: phase, seq: seq}
-			//notifyTermination(setConnectionWithOtherReplicas(replicaIPs),seq, terminationValue)
+			notifyTermination(setConnectionWithOtherReplicas(replicaIPs),seq, terminationValue)
 			//c.Println("reached consensus: ", terminationValue)
 			return terminationValue
 		} else {
 			terminationValue := TerminationValue{isNull: false, CommandData: returnStruct.CommandData, phase: phase, seq: seq}
-			//notifyTermination(setConnectionWithOtherReplicas(replicaIPs),seq, terminationValue)
+			notifyTermination(setConnectionWithOtherReplicas(replicaIPs),seq, terminationValue)
 			//c.Println("reached consensus: ", terminationValue)
 			return terminationValue
 		}
@@ -250,12 +250,12 @@ func weakMVC(stateStruct StateValueData, seq int) TerminationValue {
 		if terminationFlag == 1 {
 			if voteValue.Value == 0 {
 				terminationValue := TerminationValue{isNull: true, CommandData: voteValue.CommandData, phase: phase, seq: seq}
-				//notifyTermination(setConnectionWithOtherReplicas(replicaIPs),seq, terminationValue)
+				notifyTermination(setConnectionWithOtherReplicas(replicaIPs),seq, terminationValue)
 				//c.Println("reached consensus: ", terminationValue)
 				return terminationValue
 			} else {
 				terminationValue := TerminationValue{isNull: false, CommandData: voteValue.CommandData, phase: phase, seq: seq}
-				//notifyTermination(setConnectionWithOtherReplicas(replicaIPs),seq, terminationValue)
+				notifyTermination(setConnectionWithOtherReplicas(replicaIPs),seq, terminationValue)
 				//c.Println("reached consensus: ", terminationValue)
 				return terminationValue
 			}
@@ -267,12 +267,12 @@ func weakMVC(stateStruct StateValueData, seq int) TerminationValue {
 		if terminationFlag == 1 {
 			if returnStruct.ConsensusValue == 0 {
 				terminationValue := TerminationValue{isNull: true, CommandData: returnStruct.CommandData, phase: phase, seq: seq}
-				//notifyTermination(setConnectionWithOtherReplicas(replicaIPs),seq, terminationValue)
+				notifyTermination(setConnectionWithOtherReplicas(replicaIPs),seq, terminationValue)
 				//c.Println("reached consensus: ", terminationValue)
 				return terminationValue
 			} else {
 				terminationValue := TerminationValue{isNull: false, CommandData: returnStruct.CommandData, phase: phase, seq: seq}
-				//notifyTermination(setConnectionWithOtherReplicas(replicaIPs),seq, terminationValue)
+				notifyTermination(setConnectionWithOtherReplicas(replicaIPs),seq, terminationValue)
 				//c.Println("reached consensus: ", terminationValue)
 				return terminationValue
 			}
