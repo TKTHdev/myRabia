@@ -63,7 +63,6 @@ func main() {
 	//ここで合意アルゴリズムを実行
 	for {
 		PQMutex.Lock()
-		fmt.Println(Dictionary)
 		if PQ.Len() == 0 {
 			PQMutex.Unlock()
 			ConsensusTerminationMutex.Lock()
@@ -74,7 +73,7 @@ func main() {
 				color.Green("reached consensus: ", consensusValue, "\n")
 
 				if !consensusValue.isNull{
-					Dictionary[consensusValue.CommandData] = true
+					Dictionary[CommandTimestamp{Command: consensusValue.CommandData, Timestamp: consensusValue.CommandData.Timestamp}] = true
 				}
 
 
@@ -109,10 +108,10 @@ func main() {
 		PQMutex.Unlock()
 		commandPointer := heap.Pop(&PQ).(*CommandData)
 		fmt.Println("Command: ", *commandPointer)
-		if Dictionary[*commandPointer] {
+		if Dictionary[CommandTimestamp{Command: *commandPointer, Timestamp: commandPointer.Timestamp}] {
 			//fmt.Println("Command already reached consensus: ", *commandPointer)
 			//fmt.Println("Dictionary: ", Dictionary)
-			delete(Dictionary, *commandPointer)
+			delete(Dictionary, CommandTimestamp{Command: *commandPointer, Timestamp: commandPointer.Timestamp})
 			continue
 		}
 		var stateStruct StateValueData
@@ -142,7 +141,7 @@ func main() {
 				PQ.Push(commandPointer)
 				
 				if !consensusValue.isNull {
-					Dictionary[consensusValue.CommandData] = true
+					Dictionary[CommandTimestamp{Command: consensusValue.CommandData, Timestamp:consensusValue.CommandData.Timestamp}] = true
 				}
 				PQMutex.Unlock()
 			}
@@ -185,7 +184,7 @@ func main() {
 			PQ.Push(commandPointer)
 			PQMutex.Unlock()
 			if !consensusValue.isNull {
-				Dictionary[consensusValue.CommandData] = true
+				Dictionary[CommandTimestamp{Command: consensusValue.CommandData, Timestamp: consensusValue.CommandData.Timestamp}] = true
 			}
 		}
 		if !consensusValue.isNull {
