@@ -127,7 +127,7 @@ func main() {
 				 c := color.New(color.FgHiRed)
 				 c.Println("This should not happen!")
 			}
-			if consensusValue.CommandData != *commandPointer || consensusValue.isNull {
+			if consensusValue.CommandData != *commandPointer || consensusValue.isNull && consensusValue.CommandData.Op != ""{
 				PQMutex.Lock()
 				// c := color.New(color.FgYellow)
 				c.Println("Adding to dictionary: ", consensusValue.CommandData)
@@ -169,7 +169,9 @@ func main() {
 			 c := color.New(color.FgHiRed)
 			 c.Println("This should not happen!")
 		}
-		if consensusValue.CommandData != *commandPointer || consensusValue.isNull {
+
+
+		if consensusValue.CommandData != *commandPointer || consensusValue.isNull && consensusValue.CommandData.Op != ""{
 			PQMutex.Lock()
 			c := color.New(color.FgYellow)
 			c.Println("Adding to dictionary: ", consensusValue.CommandData)
