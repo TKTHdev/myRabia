@@ -2,7 +2,7 @@ package main
 
 
 import(
-	"container/heap"
+	
 )
 
 type PriorityQueue []*CommandData
@@ -22,7 +22,6 @@ func (pq PriorityQueue) Swap(i, j int) {
 
 func (pq *PriorityQueue) Push(x interface{}) {
 	*pq = append(*pq, x.(*CommandData))
-	heap.Push(pq, x)
 }
 
 
