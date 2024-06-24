@@ -71,7 +71,14 @@ func main() {
 				consensusValue := TerminationValue{isNull: terminationValue.Value == 0, CommandData: terminationValue.CommandData, phase: 0, seq: seq}
 				notifyTermination(setConnectionWithOtherReplicas(replicaIPs),seq, consensusValue)
 				color.Green("reached consensus: ", consensusValue, "\n")
-				Dictionary[consensusValue.CommandData] = true
+
+				if !consensusValue.isNull{
+					Dictionary[consensusValue.CommandData] = true
+				}
+
+
+
+
 				if !consensusValue.isNull && consensusValue.CommandData.Op == "" {
 					 c := color.New(color.FgHiRed)
 					 c.Println("This should not happen!")
@@ -133,7 +140,9 @@ func main() {
 				c.Println("Adding to dictionary: ", consensusValue.CommandData)
 				PQ.Push(commandPointer)
 				
-				Dictionary[consensusValue.CommandData] = true
+				if !consensusValue.isNull {
+					Dictionary[consensusValue.CommandData] = true
+				}
 				PQMutex.Unlock()
 			}
 			if !consensusValue.isNull {
@@ -173,8 +182,10 @@ func main() {
 			c := color.New(color.FgYellow)
 			c.Println("Adding to dictionary: ", consensusValue.CommandData)
 			PQ.Push(commandPointer)
-			Dictionary[consensusValue.CommandData] = true
 			PQMutex.Unlock()
+			if !consensusValue.isNull {
+				Dictionary[consensusValue.CommandData] = true
+			}
 		}
 		if !consensusValue.isNull {
 			parseWriteCommand(consensusValue.CommandData.Op, StateMachine)
