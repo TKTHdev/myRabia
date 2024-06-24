@@ -62,7 +62,6 @@ func main() {
 
 	//ここで合意アルゴリズムを実行
 	for {
-		fmt.Println("Seq: ", seq)
 		PQMutex.Lock()
 		if PQ.Len() == 0 {
 			PQMutex.Unlock()
@@ -93,6 +92,7 @@ func main() {
 				}
 
 				seq++
+				fmt.Println("Seq: ", seq)
 			}
 
 			ConsensusTerminationMutex.Unlock()
@@ -151,13 +151,11 @@ func main() {
 				responseChannelMap[consensusValue.CommandData.ClientAddr] <- ResponseToClient{Value: 0, ClientAddr: consensusValue.CommandData.ClientAddr}
 				// fmt.Println("Inserted response to slice")
 			}
-			PQMutex.Lock()
-			//fmt.Println("PQ len: ", PQ.Len())
-			PQMutex.Unlock()
 
 		
 
 			seq++
+			fmt.Println("Seq: ", seq)
 			// fmt.Println("null cnt:", nullCnt)
 			// fmt.Println("non-null percentage: ", (float64(seq-nullCnt)/float64(seq))*100)
 			continue
@@ -193,11 +191,9 @@ func main() {
 		}
 
 		//c.Println("SM in seq", seq, ":", StateMachine)
-		PQMutex.Lock()
-		//fmt.Println("PQ len: ", PQ.Len())
-		PQMutex.Unlock()
 		seq++
 		// fmt.Println("null cnt:", nullCnt)
+		fmt.Println("Seq: ", seq)
 		// fmt.Println("non-null percentage: ", (float64(seq-nullCnt)/float64(seq))*100)
 	}
 }
