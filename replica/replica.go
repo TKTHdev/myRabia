@@ -62,6 +62,7 @@ func main() {
 
 	//ここで合意アルゴリズムを実行
 	for {
+		fmt.Println("Seq: ", seq)
 		PQMutex.Lock()
 		if PQ.Len() == 0 {
 			PQMutex.Unlock()
@@ -100,8 +101,8 @@ func main() {
 		PQMutex.Unlock()
 		commandPointer := heap.Pop(&PQ).(*CommandData)
 		if Dictionary[CommandTimestamp{Command: commandPointer.Op, Timestamp: commandPointer.Timestamp}] {
-			fmt.Println("Command already reached consensus: ", *commandPointer)
-			fmt.Println("Dictionary: ", Dictionary)
+			//fmt.Println("Command already reached consensus: ", *commandPointer)
+			//fmt.Println("Dictionary: ", Dictionary)
 			delete(Dictionary, CommandTimestamp{Command: commandPointer.Op, Timestamp: commandPointer.Timestamp})
 			continue
 		}
@@ -151,7 +152,7 @@ func main() {
 				// fmt.Println("Inserted response to slice")
 			}
 			PQMutex.Lock()
-			fmt.Println("PQ len: ", PQ.Len())
+			//fmt.Println("PQ len: ", PQ.Len())
 			PQMutex.Unlock()
 
 		
@@ -185,15 +186,15 @@ func main() {
 
 		IP2 := strings.Split(consensusValue.CommandData.ReplicaAddr, ":")[0]
 		if ownIP == IP2 {
-			 fmt.Println("Sending response to client")
-			 fmt.Println("ClientAddr: ", consensusValue.CommandData.ClientAddr)
+			 //fmt.Println("Sending response to client")
+			 //fmt.Println("ClientAddr: ", consensusValue.CommandData.ClientAddr)
 			responseChannelMap[consensusValue.CommandData.ClientAddr] <- ResponseToClient{Value: 0, ClientAddr: consensusValue.CommandData.ClientAddr}
-			 fmt.Println("Inserted response to slice")
+			 //fmt.Println("Inserted response to slice")
 		}
 
-		c.Println("SM in seq", seq, ":", StateMachine)
+		//c.Println("SM in seq", seq, ":", StateMachine)
 		PQMutex.Lock()
-		fmt.Println("PQ len: ", PQ.Len())
+		//fmt.Println("PQ len: ", PQ.Len())
 		PQMutex.Unlock()
 		seq++
 		// fmt.Println("null cnt:", nullCnt)
@@ -226,7 +227,7 @@ func weakMVC(stateStruct StateValueData, seq int) TerminationValue {
 	}
 
 	//Round 2
-	 fmt.Println("voteValue: ", voteValue)
+	//fmt.Println("voteValue: ", voteValue)
 	var vote VoteValueData = VoteValueData{Value: voteValue.Value, Seq: seq, Phase: phase, CommandData: voteValue.CommandData}
 	terminationFlag, returnStruct := roundTwo(vote, seq, phase)
 	//fmt.Println("returnStruct: ", returnStruct)
@@ -263,10 +264,10 @@ func weakMVC(stateStruct StateValueData, seq int) TerminationValue {
 				return terminationValue
 			}
 		}
-		fmt.Println("voteValue: ", voteValue)
+		//fmt.Println("voteValue: ", voteValue)
 		var vote VoteValueData = VoteValueData{Value: voteValue.Value, Seq: seq, Phase: phase, CommandData: voteValue.CommandData}
 		terminationFlag, returnStruct = roundTwo(vote, seq, phase)
-		fmt.Println("returnStruct: ", returnStruct)
+		//fmt.Println("returnStruct: ", returnStruct)
 		if terminationFlag == 1 {
 			if returnStruct.ConsensusValue == 0 {
 				terminationValue := TerminationValue{isNull: true, CommandData: returnStruct.CommandData, phase: phase, seq: seq}

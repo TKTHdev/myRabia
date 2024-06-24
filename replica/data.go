@@ -135,9 +135,8 @@ func listenAndAccept() {
 	defer ln.Close()
 
 	for {
-		fmt.Println("Waiting for connection...")
 		conn, err := ln.Accept()
-		fmt.Println("Message received from: ", conn.RemoteAddr())
+		//fmt.Println("Message received from: ", conn.RemoteAddr())
 		if err != nil {
 			//fmt.Println("接続エラー:", err)
 			continue
@@ -190,7 +189,7 @@ func handleConnection(conn net.Conn) {
 			ConsensusTerminationMutex.Unlock()
 
 		case Request:
-			fmt.Println("Received Request: ", data)
+			//fmt.Println("Received Request: ", data)
 
 			if data.CommandData.Op[0] == 'R' {
 				value, err := parseReadCommand(data.CommandData.Op, StateMachine)
@@ -214,15 +213,15 @@ func handleConnection(conn net.Conn) {
 				}
 				//Wait for termination
 				go func() {
-					fmt.Println(data.CommandData.ClientAddr)
+					//fmt.Println(data.CommandData.ClientAddr)
 					response := <-responseChannelMap[data.CommandData.ClientAddr]
-					fmt.Println("Response to client: ", response)
+					//fmt.Println("Response to client: ", response)
 					sendData(conn, response)
 
 				}()
 			} else {
 				PQMutex.Lock()
-				fmt.Println("received redirected request: " + data.CommandData.Op)
+				//fmt.Println("received redirected request: " + data.CommandData.Op)
 				PQ.Push(&data.CommandData)
 				PQMutex.Unlock()
 			}
@@ -242,9 +241,9 @@ func broadCastData(IPLists []string, data Data) {
 			IPs = append(IPs , ip)
 		}
 	}
-	fmt.Println("broadcasting to replicas: ", IPs)
+	//fmt.Println("broadcasting to replicas: ", IPs)
 	conns := setConnectionWithOtherReplicas(IPs)
-	fmt.Println("broadcast to replicas: ", conns)
+	//fmt.Println("broadcast to replicas: ", conns)
 	for _, conn := range conns {
 		sendData(conn, data)
 	}
