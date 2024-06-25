@@ -98,7 +98,7 @@ func main() {
 
 		
 		var stateStruct StateValueData
-		// fmt.Println("cnt: ", seq)
+		 fmt.Println("cnt: ", seq)
 		var terminationFlag int
 		commandPointer.Seq = seq
 		terminationFlag, stateStruct = exchangeStage(*commandPointer, seq)
@@ -135,7 +135,7 @@ func main() {
 				nullCnt++
 			}
 
-			//c.Println("SM in seq", seq, ":", StateMachine)
+			c.Println("SM in seq", seq, ":", StateMachine)
 
 			// fmt.Println("IP: ", ownIP)
 			IP2 := strings.Split(consensusValue.CommandData.ReplicaAddr, ":")[0]
@@ -187,7 +187,7 @@ func main() {
 			 //fmt.Println("Inserted response to slice")
 		}
 
-		//c.Println("SM in seq", seq, ":", StateMachine)
+		c.Println("SM in seq", seq, ":", StateMachine)
 		seq++
 		// fmt.Println("null cnt:", nullCnt)
 		// fmt.Println("non-null percentage: ", (float64(seq-nullCnt)/float64(seq))*100)
@@ -201,7 +201,7 @@ func weakMVC(stateStruct StateValueData, seq int) TerminationValue {
 	c := color.New(color.FgGreen)
 
 	//Round 1
-	//fmt.Println("State struct: ", stateStruct)
+	fmt.Println("State struct: ", stateStruct)
 	var state StateValueData = StateValueData{Value: stateStruct.Value, Seq: seq, Phase: phase, CommandData: stateStruct.CommandData}
 	terminationFlag, voteValue := roundOne(state, seq, phase)
 	if terminationFlag == 1 {
@@ -219,10 +219,10 @@ func weakMVC(stateStruct StateValueData, seq int) TerminationValue {
 	}
 
 	//Round 2
-	//fmt.Println("voteValue: ", voteValue)
+	fmt.Println("voteValue: ", voteValue)
 	var vote VoteValueData = VoteValueData{Value: voteValue.Value, Seq: seq, Phase: phase, CommandData: voteValue.CommandData}
 	terminationFlag, returnStruct := roundTwo(vote, seq, phase)
-	//fmt.Println("returnStruct: ", returnStruct)
+	fmt.Println("returnStruct: ", returnStruct)
 	if terminationFlag == 1 {
 		if returnStruct.ConsensusValue == 0 {
 			terminationValue := TerminationValue{isNull: true, CommandData: returnStruct.CommandData, phase: phase, seq: seq}
@@ -256,10 +256,10 @@ func weakMVC(stateStruct StateValueData, seq int) TerminationValue {
 				return terminationValue
 			}
 		}
-		//fmt.Println("voteValue: ", voteValue)
+		fmt.Println("voteValue: ", voteValue)
 		var vote VoteValueData = VoteValueData{Value: voteValue.Value, Seq: seq, Phase: phase, CommandData: voteValue.CommandData}
 		terminationFlag, returnStruct = roundTwo(vote, seq, phase)
-		//fmt.Println("returnStruct: ", returnStruct)
+		fmt.Println("returnStruct: ", returnStruct)
 		if terminationFlag == 1 {
 			if returnStruct.ConsensusValue == 0 {
 				terminationValue := TerminationValue{isNull: true, CommandData: returnStruct.CommandData, phase: phase, seq: seq}
