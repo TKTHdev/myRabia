@@ -243,6 +243,7 @@ func resolveTermination(termination TerminationValue, ownProposal CommandData){
 
 	IP := strings.Split(termination.CommandData.ReplicaAddr, ":")[0]
 	if ownIP == IP  {
+		fmt.Println("Sending response to client: ", termination.CommandData.ClientAddr)
 		responseChannelMap[termination.CommandData.ClientAddr] <- ResponseToClient{Value: 0, ClientAddr: termination.CommandData.ClientAddr}
 	}
 }
