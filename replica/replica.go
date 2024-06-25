@@ -97,45 +97,6 @@ func main() {
 
 		if PQ.Len() == 0{
 			PQMutex.Unlock()
-			ConsensusTerminationMutex.Lock()
-			//fmt.Println("ConsensusTerminationMapList: ", ConsensusTerminationMapList)
-			if len(ConsensusTerminationMapList[seq]) != 0 {
-				terminationValue := ConsensusTerminationMapList[seq][0]
-				fmt.Println("received termination for seq: ", terminationValue.Seq )
-				consensusValue := TerminationValue{isNull: terminationValue.Value == 0, CommandData: terminationValue.CommandData, phase: 0, seq: seq}
-				notifyTermination(setConnectionWithOtherReplicas(replicaIPs),seq, consensusValue)
-				color.Green("reached consensus: ", consensusValue, "\n")
-
-				if !consensusValue.isNull{
-					Dictionary[OpTimestamp{Op: consensusValue.CommandData.Op, Timestamp: consensusValue.CommandData.Timestamp}] = true
-				}
-
-
-
-
-				if !consensusValue.isNull && consensusValue.CommandData.Op == "" {
-					 c := color.New(color.FgHiRed)
-					 c.Println("This should not happen!")
-				}
-				if !consensusValue.isNull {
-					parseWriteCommand(consensusValue.CommandData.Op, StateMachine)
-				} else {
-					nullCnt++
-				}
-				c.Println("SM in seq", seq, ":", StateMachine)
-
-				IP2 := strings.Split(terminationValue.CommandData.ReplicaAddr, ":")[0]
-
-				if ownIP == IP2 {
-					// fmt.Println("Sending response to client")
-					responseChannelMap[terminationValue.CommandData.ClientAddr] <- ResponseToClient{Value: 0, ClientAddr: terminationValue.CommandData.ClientAddr}
-					// fmt.Println("Inserted response to slice")
-				}
-
-				seq++
-				fmt.Println("Seq: ", seq)
-			}
-
 			ConsensusTerminationMutex.Unlock()
 			continue
 		}
