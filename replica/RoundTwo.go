@@ -34,9 +34,10 @@ func roundTwoReceive(selfSeq int, nodeNum int, phase int) (int, int, CommandData
 		if len(ConsensusTerminationMapList[selfSeq]) != 0 {
 			//fmt.Println(len(ConsensusTerminationMapList[selfSeq]))
 			value := ConsensusTerminationMapList[selfSeq][0].Value
+			commandData := ConsensusTerminationMapList[selfSeq][0].CommandData
 			ConsensusTerminationMutex.Unlock()
 			VoteValueDataMutex.Unlock()
-			return 1, value, ConsensusTerminationMapList[selfSeq][0].CommandData
+			return 1, value, commandData
 		}
 		ConsensusTerminationMutex.Unlock()
 
