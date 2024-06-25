@@ -62,7 +62,6 @@ func main() {
 	//ここで合意アルゴリズムを実行
 	for {
 		PQMutex.Lock()
-		fmt.Println("PQ: ", PQ)
 		ConsensusTerminationMutex.Lock()
 		if ConsensusTerminationMapList[seq] != nil {
 
