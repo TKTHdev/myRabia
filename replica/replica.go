@@ -76,6 +76,8 @@ func main() {
 			continue
 
 		}
+
+		fmt.Println("PQ: ", PQ)
 		
 		if len(PQ) == 0 {
 			PQMutex.Unlock()
