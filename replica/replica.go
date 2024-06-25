@@ -62,10 +62,9 @@ func main() {
 
 	//ここで合意アルゴリズムを実行
 	for {
-		fmt.Println("Seq: ", seq)
 		PQMutex.Lock()
+		ConsensusTerminationMutex.Lock()
 		if ConsensusTerminationMapList[seq] != nil {
-			ConsensusTerminationMutex.Lock()
 			terminationValue:=ConsensusTerminationMapList[seq][0]
 			fmt.Println("received termination for seq: ", terminationValue.Seq)
 			consensusValue := TerminationValue{isNull: terminationValue.Value == 0, CommandData: terminationValue.CommandData, phase: 0, seq: seq}
@@ -140,8 +139,8 @@ func main() {
 			ConsensusTerminationMutex.Unlock()
 			continue
 		}
-		PQMutex.Unlock()
 		commandPointer := heap.Pop(&PQ).(*CommandData)
+		PQMutex.Unlock()	
 		fmt.Println("Command: ", *commandPointer)
 		if Dictionary[OpTimestamp{Op: commandPointer.Op, Timestamp: commandPointer.Timestamp}] {
 			//fmt.Println("Command already reached consensus: ", *commandPointer)
