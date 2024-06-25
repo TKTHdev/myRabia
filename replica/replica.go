@@ -233,7 +233,7 @@ func resolveTermination(termination TerminationValue, ownProposal CommandData){
 		return 
 	}
 
-	if termination.CommandData != ownProposal  {
+	if termination.CommandData != ownProposal && ownProposal.Op != ""{
 		PQMutex.Lock()
 		heap.Push(&PQ, &ownProposal)
 		PQMutex.Unlock()
