@@ -73,7 +73,7 @@ func main() {
 			ConsensusTerminationMutex.Unlock()
 			terminationValue := TerminationValue{isNull: consensusValue.Value == 0, CommandData: consensusValue.CommandData, phase: 0, seq: seq}
 			notifyTermination(setConnectionWithOtherReplicas(replicaIPs),seq, terminationValue)
-			color.Green("reached consensus: ", terminationValue, "\n")
+			color.Yellow("reached consensus: ", terminationValue, "\n")
 			if !terminationValue.isNull && terminationValue.CommandData.Op == "" {
 				 c := color.New(color.FgHiRed)
 				 c.Println("This should not happen!")
