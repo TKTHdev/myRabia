@@ -70,7 +70,8 @@ func main() {
 
 
 			value := ConsensusTerminationMapList[seq][0]
-			resolveTermination(TerminationValue{isNull: value.Value==0, CommandData: value.CommandData, phase: 0, seq: seq}, CommandData{})
+			resolveTermination(TerminationValue{isNull: value.Value==0, CommandData: value.CommandData, phase: 0, seq: seq}, CommandData{Op: "", Timestamp: time.Now(), ClientAddr: "", ReplicaAddr: ""})
+
 			c.Println("SM in seq", seq, ":", StateMachine)
 			seq++
 			continue
@@ -243,9 +244,11 @@ func resolveTermination(termination TerminationValue, ownProposal CommandData){
 		return 
 	}
 
-	if (termination.CommandData != ownProposal )&& ownProposal.Op != ""{
+	if termination.CommandData != ownProposal{
 		PQMutex.Lock()
-		heap.Push(&PQ, &ownProposal)
+		if ownProposal.Op != "" {
+			heap.Push(&PQ, &ownProposal)
+		}
 		PQMutex.Unlock()
 		Dictionary[OpTimestamp{Op: termination.CommandData.Op, Timestamp: termination.CommandData.Timestamp}] = true
 	}
