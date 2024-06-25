@@ -81,7 +81,7 @@ func main() {
 			}
 
 			IP2 := strings.Split(terminationValue.CommandData.ReplicaAddr, ":")[0]
-			if ownIP == IP2 {
+			if ownIP == IP2 && !terminationValue.isNull{
 				responseChannelMap[terminationValue.CommandData.ClientAddr] <- ResponseToClient{Value: 0, ClientAddr: terminationValue.CommandData.ClientAddr}
 			}
 
