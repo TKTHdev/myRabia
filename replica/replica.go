@@ -77,7 +77,7 @@ func main() {
 
 		}
 
-		fmt.Println("PQ: ", PQ)
+		//fmt.Println("PQ: ", PQ)
 		
 		if len(PQ) == 0 {
 			PQMutex.Unlock()
@@ -87,6 +87,7 @@ func main() {
 		ConsensusTerminationMutex.Unlock()
 
 		commandPointer := heap.Pop(&PQ).(*CommandData)
+		fmt.Println("proposal: ", *commandPointer)
 		PQMutex.Unlock()
 
 		
@@ -232,7 +233,7 @@ func resolveTermination(termination TerminationValue, ownProposal CommandData){
 		return 
 	}
 
-	if termination.CommandData != ownProposal {
+	if termination.CommandData != ownProposal  {
 		PQMutex.Lock()
 		heap.Push(&PQ, &ownProposal)
 		PQMutex.Unlock()
