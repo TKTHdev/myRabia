@@ -96,6 +96,7 @@ func main() {
 		commandPointer.Seq = seq
 		terminationFlag, stateStruct = exchangeStage(*commandPointer, seq)
 		if terminationFlag == 1 {
+
 			value := TerminationValue{isNull: stateStruct.Value == 0, CommandData: stateStruct.CommandData, phase: 0, seq: seq}
 			color.Green("reached consensus: ", value, "\n")
 			resolveTermination(value, *commandPointer)
@@ -124,7 +125,7 @@ func weakMVC(stateStruct StateValueData, seq int) TerminationValue {
 	c := color.New(color.FgGreen)
 
 	//Round 1
-	//fmt.Println("State struct: ", stateStruct)
+	fmt.Println("State struct: ", stateStruct)
 	var state StateValueData = StateValueData{Value: stateStruct.Value, Seq: seq, Phase: phase, CommandData: stateStruct.CommandData}
 	terminationFlag, voteValue := roundOne(state, seq, phase)
 	if terminationFlag == 1 {
@@ -142,7 +143,7 @@ func weakMVC(stateStruct StateValueData, seq int) TerminationValue {
 	}
 
 	//Round 2
-	//fmt.Println("voteValue: ", voteValue)
+	fmt.Println("voteValue: ", voteValue)
 	var vote VoteValueData = VoteValueData{Value: voteValue.Value, Seq: seq, Phase: phase, CommandData: voteValue.CommandData}
 	terminationFlag, returnStruct := roundTwo(vote, seq, phase)
 	//fmt.Println("returnStruct: ", returnStruct)
@@ -179,7 +180,7 @@ func weakMVC(stateStruct StateValueData, seq int) TerminationValue {
 				return terminationValue
 			}
 		}
-		//fmt.Println("voteValue: ", voteValue)
+		fmt.Println("voteValue: ", voteValue)
 		var vote VoteValueData = VoteValueData{Value: voteValue.Value, Seq: seq, Phase: phase, CommandData: voteValue.CommandData}
 		terminationFlag, returnStruct = roundTwo(vote, seq, phase)
 		//fmt.Println("returnStruct: ", returnStruct)
@@ -240,7 +241,7 @@ func resolveTermination(termination TerminationValue, ownProposal CommandData){
 	parseWriteCommand(termination.CommandData.Op, StateMachine)
 
 	IP := strings.Split(termination.CommandData.ReplicaAddr, ":")[0]
-	if ownIP == IP {
+	if ownIP == IP  {
 		responseChannelMap[termination.CommandData.ClientAddr] <- ResponseToClient{Value: 0, ClientAddr: termination.CommandData.ClientAddr}
 	}
 }
