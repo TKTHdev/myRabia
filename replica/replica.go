@@ -82,6 +82,13 @@ func main() {
 				parseWriteCommand(terminationValue.CommandData.Op, StateMachine)
 				Dictionary[OpTimestamp{Op: terminationValue.CommandData.Op, Timestamp:terminationValue.CommandData.Timestamp}] = true
 			}
+
+			IP2 := strings.Split(terminationValue.CommandData.ReplicaAddr, ":")[0]
+			if ownIP == IP2 {
+				responseChannelMap[terminationValue.CommandData.ClientAddr] <- ResponseToClient{Value: 0, ClientAddr: terminationValue.CommandData.ClientAddr}
+			}
+			
+
 			seq++
 			continue
 		}
