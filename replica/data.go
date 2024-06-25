@@ -166,7 +166,7 @@ func handleConnection(conn net.Conn) {
 		switch data := data.(type) {
 		case CommandData:
 			CommandDataMutex.Lock()
-			//fmt.Println("Received CommandData: ", data)
+			fmt.Println("Received CommandData: ", data)
 			CommandDataMapList[data.Seq] = append(CommandDataMapList[data.Seq], data)
 			//fmt.Println("CommandDataMapList: ", CommandDataMapList)
 			CommandDataMutex.Unlock()
