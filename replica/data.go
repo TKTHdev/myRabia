@@ -172,13 +172,13 @@ func handleConnection(conn net.Conn) {
 			CommandDataMutex.Unlock()
 		case StateValueData:
 			StateValueDataMutex.Lock()
-			//fmt.Println("Received StateValueData: ", data)
+			fmt.Println("Received StateValueData: ", data)
 			StateValueDataMapList[SeqPhase{Seq: data.Seq, Phase: data.Phase}] = append(StateValueDataMapList[SeqPhase{Seq: data.Seq, Phase: data.Phase}], data)
 			//fmt.Println("StateValueDataMapList: ", StateValueDataMapList)
 			StateValueDataMutex.Unlock()
 		case VoteValueData:
 			VoteValueDataMutex.Lock()
-			//fmt.Println("Received VoteValueData: ", data)
+			fmt.Println("Received VoteValueData: ", data)
 			VoteValueDataMapList[SeqPhase{Seq: data.Seq, Phase: data.Phase}] = append(VoteValueDataMapList[SeqPhase{Seq: data.Seq, Phase: data.Phase}], data)
 			//fmt.Println("VoteValueDataMaplist: ", VoteValueDataMaplist)
 			VoteValueDataMutex.Unlock()
