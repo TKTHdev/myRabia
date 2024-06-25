@@ -302,8 +302,10 @@ func notifyTermination(conns []net.Conn,  seq int, termination TerminationValue)
 		go func(conn net.Conn) {
 			if termination.isNull{
 				sendData(conn, ConsensusTermination{Seq: seq, Value: 0, CommandData: termination.CommandData})
+				fmt.Println("sending termination to: ", conn.RemoteAddr().String())
 			}else{
 				sendData(conn, ConsensusTermination{Seq: seq, Value: 1, CommandData: termination.CommandData})
+				fmt.Println("sending termination to: ", conn.RemoteAddr().String())
 			}
 		}(conn)
 	}
