@@ -172,6 +172,7 @@ func main() {
 				Dictionary[OpTimestamp{Op: consensusValue.CommandData.Op, Timestamp: consensusValue.CommandData.Timestamp}] = true
 			}
 		}
+		fmt.Println("HERERERE")
 		if !consensusValue.isNull {
 			parseWriteCommand(consensusValue.CommandData.Op, StateMachine)
 		} else {
@@ -198,7 +199,7 @@ func weakMVC(stateStruct StateValueData, seq int) TerminationValue {
 
 	var phase int = 0
 
-	c := color.New(color.FgBlue)
+	c := color.New(color.FgGreen)
 
 	//Round 1
 	//fmt.Println("State struct: ", stateStruct)
