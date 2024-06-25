@@ -226,14 +226,14 @@ func resolveTermination(termination TerminationValue, ownProposal CommandData){
 		c.Println("This should not happen!")
 	}
 
-	if termination.isNull{
+	if termination.isNull && ownProposal.Op != ""{
 		PQMutex.Lock()
 		heap.Push(&PQ, &ownProposal)
 		PQMutex.Unlock()
 		return 
 	}
 
-	if termination.CommandData != ownProposal && ownProposal.Op != ""{
+	if (termination.CommandData != ownProposal )&& ownProposal.Op != ""{
 		PQMutex.Lock()
 		heap.Push(&PQ, &ownProposal)
 		PQMutex.Unlock()
