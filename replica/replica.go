@@ -84,9 +84,19 @@ func main() {
 			ConsensusTerminationMutex.Unlock()
 			continue
 		}
+
+
+
 		ConsensusTerminationMutex.Unlock()
 
 		commandPointer := heap.Pop(&PQ).(*CommandData)
+
+
+		if Dictionary[OpTimestamp{Op: commandPointer.Op, Timestamp: commandPointer.Timestamp}] {
+			PQMutex.Unlock()
+			continue
+		}
+
 		fmt.Println("proposal: ", *commandPointer)
 		PQMutex.Unlock()
 
