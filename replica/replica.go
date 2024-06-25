@@ -63,7 +63,40 @@ func main() {
 	//ここで合意アルゴリズムを実行
 	for {
 		PQMutex.Lock()
-		if PQ.Len() == 0 || len(ConsensusTerminationMapList[seq]) != 0{
+		fmt.Println("Seq: ", seq)
+		if ConsensusTerminationMapList[seq] != nil {
+			ConsensusTerminationMutex.Lock()
+			terminationValue:=ConsensusTerminationMapList[seq][0]
+			fmt.Println("received termination for seq: ", terminationValue.Seq)
+			consensusValue := TerminationValue{isNull: terminationValue.Value == 0, CommandData: terminationValue.CommandData, phase: 0, seq: seq}
+			notifyTermination(setConnectionWithOtherReplicas(replicaIPs),seq, consensusValue)
+			color.Green("reached consensus: ", consensusValue, "\n")
+			if !consensusValue.isNull {
+				Dictionary[OpTimestamp{Op: consensusValue.CommandData.Op, Timestamp: consensusValue.CommandData.Timestamp}] = true
+			}
+			if !consensusValue.isNull && consensusValue.CommandData.Op == "" {
+				c := color.New(color.FgHiRed)
+				c.Println("This should not happen!")
+			}
+			if !consensusValue.isNull {
+				parseWriteCommand(consensusValue.CommandData.Op, StateMachine)
+			} else {
+				nullCnt++
+			}
+			c.Println("SM in seq", seq, ":", StateMachine)
+			IP2 := strings.Split(terminationValue.CommandData.ReplicaAddr, ":")[0]
+			if ownIP == IP2 {
+				responseChannelMap[terminationValue.CommandData.ClientAddr] <- ResponseToClient{Value: 0, ClientAddr: terminationValue.CommandData.ClientAddr}
+			}
+			seq++
+			fmt.Println("Seq: ", seq)
+			ConsensusTerminationMutex.Unlock()
+			PQMutex.Unlock()
+			continue
+		}
+
+
+		if PQ.Len() == 0{
 			PQMutex.Unlock()
 			ConsensusTerminationMutex.Lock()
 			//fmt.Println("ConsensusTerminationMapList: ", ConsensusTerminationMapList)
@@ -209,7 +242,6 @@ func main() {
 		//c.Println("SM in seq", seq, ":", StateMachine)
 		seq++
 		// fmt.Println("null cnt:", nullCnt)
-		fmt.Println("Seq: ", seq)
 		// fmt.Println("non-null percentage: ", (float64(seq-nullCnt)/float64(seq))*100)
 	}
 }
