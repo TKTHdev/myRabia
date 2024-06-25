@@ -187,6 +187,7 @@ func main() {
 			responseChannelMap[consensusValue.CommandData.ClientAddr] <- ResponseToClient{Value: 0, ClientAddr: consensusValue.CommandData.ClientAddr}
 			 //fmt.Println("Inserted response to slice")
 		}
+		fmt.Println("HEREwlRERE")
 
 		c.Println("SM in seq", seq, ":", StateMachine)
 		seq++
