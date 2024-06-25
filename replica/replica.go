@@ -62,9 +62,7 @@ func main() {
 
 	//ここで合意アルゴリズムを実行
 	for {
-		fmt.Println("HERE")
 		PQMutex.Lock()
-		fmt.Println("HERE")
 		ConsensusTerminationMutex.Lock()
 		fmt.Println("ConsensusTerminationMapList[seq]: ", ConsensusTerminationMapList[seq])
 		if ConsensusTerminationMapList[seq] != nil {
@@ -101,6 +99,7 @@ func main() {
 		ConsensusTerminationMutex.Unlock()
 
 		commandPointer := heap.Pop(&PQ).(*CommandData)
+		fmt.Println("Popped from PQ: ", *commandPointer)
 		PQMutex.Unlock()
 
 		
@@ -179,7 +178,6 @@ func main() {
 				Dictionary[OpTimestamp{Op: consensusValue.CommandData.Op, Timestamp: consensusValue.CommandData.Timestamp}] = true
 			}
 		}
-		fmt.Println("HERERERE")
 		if !consensusValue.isNull {
 			parseWriteCommand(consensusValue.CommandData.Op, StateMachine)
 		} else {
@@ -189,12 +187,11 @@ func main() {
 
 		IP2 := strings.Split(consensusValue.CommandData.ReplicaAddr, ":")[0]
 		if ownIP == IP2  && !consensusValue.isNull{
-				fmt.Println("Sending response to client")
-				fmt.Println("ClientAddr: ", consensusValue.CommandData.ClientAddr)
+			fmt.Println("Sending response to client")
+			fmt.Println("ClientAddr: ", consensusValue.CommandData.ClientAddr)
 			responseChannelMap[consensusValue.CommandData.ClientAddr] <- ResponseToClient{Value: 0, ClientAddr: consensusValue.CommandData.ClientAddr}
 			 //fmt.Println("Inserted response to slice")
 		}
-		fmt.Println("HERwlcERERE")
 
 		c.Println("SM in seq", seq, ":", StateMachine)
 		seq++
