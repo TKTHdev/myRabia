@@ -198,7 +198,7 @@ func weakMVC(stateStruct StateValueData, seq int) TerminationValue {
 
 	var phase int = 0
 
-	c := color.New(color.FgGreen)
+	c := color.New(color.FgBlue)
 
 	//Round 1
 	//fmt.Println("State struct: ", stateStruct)
