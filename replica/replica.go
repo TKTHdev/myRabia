@@ -85,6 +85,7 @@ func main() {
 		
 		if len(PQ) == 0 {
 			PQMutex.Unlock()
+			ConsensusTerminationMutex.Lock()
 			continue
 		}
 		ConsensusTerminationMutex.Unlock()
