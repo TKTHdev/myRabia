@@ -64,10 +64,12 @@ func main() {
 	for {
 		
 		PQMutex.Lock()
+		ConsensusTerminationMutex.Lock()
 		fmt.Println("ConsensusTerminationMapList[seq]: ", ConsensusTerminationMapList[seq])
 		if ConsensusTerminationMapList[seq] != nil {
 			PQMutex.Unlock()
 			consensusValue:= ConsensusTerminationMapList[seq][0]
+			ConsensusTerminationMutex.Unlock()
 			terminationValue := TerminationValue{isNull: consensusValue.Value == 0, CommandData: consensusValue.CommandData, phase: 0, seq: seq}
 			notifyTermination(setConnectionWithOtherReplicas(replicaIPs),seq, terminationValue)
 			color.Green("reached consensus: ", terminationValue, "\n")
@@ -85,8 +87,10 @@ func main() {
 		
 		if len(PQ) == 0 {
 			PQMutex.Unlock()
+			ConsensusTerminationMutex.Unlock()
 			continue
 		}
+		ConsensusTerminationMutex.Unlock()
 
 		commandPointer := heap.Pop(&PQ).(*CommandData)
 		PQMutex.Unlock()
