@@ -62,53 +62,37 @@ func main() {
 
 	//ここで合意アルゴリズムを実行
 	for {
+		
 		PQMutex.Lock()
 		ConsensusTerminationMutex.Lock()
 		if ConsensusTerminationMapList[seq] != nil {
-			terminationValue:=ConsensusTerminationMapList[seq][0]
-			fmt.Println("received termination for seq: ", terminationValue.Seq)
-			consensusValue := TerminationValue{isNull: terminationValue.Value == 0, CommandData: terminationValue.CommandData, phase: 0, seq: seq}
-			notifyTermination(setConnectionWithOtherReplicas(replicaIPs),seq, consensusValue)
-			color.Green("reached consensus: ", consensusValue, "\n")
-			if !consensusValue.isNull {
-				Dictionary[OpTimestamp{Op: consensusValue.CommandData.Op, Timestamp: consensusValue.CommandData.Timestamp}] = true
+			consensusValue:= ConsensusTerminationMapList[seq][0]
+			ConsensusTerminationMutex.Unlock()
+			terminationValue := TerminationValue{isNull: consensusValue.Value == 0, CommandData: consensusValue.CommandData, phase: 0, seq: seq}
+			notifyTermination(setConnectionWithOtherReplicas(replicaIPs),seq, terminationValue)
+			color.Green("reached consensus: ", terminationValue, "\n")
+			if !terminationValue.isNull && terminationValue.CommandData.Op == "" {
+				 c := color.New(color.FgHiRed)
+				 c.Println("This should not happen!")
 			}
-			if !consensusValue.isNull && consensusValue.CommandData.Op == "" {
-				c := color.New(color.FgHiRed)
-				c.Println("This should not happen!")
-			}
-			if !consensusValue.isNull {
-				parseWriteCommand(consensusValue.CommandData.Op, StateMachine)
-			} else {
-				nullCnt++
-			}
-			c.Println("SM in seq", seq, ":", StateMachine)
-			IP2 := strings.Split(terminationValue.CommandData.ReplicaAddr, ":")[0]
-			if ownIP == IP2 {
-				responseChannelMap[terminationValue.CommandData.ClientAddr] <- ResponseToClient{Value: 0, ClientAddr: terminationValue.CommandData.ClientAddr}
+			if !terminationValue.isNull{
+				parseWriteCommand(terminationValue.CommandData.Op, StateMachine)
+				Dictionary[OpTimestamp{Op: terminationValue.CommandData.Op, Timestamp:terminationValue.CommandData.Timestamp}] = true
 			}
 			seq++
-			fmt.Println("Seq: ", seq)
-			ConsensusTerminationMutex.Unlock()
+			continue
+		}
+		
+		if len(PQ) == 0 {
 			PQMutex.Unlock()
 			continue
 		}
+		ConsensusTerminationMutex.Unlock()
 
-
-		if PQ.Len() == 0{
-			PQMutex.Unlock()
-			ConsensusTerminationMutex.Unlock()
-			continue
-		}
 		commandPointer := heap.Pop(&PQ).(*CommandData)
-		PQMutex.Unlock()	
-		fmt.Println("Command: ", *commandPointer)
-		if Dictionary[OpTimestamp{Op: commandPointer.Op, Timestamp: commandPointer.Timestamp}] {
-			//fmt.Println("Command already reached consensus: ", *commandPointer)
-			//fmt.Println("Dictionary: ", Dictionary)
-			delete(Dictionary, OpTimestamp{Op: commandPointer.Op, Timestamp: commandPointer.Timestamp})
-			continue
-		}
+		PQMutex.Unlock()
+
+		
 		var stateStruct StateValueData
 		// fmt.Println("cnt: ", seq)
 		var terminationFlag int
