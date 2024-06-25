@@ -73,6 +73,7 @@ func main() {
 			resolveTermination(TerminationValue{isNull: value.Value==0, CommandData: value.CommandData, phase: 0, seq: seq}, CommandData{})
 			c.Println("SM in seq", seq, ":", StateMachine)
 			seq++
+			continue
 
 		}
 		
