@@ -66,6 +66,7 @@ func main() {
 		PQMutex.Lock()
 		ConsensusTerminationMutex.Lock()
 		if ConsensusTerminationMapList[seq] != nil {
+			PQMutex.Lock()
 			consensusValue:= ConsensusTerminationMapList[seq][0]
 			ConsensusTerminationMutex.Unlock()
 			terminationValue := TerminationValue{isNull: consensusValue.Value == 0, CommandData: consensusValue.CommandData, phase: 0, seq: seq}
@@ -85,7 +86,7 @@ func main() {
 		
 		if len(PQ) == 0 {
 			PQMutex.Unlock()
-			ConsensusTerminationMutex.Lock()
+			ConsensusTerminationMutex.Unlock()
 			continue
 		}
 		ConsensusTerminationMutex.Unlock()
