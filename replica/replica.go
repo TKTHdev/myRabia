@@ -188,7 +188,7 @@ func main() {
 		// c.Println("SM in seq", seq, ":", StateMachine)
 
 		IP2 := strings.Split(consensusValue.CommandData.ReplicaAddr, ":")[0]
-		if ownIP == IP2 {
+		if ownIP == IP2  && !consensusValue.isNull{
 				fmt.Println("Sending response to client")
 				fmt.Println("ClientAddr: ", consensusValue.CommandData.ClientAddr)
 			responseChannelMap[consensusValue.CommandData.ClientAddr] <- ResponseToClient{Value: 0, ClientAddr: consensusValue.CommandData.ClientAddr}
