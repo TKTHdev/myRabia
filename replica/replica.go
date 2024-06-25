@@ -138,6 +138,7 @@ func main() {
 			if consensusValue.CommandData != *commandPointer || consensusValue.isNull {
 				PQMutex.Lock()
 				// c := color.New(color.FgYellow)
+				fmt.Println("Pushing back to PQ: ", *commandPointer)
 				heap.Push(&PQ, commandPointer)
 				
 				if !consensusValue.isNull {
@@ -181,6 +182,7 @@ func main() {
 		if consensusValue.CommandData != *commandPointer || consensusValue.isNull {
 			PQMutex.Lock()
 			c := color.New(color.FgYellow)
+			fmt.Println("Pushing back to PQ: ", *commandPointer)
 			heap.Push(&PQ, commandPointer)
 			PQMutex.Unlock()
 			if !consensusValue.isNull {
