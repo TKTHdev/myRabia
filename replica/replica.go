@@ -182,12 +182,12 @@ func main() {
 
 		IP2 := strings.Split(consensusValue.CommandData.ReplicaAddr, ":")[0]
 		if ownIP == IP2 {
-			 //fmt.Println("Sending response to client")
-			 //fmt.Println("ClientAddr: ", consensusValue.CommandData.ClientAddr)
+				fmt.Println("Sending response to client")
+				fmt.Println("ClientAddr: ", consensusValue.CommandData.ClientAddr)
 			responseChannelMap[consensusValue.CommandData.ClientAddr] <- ResponseToClient{Value: 0, ClientAddr: consensusValue.CommandData.ClientAddr}
 			 //fmt.Println("Inserted response to slice")
 		}
-		fmt.Println("HEREwlRERE")
+		fmt.Println("HERwlcERERE")
 
 		c.Println("SM in seq", seq, ":", StateMachine)
 		seq++
