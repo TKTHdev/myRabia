@@ -68,6 +68,7 @@ func main() {
 			ConsensusTerminationMutex.Lock()
 			if ConsensusTerminationMapList[seq] != nil {
 				terminationValue := ConsensusTerminationMapList[seq][0]
+				fmt.Println("received termination for seq: ", terminationValue.Seq )
 				consensusValue := TerminationValue{isNull: terminationValue.Value == 0, CommandData: terminationValue.CommandData, phase: 0, seq: seq}
 				notifyTermination(setConnectionWithOtherReplicas(replicaIPs),seq, consensusValue)
 				color.Green("reached consensus: ", consensusValue, "\n")
