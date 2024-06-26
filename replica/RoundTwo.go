@@ -2,7 +2,7 @@ package main
 
 import (
 	"net"
-	//"fmt"
+	"fmt"
 	"math/rand"
 	"sync"
 
@@ -52,7 +52,7 @@ func roundTwoReceive(selfSeq int, nodeNum int, phase int) (int, int, CommandData
 					anyCommandReceived = command.CommandData
 				}
 			}
-			//fmt.Println("VoteValueDataMapList: ", VoteValueDataMapList[SeqPhase{Seq: selfSeq, Phase: phase}])
+			fmt.Println("VoteValueDataMapList: ", VoteValueDataMapList[SeqPhase{Seq: selfSeq, Phase: phase}])
 			//fmt.Println("any command received in vote round: ", anyCommandReceived)
 			cnt := make(map[VoteValueData]int)
 			for _, command := range VoteValueDataMapList[SeqPhase{Seq: selfSeq, Phase: phase}] {
