@@ -14,6 +14,12 @@ func main() {
 	command , clientNum, duration := setUp()
 	var stopChannelList []chan bool = make([]chan bool, clientNum)
 	var commandNumChannelList []chan int = make([]chan int, clientNum)
+
+	for i := 0; i < clientNum; i++ {
+		stopChannelList[i] = make(chan bool)
+		commandNumChannelList[i] = make(chan int)
+	}
+
 	for i := 0; i < clientNum; i++ {
 		  go YCSB(command, stopChannelList[i],commandNumChannelList[i] , i)
 	}
