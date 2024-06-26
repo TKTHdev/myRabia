@@ -40,10 +40,6 @@ func YCSB(command string, stopChannel chan bool, commandNumChannel chan int,  ID
 
 	var readRatio int	
 
-	fmt.Println("Replica? 1, 2 or 3?")
-	var replica int
-	fmt.Scanln(&replica)
-
 	if command == "A" {
 		readRatio = 50
 	} else if command == "B" {
