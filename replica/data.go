@@ -145,6 +145,10 @@ func listenAndAccept() {
 	}
 }
 
+
+
+
+
 func sendData(conn net.Conn, data Data) {
 	encoder := gob.NewEncoder(conn)
 	err := encoder.Encode(ConsensusData{Data: data})

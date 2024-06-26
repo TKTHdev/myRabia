@@ -61,6 +61,11 @@ func YCSB(command string, stopChannel chan bool, commandNumChannel chan int,  ID
 	var cnt int = 0
 	
 	var replicaID string = IPList[ID%replicaNum]+":8080"
+	conn, err := net.Dial("tcp", replicaID)
+	if err != nil {
+		fmt.Println("Dial error", err)
+		return
+	}
 
 	for  {
 			select{
@@ -72,12 +77,6 @@ func YCSB(command string, stopChannel chan bool, commandNumChannel chan int,  ID
 			default:
 			var command string = generateRandomCommand(readRatio)
 			//fmt.Println("Command: " + command)
-			conn, err := net.Dial("tcp", replicaID)
-			if err != nil {
-				fmt.Println("Dial error", err)
-				continue
-			}
-			defer conn.Close()
 			sendData(conn, Request{CommandData: CommandData{Op: command, Timestamp: time.Now(), Seq: 0, ClientAddr: conn.LocalAddr().String()}, Redirected: false, Timestamp: 0})
 			if command[0] == 'R' {
 				var data ConsensusData
