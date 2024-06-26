@@ -19,6 +19,8 @@ func main() {
 	}
 	time.Sleep(time.Duration(duration) * time.Second)
 
+	fmt.Println("Test finished")
+
 	//stop each of goroutines
 	for i := 0; i < clientNum; i++ {
 		stopChannelList[i] <- true
@@ -80,7 +82,7 @@ func YCSB(command string, stopChannel chan bool, commandNumChannel chan int,  ID
 				switch response := response.(type) {
 				case ResponseToClient:
 					if response.Value == -1 {
-						fmt.Println("Key not found")
+						//fmt.Println("Key not found")
 					}
 					if response.Value != -1 {
 						//fmt.Println("Read value: ", response.Value)
@@ -103,7 +105,6 @@ func YCSB(command string, stopChannel chan bool, commandNumChannel chan int,  ID
 				}
 			}
 			cnt++
-			fmt.Println("Command ", cnt, " completed")
 		}
 	}
 }
