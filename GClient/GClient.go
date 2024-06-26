@@ -23,7 +23,7 @@ func main() {
 
 	//stop each of goroutines
 	for i := 0; i < clientNum; i++ {
-		stopChannelList[i] <- true
+		close(stopChannelList[i])
 	}
 
 	//get the number of commands executed by each client
@@ -59,7 +59,6 @@ func YCSB(command string, stopChannel chan bool, commandNumChannel chan int,  ID
 			select{
 			case <-stopChannel:
 				fmt.Println("Client stopped")
-				close(commandNumChannel)
 				return 
 
 			default:
