@@ -4,17 +4,29 @@ import (
 	"container/heap"
 	//"fmt"
 	"log"
+	"net"
 	"os"
 	"strings"
 	"time"
-	"net"
+
 	"github.com/fatih/color"
 )
 
 var replicaIPs []string
 var ownIP string
 
-var StateMachine map[string]int = make(map[string]int)
+var StateMachine map[string]int = make(map[string]int) 
+
+
+func init(){
+	StateMachine["a"] = 0
+	StateMachine["b"] = 0
+	StateMachine["c"] = 0
+	StateMachine["x"] = 0
+	StateMachine["y"] = 0
+	StateMachine["z"] = 0
+
+}
 
 func main() {
 
