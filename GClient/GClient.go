@@ -35,6 +35,7 @@ func main() {
 	//get the number of commands executed by each client
 	var totalCommandNum int = 0
 	for i := 0; i < clientNum; i++ {
+		fmt.Println("client", i ,"stop")
 		totalCommandNum += <-commandNumChannelList[i]
 	}
 
