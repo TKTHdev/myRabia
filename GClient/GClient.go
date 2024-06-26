@@ -64,7 +64,7 @@ func YCSB(command string, stopChannel chan bool, commandNumChannel chan int,  ID
 
 			default:
 			var command string = generateRandomCommand(readRatio)
-			fmt.Println("Command: " + command)
+			//fmt.Println("Command: " + command)
 			conn, err := net.Dial("tcp", replicaID)
 			if err != nil {
 				fmt.Println("Dial error", err)
