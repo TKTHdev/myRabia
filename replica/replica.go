@@ -98,7 +98,7 @@ func main() {
 			continue
 		}
 
-		fmt.Println("proposal: ", *commandPointer)
+		//fmt.Println("proposal: ", *commandPointer)
 		PQMutex.Unlock()
 
 		
@@ -110,7 +110,7 @@ func main() {
 		if terminationFlag == 1 {
 
 			value := TerminationValue{isNull: stateStruct.Value == 0, CommandData: stateStruct.CommandData, phase: 0, seq: seq}
-			color.Green("reached consensus: ", value, "\n")
+			//color.Green("reached consensus: ", value, "\n")
 			resolveTermination(value, *commandPointer)
 			//c.Println("SM in seq", seq, ":", StateMachine)
 			seq++
