@@ -66,6 +66,7 @@ func YCSB(command string, stopChannel chan bool, commandNumChannel chan int,  ID
 			select{
 			case <-stopChannel:
 				fmt.Println("Client stopped")
+				commandNumChannel <- cnt
 				return 
 
 			default:
