@@ -14,6 +14,12 @@ func roundOne(state StateValueData, seq int, phase int) (int, VoteValueData) {
 	var voteValue int
 	conns := setConnectionWithOtherReplicas(replicaIPs)
 	wg := sync.WaitGroup{}
+
+
+	StateValueDataMutex.Lock()
+	StateValueDataMapList[SeqPhase{Seq: seq, Phase: phase}] = append(StateValueDataMapList[SeqPhase{Seq: seq, Phase: phase}], state)
+	StateValueDataMutex.Unlock()
+
 	roundOneSend(conns, state, &wg)
 	terminationFlag, voteValue, returnCommand := roundOneReceive(seq, phase, len(replicaIPs))
 	returnVoteStruct := VoteValueData{Value: voteValue, Seq: seq, Phase: phase, CommandData: returnCommand}

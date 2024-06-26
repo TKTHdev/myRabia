@@ -13,6 +13,12 @@ func exchangeStage(command CommandData, seq int) (int, StateValueData) {
 	//fmt.Println("Sending Command: ", command)
 	var state int
 	wg := sync.WaitGroup{}
+
+	CommandDataMutex.Lock()
+	CommandDataMapList[seq] = append(CommandDataMapList[seq], command)
+	CommandDataMutex.Unlock()
+
+	
 	exchangeSend(conns, command, &wg)
 	terminationFlag, state, CommandData := exchangeReceive(seq, len(replicaIPs))
 	var returnStateValue StateValueData = StateValueData{Value: state, Seq: seq, CommandData: CommandData}

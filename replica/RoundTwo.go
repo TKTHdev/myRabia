@@ -17,6 +17,11 @@ func roundTwo(vote VoteValueData, seq int, phase int) (int, RoundTwoReturnStruct
 	var returnStruct RoundTwoReturnStruct
 	var terminationValue int
 	wg := sync.WaitGroup{}
+
+	VoteValueDataMutex.Lock()
+	VoteValueDataMapList[SeqPhase{Seq: seq, Phase: phase}] = append(VoteValueDataMapList[SeqPhase{Seq: seq, Phase: phase}], vote)
+	VoteValueDataMutex.Unlock()
+
 	roundTwoSend(conns, vote, &wg)
 	terminationFlag, terminationValue, CommandData := roundTwoReceive(seq, len(replicaIPs), phase)
 	if CommandData.Op != "" {

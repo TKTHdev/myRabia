@@ -104,6 +104,8 @@ func main() {
 
 		commandPointer := heap.Pop(&PQ).(*CommandData)
 
+		
+
 
 		if Dictionary[OpTimestamp{Op: commandPointer.Op, Timestamp: commandPointer.Timestamp}] {
 			PQMutex.Unlock()
