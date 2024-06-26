@@ -2,7 +2,7 @@ package main
 
 import (
 	"container/heap"
-	"fmt"
+	//"fmt"
 	"log"
 	"os"
 	"strings"
