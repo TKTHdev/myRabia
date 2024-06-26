@@ -16,6 +16,7 @@ var VoteValueDataMutex sync.Mutex
 var ConsensusTerminationMutex sync.Mutex
 var PQMutex sync.Mutex
 var stringIP string
+var responceChannelMapMutex sync.Mutex
 
 var responseChannelMap map[string]chan ResponseToClient
 
@@ -121,8 +122,10 @@ func init() {
 	}
 	stringIP = selfIP.String()
 
-
+	responceChannelMapMutex.Lock()
 	responseChannelMap = make(map[string]chan ResponseToClient)
+	responceChannelMapMutex.Unlock()
+
 }
 
 func listenAndAccept() {
@@ -212,13 +215,21 @@ func handleConnection(conn net.Conn) {
 				heap.Push(&PQ, &data.CommandData)
 				PQMutex.Unlock()
 				broadCastData(replicaIPs, data)
+
+				responceChannelMapMutex.Lock()
 				if responseChannelMap[data.CommandData.ClientAddr] == nil {
 					responseChannelMap[data.CommandData.ClientAddr] = make(chan ResponseToClient)
 				}
+				responceChannelMapMutex.Unlock()
 				//Wait for termination
 				go func() {
 					//fmt.Println(data.CommandData.ClientAddr)
-					response := <-responseChannelMap[data.CommandData.ClientAddr]
+
+					responceChannelMapMutex.Lock()
+					respChan := responseChannelMap[data.CommandData.ClientAddr]
+					responceChannelMapMutex.Unlock()
+					// ロックを解放した後、チャネルからデータを受信
+					response := <-respChan
 					//fmt.Println("Response to client: ", response)
 					sendData(conn, response)
 
