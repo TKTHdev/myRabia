@@ -2,7 +2,7 @@ package main
 
 import (
 	"container/heap"
-	"fmt"
+	//"fmt"
 	"log"
 	"net"
 	"os"
@@ -146,7 +146,7 @@ func main() {
 		phaseSum += phases + 1
 		// fmt.Println("null cnt:", nullCnt)
 		// fmt.Println("non-null percentage: ", (float64(seq-nullCnt)/float64(seq))*100)
-		fmt.Println("phase average: ", float32(phaseSum)/float32(seq))
+		//fmt.Println("phase average: ", float32(phaseSum)/float32(seq))
 
 	}
 }
