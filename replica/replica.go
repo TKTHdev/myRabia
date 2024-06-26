@@ -137,6 +137,7 @@ func main() {
 		}
 
 		consensusValue, phases := weakMVC(stateStruct, seq)
+		deleteMapList(seq, phases)
 		resolveTermination(consensusValue, *commandPointer)
 
 
@@ -281,4 +282,24 @@ func resolveTermination(termination TerminationValue, ownProposal CommandData){
 
 		responseChannelMap[termination.CommandData.ClientAddr] <- ResponseToClient{Value: 0, ClientAddr: termination.CommandData.ClientAddr}
 	}
+}
+
+
+func deleteMapList(seq int, phase int){
+
+	StateValueDataMutex.Lock()
+	delete(StateValueDataMapList, SeqPhase{Seq: seq, Phase: phase})
+	StateValueDataMutex.Unlock()
+
+	VoteValueDataMutex.Lock()
+	delete(VoteValueDataMapList, SeqPhase{Seq: seq, Phase: phase})
+	VoteValueDataMutex.Unlock()
+
+	CommandDataMutex.Lock()
+	delete(CommandDataMapList, seq)
+	CommandDataMutex.Unlock()
+
+	ConsensusTerminationMutex.Lock()
+	delete(ConsensusTerminationMapList, seq)
+	ConsensusTerminationMutex.Unlock()
 }
