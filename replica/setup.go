@@ -13,6 +13,7 @@ func setConnectionWithOtherReplicas(IPLists []string) []net.Conn {
 
 	for _, IP := range IPLists {
 		if IP[0]!= 'N'  && IP!= ownIP{
+			fmt.Println("Connecting to: ", IP)
 			conn, err := net.Dial("tcp", IP+":8080")
 			if err != nil {
 				fmt.Printf("接続エラー  %d: %v\n", conn, err)
