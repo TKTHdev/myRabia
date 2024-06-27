@@ -51,9 +51,11 @@ func parseReadCommand(command string, stateMachine map[string]int) (int, string)
 	parts := strings.Split(command, " ")
 	if len(parts) == 2 {
 		key := parts[1]
+
 		SMMutex.Lock()
 		value, ok := stateMachine[key]
 		SMMutex.Unlock()
+		
 		if !ok {
 			fmt.Println("Variable not found: ", key)
 			return 0, "notFound"

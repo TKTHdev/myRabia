@@ -199,7 +199,9 @@ func handleConnection(conn net.Conn) {
 			//fmt.Println("Received Request: ", data)
 
 			if data.CommandData.Op[0] == 'R' {
+
 				value, err := parseReadCommand(data.CommandData.Op, StateMachine)
+				
 				if err == "notFound" {
 					response := ResponseToClient{Value: -1}
 					sendData(conn, response)
@@ -207,6 +209,8 @@ func handleConnection(conn net.Conn) {
 					response := ResponseToClient{Value: value}
 					sendData(conn, response)
 				}
+
+
 			} else if !data.Redirected {
 				data.Redirected = true
 				data.CommandData.ReplicaAddr = ownIP
