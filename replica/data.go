@@ -177,23 +177,32 @@ func handleConnection(conn net.Conn) {
 			CommandDataMapList[data.Seq] = append(CommandDataMapList[data.Seq], data)
 			//fmt.Println("CommandDataMapList: ", CommandDataMapList)
 			CommandDataMutex.Unlock()
+			return 
+
+
 		case StateValueData:
 			StateValueDataMutex.Lock()
 			//fmt.Println("Received StateValueData: ", data)
 			StateValueDataMapList[SeqPhase{Seq: data.Seq, Phase: data.Phase}] = append(StateValueDataMapList[SeqPhase{Seq: data.Seq, Phase: data.Phase}], data)
 			//fmt.Println("StateValueDataMapList: ", StateValueDataMapList)
 			StateValueDataMutex.Unlock()
+			return 
+
+
 		case VoteValueData:
 			VoteValueDataMutex.Lock()
 			//fmt.Println("Received VoteValueData: ", data)
 			VoteValueDataMapList[SeqPhase{Seq: data.Seq, Phase: data.Phase}] = append(VoteValueDataMapList[SeqPhase{Seq: data.Seq, Phase: data.Phase}], data)
 			//fmt.Println("VoteValueDataMaplist: ", VoteValueDataMaplist)
 			VoteValueDataMutex.Unlock()
+			return 
+
 		case ConsensusTermination:
 			ConsensusTerminationMutex.Lock()
 			//fmt.Println("Received ConsensusTermination: ", data)
 			ConsensusTerminationMapList[data.Seq] = append(ConsensusTerminationMapList[data.Seq], data)
 			ConsensusTerminationMutex.Unlock()
+			return 
 
 		case Request:
 			//fmt.Println("Received Request: ", data)
