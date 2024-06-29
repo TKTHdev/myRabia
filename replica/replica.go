@@ -12,7 +12,7 @@ import (
 	"github.com/fatih/color"
 )
 
-var replicaIPs []string
+var replicaIPs =[]string{ "52.64.108.149",  "52.65.112.127", "52.62.115.28"}
 var ownIP string
 
 var StateMachine map[string]int = make(map[string]int) 
@@ -63,11 +63,11 @@ func main() {
 	*/
 
 	//Register to proxy
-	ownIP = RegisterToProxy()
+	//ownIP = RegisterToProxy()
 
 	// プロキシからの接続を待ち受ける
 	// 他のレプリカのポート番号を取得
-	replicaIPs = listenAndAcceptConnectionWithProxy()
+	//replicaIPs = listenAndAcceptConnectionWithProxy()
 
 	// 他のレプリカとの接続を確立
 	go listenAndAccept()
