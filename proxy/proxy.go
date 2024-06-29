@@ -5,7 +5,7 @@ import (
 	"net"
 	"strings"
 	"sync"
-	"math/rand"
+	//"math/rand"
 
 )
 
@@ -144,8 +144,8 @@ func sendPortNumListToReplicasWithDisconnection(num int) {
 	for i := 0; i < num; i++ {
 		var IP1, IP2 string
 		for{
-			IP1 = replicaIPs[rand.Intn(len(replicaIPs))]
-			IP2 = replicaIPs[rand.Intn(len(replicaIPs))]
+			IP1 = replicaIPs[1]
+			IP2 = replicaIPs[2]
 			if IP1 != IP2 {
 				break
 			}
