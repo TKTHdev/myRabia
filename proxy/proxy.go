@@ -144,8 +144,8 @@ func sendPortNumListToReplicasWithDisconnection(num int) {
 	for i := 0; i < num; i++ {
 		var IP1, IP2 string
 		for{
-			IP1 = replicaIPs[1]
-			IP2 = replicaIPs[2]
+			IP1 = replicaIPs[0]
+			IP2 = replicaIPs[1]
 			if IP1 != IP2 {
 				break
 			}
