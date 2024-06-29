@@ -7,7 +7,7 @@ import (
 )
 
 var StateMachine map[string]int = make(map[string]int)
-var IPList = []string{"52.62.115.28", "52.65.112.127", "52.64.108.149"}
+var IPList = []string{"52.64.108.149", "52.65.112.127", "52.62.115.28"}
 var replicaNum = 3
 
 func main() {
@@ -61,6 +61,7 @@ func YCSB(command string, stopChannel chan bool, commandNumChannel chan int,  ID
 	var cnt int = 0
 	
 	var replicaID string = IPList[ID%replicaNum]+":8080"
+	fmt.Println("Replica ID: ", replicaID)
 	conn, err := net.Dial("tcp", replicaID)
 	if err != nil {
 		fmt.Println("Dial error", err)
