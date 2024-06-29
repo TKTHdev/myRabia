@@ -2,7 +2,7 @@ package main
 
 import (
 	"container/heap"
-	"fmt"
+	//"fmt"
 	"log"
 	"net"
 	"os"
@@ -114,7 +114,7 @@ func main() {
 			continue
 		}
 
-		fmt.Println("proposal: ", *commandPointer)
+		//fmt.Println("proposal: ", *commandPointer)
 		PQMutex.Unlock()
 
 		
@@ -128,7 +128,7 @@ func main() {
 			value := TerminationValue{isNull: stateStruct.Value == 0, CommandData: stateStruct.CommandData, phase: 0, seq: seq}
 			//color.Green("reached consensus: ", value, "\n")
 			resolveTermination(value, *commandPointer)
-			c.Println("SM in seq", seq, ":", StateMachine)
+			//c.Println("SM in seq", seq, ":", StateMachine)
 			seq++
 			phaseSum += 0
 			// fmt.Println("null cnt:", nullCnt)
@@ -146,7 +146,7 @@ func main() {
 		phaseSum += phases + 1
 		// fmt.Println("null cnt:", nullCnt)
 		// fmt.Println("non-null percentage: ", (float64(seq-nullCnt)/float64(seq))*100)
-		fmt.Println("phase average: ", float32(phaseSum)/float32(seq))
+		//fmt.Println("phase average: ", float32(phaseSum)/float32(seq))
 
 	}
 }
@@ -158,7 +158,7 @@ func weakMVC(stateStruct StateValueData, seq int) (TerminationValue, int){
 	//c := color.New(color.FgGreen)
 
 	//Round 1
-	fmt.Println("State struct: ", stateStruct)
+	//fmt.Println("State struct: ", stateStruct)
 	var state StateValueData = StateValueData{Value: stateStruct.Value, Seq: seq, Phase: phase, CommandData: stateStruct.CommandData}
 	terminationFlag, voteValue := roundOne(state, seq, phase)
 	if terminationFlag == 1 {
@@ -176,7 +176,7 @@ func weakMVC(stateStruct StateValueData, seq int) (TerminationValue, int){
 	}
 
 	//Round 2
-	fmt.Println("voteValue: ", voteValue)
+	//fmt.Println("voteValue: ", voteValue)
 	var vote VoteValueData = VoteValueData{Value: voteValue.Value, Seq: seq, Phase: phase, CommandData: voteValue.CommandData}
 	terminationFlag, returnStruct := roundTwo(vote, seq, phase)
 	//fmt.Println("returnStruct: ", returnStruct)
