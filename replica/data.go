@@ -164,6 +164,13 @@ func handleConnection(conn net.Conn) {
 	defer conn.Close()
 
 	for {
+
+		//if the connection is closed, return
+		_, err := conn.Read(make([]byte, 0))
+		if err != nil {
+			return
+		}
+
 		consensusData, err := receiveData(conn)
 		if err != nil {
 			return
