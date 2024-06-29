@@ -212,7 +212,7 @@ func handleConnection(conn net.Conn) {
 			return 
 
 		case Request:
-			//fmt.Println("Received Request: ", data)
+			fmt.Println("Received Request: ", data)
 
 			if data.CommandData.Op[0] == 'R' {
 
