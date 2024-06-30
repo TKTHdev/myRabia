@@ -10,22 +10,28 @@ var StateMachine map[string]int = make(map[string]int)
 var IPList = []string{"52.64.108.149", "52.65.112.127", "52.62.115.28"}
 var replicaNum = 3
 
+
+
+
+type Report struct {
+	commandNum int
+	readTime time.Duration
+	writeTime time.Duration
+}
+
+
 func main() {
 	command , clientNum, duration := setUp()
 	var stopChannelList []chan bool = make([]chan bool, clientNum)
-	var commandNumChannelList []chan int = make([]chan int, clientNum)
-	var readTimeChannelList []chan time.Duration = make([]chan time.Duration, clientNum)
-	var writeTimeChannelList []chan time.Duration = make([]chan time.Duration, clientNum)
+	var reportChannelList []chan Report = make([]chan Report, clientNum)
 
 	for i := 0; i < clientNum; i++ {
 		stopChannelList[i] = make(chan bool)
-		commandNumChannelList[i] = make(chan int)
-		readTimeChannelList[i] = make(chan time.Duration)
-		writeTimeChannelList[i] = make(chan time.Duration)
+		reportChannelList[i] = make(chan Report)
 	}
 
 	for i := 0; i < clientNum; i++ {
-		  go YCSB(command, stopChannelList[i],commandNumChannelList[i] , readTimeChannelList[i],writeTimeChannelList[i],i)
+		  go YCSB(command, stopChannelList[i],reportChannelList[i],i)
 	}
 	time.Sleep(time.Duration(duration) * time.Second)
 
@@ -44,9 +50,10 @@ func main() {
 
 	for i := 0; i < clientNum; i++ {
 		fmt.Println("client", i ,"stop")
-		totalCommandNum += <-commandNumChannelList[i]
-		totalReadTime += <-readTimeChannelList[i]
-		totalWriteTime += <-writeTimeChannelList[i]
+		report := <-reportChannelList[i]
+		totalCommandNum += report.commandNum
+		totalReadTime += report.readTime
+		totalWriteTime += report.writeTime
 	}
 
 	fmt.Println("Total number of commands executed: ", totalCommandNum)
@@ -57,7 +64,7 @@ func main() {
 }
 
 
-func YCSB(command string, stopChannel chan bool, commandNumChannel chan int, readTimeChannel chan time.Duration, writeTimeChannel chan time.Duration,ID int)  {
+func YCSB(command string, stopChannel chan bool, reportChannel chan Report,ID int)  {
 
 	var readRatio int	
 
@@ -91,9 +98,7 @@ func YCSB(command string, stopChannel chan bool, commandNumChannel chan int, rea
 				readTimeAverage := readTime / time.Duration(readCnt)
 				writeTimeAverage:= writeTime / time.Duration(writeCnt)
 				fmt.Println("Client stopped")
-				commandNumChannel <- cnt
-				readTimeChannel <- readTimeAverage
-				writeTimeChannel <- writeTimeAverage
+				reportChannel <- Report{commandNum: cnt, readTime: readTimeAverage, writeTime: writeTimeAverage}	
 				return 
 
 			default:
