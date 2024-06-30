@@ -129,6 +129,7 @@ func YCSB(command string, stopChannel chan bool, reportChannel chan Report,ID in
 					}
 				}
 				//end measuring time
+				fmt.Println("Read time: ", time.Since(start).Milliseconds())
 				readTime += time.Duration(time.Since(start).Milliseconds())
 				total += time.Duration(time.Since(start).Milliseconds())
 				readCnt++
