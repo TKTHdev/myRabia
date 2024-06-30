@@ -47,7 +47,7 @@ func main() {
 	var totalCommandNum int = 0
 	var totalReadTime time.Duration = 0
 	var totalWriteTime time.Duration = 0
-
+	var totalTime time.Duration = 0
 
 	for i := 0; i < clientNum; i++ {
 		fmt.Println("client", i ,"stop")
@@ -55,11 +55,13 @@ func main() {
 		totalCommandNum += report.commandNum
 		totalReadTime += report.readTime
 		totalWriteTime += report.writeTime
+		totalTime += report.totalTime
 	}
 
 	fmt.Println("Total number of commands executed: ", totalCommandNum)
 	fmt.Println("Average read time: ", totalReadTime / time.Duration(clientNum))
 	fmt.Println("Average write time: ", totalWriteTime / time.Duration(clientNum))
+	fmt.Println("Average total time: ", totalTime / time.Duration(clientNum))
 
 
 }
