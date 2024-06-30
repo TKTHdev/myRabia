@@ -53,9 +53,9 @@ func main() {
 		fmt.Println("client", i ,"stop")
 		report := <-reportChannelList[i]
 		totalCommandNum += report.commandNum
-		totalReadTime += time.Duration(report.readTime.Milliseconds())
-		totalWriteTime += time.Duration(report.writeTime.Milliseconds())
-		totalTime += time.Duration(report.totalTime.Milliseconds())
+		totalReadTime += report.readTime
+		totalWriteTime += report.writeTime
+		totalTime += report.totalTime
 	}
 
 	fmt.Println("Total number of commands executed: ", totalCommandNum)
@@ -129,8 +129,8 @@ func YCSB(command string, stopChannel chan bool, reportChannel chan Report,ID in
 					}
 				}
 				//end measuring time
-				readTime += time.Since(start)
-				total += time.Since(start)
+				readTime += time.Duration(time.Since(start).Milliseconds())
+				total += time.Duration(time.Since(start).Milliseconds())
 				readCnt++
 			} else {
 				var data ConsensusData
@@ -148,8 +148,8 @@ func YCSB(command string, stopChannel chan bool, reportChannel chan Report,ID in
 					}
 				}
 
-				writeTime += time.Since(start)
-				total += time.Since(start)
+				writeTime += time.Duration(time.Since(start).Milliseconds())
+				total += time.Duration(time.Since(start).Milliseconds())
 				writeCnt++
 			}
 			cnt++
