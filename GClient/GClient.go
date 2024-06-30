@@ -90,14 +90,26 @@ func YCSB(command string, stopChannel chan bool, reportChannel chan Report, ID i
 	for {
 		select {
 		case <-stopChannel:
-			readTimeAverage := readTime / time.Duration(readCnt)
+			var readTimeAverage time.Duration
+			if readCnt == 0 {
+				readTimeAverage = 0
+			} else {
+				readTimeAverage = readTime / time.Duration(readCnt)
+			}
+
 			var writeTimeAverage time.Duration
 			if writeCnt == 0 {
 				writeTimeAverage = 0
-			}else{
+			} else {
 				writeTimeAverage = writeTime / time.Duration(writeCnt)
 			}
-			totalAverage := total / time.Duration(cnt)
+
+			var totalAverage time.Duration
+			if cnt == 0 {
+				totalAverage = 0
+			} else {
+				totalAverage = total / time.Duration(cnt)
+			}
 			fmt.Println("Client stopped")
 			reportChannel <- Report{commandNum: cnt, readTime: readTimeAverage, writeTime: writeTimeAverage, totalTime: totalAverage}
 			return
