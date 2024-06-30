@@ -73,7 +73,7 @@ func YCSB(command string, stopChannel chan bool, commandNumChannel chan int, rea
 	var cnt int = 0
 	
 	var replicaID string = IPList[ID%replicaNum]+":8080"
-	fmt.Println("Replica ID: ", replicaID)
+	//fmt.Println("Replica ID: ", replicaID)
 	conn, err := net.Dial("tcp", replicaID)
 	if err != nil {
 		fmt.Println("Dial error", err)
