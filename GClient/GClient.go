@@ -53,9 +53,9 @@ func main() {
 		fmt.Println("client", i ,"stop")
 		report := <-reportChannelList[i]
 		totalCommandNum += report.commandNum
-		totalReadTime += report.readTime
-		totalWriteTime += report.writeTime
-		totalTime += report.totalTime
+		totalReadTime += time.Duration(report.readTime.Milliseconds())
+		totalWriteTime += time.Duration(report.writeTime.Milliseconds())
+		totalTime += time.Duration(report.totalTime.Milliseconds())
 	}
 
 	fmt.Println("Total number of commands executed: ", totalCommandNum)
