@@ -17,6 +17,7 @@ type Report struct {
 	commandNum int
 	readTime time.Duration
 	writeTime time.Duration
+	totalTime time.Duration
 }
 
 
@@ -89,6 +90,7 @@ func YCSB(command string, stopChannel chan bool, reportChannel chan Report,ID in
 
 	var readTime time.Duration = 0
 	var writeTime time.Duration = 0
+	var total time.Duration = 0
 	var readCnt int = 0
 	var writeCnt int = 0
 
@@ -98,7 +100,7 @@ func YCSB(command string, stopChannel chan bool, reportChannel chan Report,ID in
 				readTimeAverage := readTime / time.Duration(readCnt)
 				writeTimeAverage:= writeTime / time.Duration(writeCnt)
 				fmt.Println("Client stopped")
-				reportChannel <- Report{commandNum: cnt, readTime: readTimeAverage, writeTime: writeTimeAverage}	
+				reportChannel <- Report{commandNum: cnt, readTime: readTimeAverage, writeTime: writeTimeAverage , totalTime: total}	
 				return 
 
 			default:
@@ -126,6 +128,7 @@ func YCSB(command string, stopChannel chan bool, reportChannel chan Report,ID in
 				}
 				//end measuring time
 				readTime += time.Since(start)
+				total += time.Since(start)
 				readCnt++
 			} else {
 				var data ConsensusData
@@ -144,6 +147,7 @@ func YCSB(command string, stopChannel chan bool, reportChannel chan Report,ID in
 				}
 
 				writeTime += time.Since(start)
+				total += time.Since(start)
 				writeCnt++
 			}
 			cnt++
