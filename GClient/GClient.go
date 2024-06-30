@@ -7,21 +7,25 @@ import (
 )
 
 var StateMachine map[string]int = make(map[string]int)
-var IPList = []string{"52.64.108.149", "52.65.112.127", "52.62.115.28"}
+var IPList = []string{"", "52.65.112.127", "52.62.115.28"}
 var replicaNum = 3
 
 func main() {
 	command , clientNum, duration := setUp()
 	var stopChannelList []chan bool = make([]chan bool, clientNum)
 	var commandNumChannelList []chan int = make([]chan int, clientNum)
+	var readTimeChannelList []chan time.Duration = make([]chan time.Duration, clientNum)
+	var writeTimeChannelList []chan time.Duration = make([]chan time.Duration, clientNum)
 
 	for i := 0; i < clientNum; i++ {
 		stopChannelList[i] = make(chan bool)
 		commandNumChannelList[i] = make(chan int)
+		readTimeChannelList[i] = make(chan time.Duration)
+		writeTimeChannelList[i] = make(chan time.Duration)
 	}
 
 	for i := 0; i < clientNum; i++ {
-		  go YCSB(command, stopChannelList[i],commandNumChannelList[i] , i)
+		  go YCSB(command, stopChannelList[i],commandNumChannelList[i] , readTimeChannelList[i],writeTimeChannelList[i],i)
 	}
 	time.Sleep(time.Duration(duration) * time.Second)
 
@@ -34,18 +38,26 @@ func main() {
 
 	//get the number of commands executed by each client
 	var totalCommandNum int = 0
+	var totalReadTime time.Duration = 0
+	var totalWriteTime time.Duration = 0
+
+
 	for i := 0; i < clientNum; i++ {
 		fmt.Println("client", i ,"stop")
 		totalCommandNum += <-commandNumChannelList[i]
+		totalReadTime += <-readTimeChannelList[i]
+		totalWriteTime += <-writeTimeChannelList[i]
 	}
 
 	fmt.Println("Total number of commands executed: ", totalCommandNum)
+	fmt.Println("Average read time: ", totalReadTime / time.Duration(clientNum))
+	fmt.Println("Average write time: ", totalWriteTime / time.Duration(clientNum))
 
 
 }
 
 
-func YCSB(command string, stopChannel chan bool, commandNumChannel chan int,  ID int)  {
+func YCSB(command string, stopChannel chan bool, commandNumChannel chan int, readTimeChannel chan time.Duration, writeTimeChannel chan time.Duration,ID int)  {
 
 	var readRatio int	
 
@@ -68,18 +80,30 @@ func YCSB(command string, stopChannel chan bool, commandNumChannel chan int,  ID
 		return
 	}
 
+	var readTime time.Duration = 0
+	var writeTime time.Duration = 0
+	var readCnt int = 0
+	var writeCnt int = 0
+
 	for  {
 			select{
 			case <-stopChannel:
+				readTimeAverage := readTime / time.Duration(readCnt)
+				writeTimeAverage:= writeTime / time.Duration(writeCnt)
 				fmt.Println("Client stopped")
 				commandNumChannel <- cnt
+				readTimeChannel <- readTimeAverage
+				writeTimeChannel <- writeTimeAverage
 				return 
 
 			default:
 			var command string = generateRandomCommand(readRatio)
 			//fmt.Println("Command: " + command)
+			start := time.Now()
 			sendData(conn, Request{CommandData: CommandData{Op: command, Timestamp: time.Now(), Seq: 0, ClientAddr: conn.LocalAddr().String()}, Redirected: false, Timestamp: 0})
+			
 			if command[0] == 'R' {
+				//start measuring time
 				var data ConsensusData
 				data, err := receiveData(conn)
 				if err != nil {
@@ -95,6 +119,9 @@ func YCSB(command string, stopChannel chan bool, commandNumChannel chan int,  ID
 						//fmt.Println("Read value: ", response.Value)
 					}
 				}
+				//end measuring time
+				readTime += time.Since(start)
+				readCnt++
 			} else {
 				var data ConsensusData
 				data, err := receiveData(conn)
@@ -110,6 +137,9 @@ func YCSB(command string, stopChannel chan bool, commandNumChannel chan int,  ID
 						fmt.Println("Write unsuccessful")
 					}
 				}
+
+				writeTime += time.Since(start)
+				writeCnt++
 			}
 			cnt++
 		}
