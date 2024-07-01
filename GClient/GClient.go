@@ -7,7 +7,7 @@ import (
 )
 
 var StateMachine map[string]int = make(map[string]int)
-var IPList = []string{"52.64.108.149", "52.65.112.127", "52.62.115.28"}
+var IPList = []string{"52.64.108.149", "52.65.112.127", "52.62.115.28","3.106.167.230","13.54.181.252"}
 var replicaNum = 3
 
 type Report struct {

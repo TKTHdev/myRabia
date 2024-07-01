@@ -72,15 +72,28 @@ x_a = [1, 2, 4, 8, 16, 32, 64]
 y_a= [259.17,407.36,461.94,457.64,461.21,480.75,483.78]
 x_a_geo = [1, 2, 4, 8, 16, 32, 64]
 y_a_geo = [1.04,1.40,1.72,1.88,2.68,3.42,5.65]
+x_b = [1, 2, 4, 8, 16, 32, 64]
+y_b = [763.34,1484.16,2767.86,4613.38,4932.94,4972.38,4917.45]
+x_b_geo = [1, 2, 4, 8, 16, 32, 64]
+y_b_geo = [5.70,9.52,14.17,18.17,23.29,33.78,51.71]
+x_c = [1, 2, 4, 8, 16, 32, 64]
+y_c = [944.33,1863.22,3653.79,7282.32,13235.30,19410.69,28014.23]
+
+x_c_geo = [1, 2, 4, 8, 16, 32, 64]
+y_c_geo = [9.42,16.22,29.32,57.26,110.58,219.58,434.26]
+
+
 
 plt.figure(figsize=(10, 5))
 #plt.plot(x_a, y_a, marker='o', label='YCSB-A Normal')
 plt.plot(x_a_geo, y_a_geo, marker='o', label='YCSB-A when Geo-Distributed')
-plt.title('Throughput vs. Number of Clients [YCSB-A]')
+plt.plot(x_b_geo, y_b_geo, marker='o', label='YCSB-B when Geo-Distributed')
+plt.plot(x_c_geo, y_c_geo, marker='o', label='YCSB-C when Geo-Distributed')
+plt.title('Throughput vs. Number of Clients [YCSB-A,B,C]')
 plt.xlabel('Number of Clients')
 plt.ylabel('Throughput (ops/sec)')
 plt.legend()
-plt.savefig('/home/Jamiroq/Documents/GitHub/myRabia/plot/throughput_plot-A_geo.png')
+plt.savefig('/home/Jamiroq/Documents/GitHub/myRabia/plot/throughput_plot-_geo.png')
 plt.close()
 
 
