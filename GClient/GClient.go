@@ -143,8 +143,8 @@ func YCSB(command string, stopChannel chan bool, reportChannel chan Report, ID i
 				}
 				//end measuring time
 				elapsed := time.Since(start)
-				readTime += time.Duration(elapsed.Microseconds())
-				total += time.Duration(elapsed.Microseconds())
+				readTime += time.Duration(elapsed)
+				total += time.Duration(elapsed)
 				readCnt++
 			} else {
 				var data ConsensusData
@@ -163,8 +163,8 @@ func YCSB(command string, stopChannel chan bool, reportChannel chan Report, ID i
 				}
 
 				elapsed := time.Since(start)
-				writeTime += time.Duration(elapsed.Microseconds())
-				total += time.Duration(elapsed.Microseconds())
+				writeTime += time.Duration(elapsed)
+				total += time.Duration(elapsed)
 				writeCnt++
 			}
 			cnt++
