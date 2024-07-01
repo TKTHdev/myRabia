@@ -55,7 +55,7 @@ func main() {
 	}
 
 	fmt.Println("Total number of commands executed: ", totalCommandNum)
-	fmt.Println("Average read time: ", (totalReadTime/time.Duration(totalCommandNum)))
+	fmt.Println("Average read time: ", (totalReadTime))
 	if totalWriteTime == 0 {
 		fmt.Println("Average write time: 0")
 	} else {
