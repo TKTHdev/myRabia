@@ -141,6 +141,7 @@ func YCSB(command string, stopChannel chan bool, reportChannel chan Report, ID i
 				elapsed := time.Since(start)
 				readTime += time.Duration(elapsed.Microseconds())
 				total += time.Duration(elapsed.Microseconds())
+				fmt.Println(total)
 				readCnt++
 			} else {
 				var data ConsensusData
