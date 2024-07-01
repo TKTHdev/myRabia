@@ -55,9 +55,9 @@ func main() {
 	}
 
 	fmt.Println("Total number of commands executed: ", totalCommandNum)
-	fmt.Printf("Average read time: %d ms\n", totalReadTime.Nanoseconds()/int64(clientNum))
-	fmt.Printf("Average write time: %d ms\n", totalWriteTime.Nanoseconds()/int64(clientNum))
-	fmt.Printf("Average total time: %d ms\n", totalTime.Nanoseconds()/int64(clientNum))
+	fmt.Println("Average read time: ", totalReadTime/time.Duration(totalReadTime))
+	fmt.Println("Average write time: ", totalWriteTime/time.Duration(totalWriteTime))
+	fmt.Println("Average total time: ", totalTime/time.Duration(totalCommandNum))
 }
 
 func YCSB(command string, stopChannel chan bool, reportChannel chan Report, ID int) {
