@@ -55,7 +55,7 @@ func main() {
 	}
 
 	fmt.Println("Total number of commands executed: ", totalCommandNum)
-	fmt.Println("Average read time: ", (totalReadTime))
+	fmt.Println("Average read time: ", totalReadTime)
 	if totalWriteTime == 0 {
 		fmt.Println("Average write time: 0")
 	} else {
@@ -143,6 +143,7 @@ func YCSB(command string, stopChannel chan bool, reportChannel chan Report, ID i
 				}
 				//end measuring time
 				elapsed := time.Since(start)
+				fmt.Println("Read time: ", elapsed)
 				readTime += time.Duration(elapsed)
 				total += time.Duration(elapsed)
 				readCnt++
