@@ -98,7 +98,7 @@ func YCSB(command string, stopChannel chan bool, reportChannel chan Report, ID i
 			if readCnt == 0 {
 				readTimeAverage = 0
 			} else {
-				readTimeAverage = readTime / time.Duration(readCnt)
+				readTimeAverage = readTime 
 			}
 
 			var writeTimeAverage time.Duration
