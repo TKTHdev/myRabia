@@ -21,7 +21,9 @@ var responceChannelMapMutex sync.Mutex
 var responseChannelMap map[string]chan ResponseToClient
 
 
-
+var readCnt int = 0
+var durationSum time.Duration = 0
+var readAverage time.Duration = 0
 
 type Data interface{}
 
@@ -216,7 +218,15 @@ func handleConnection(conn net.Conn) {
 
 			if data.CommandData.Op[0] == 'R' {
 
+
+				now := time.Now()
 				value, err := parseReadCommand(data.CommandData.Op, StateMachine)
+				duration := time.Since(now)
+				durationSum += duration
+				readCnt++
+				readAverage = durationSum / time.Duration(readCnt)
+				fmt.Println("Average read time: ", readAverage)
+
 				
 				if err == "notFound" {
 					response := ResponseToClient{Value: -1}

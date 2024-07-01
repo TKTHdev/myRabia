@@ -13,17 +13,22 @@ Atotal_time = [3.625986, 4.213716, 7.121323, 14.154026, 28.570923, 56.93856, 115
 
 # Creating the plot for YCSB-A
 plt.figure(figsize=(10, 5))
-plt.plot(x_a, Aread_time, marker='o', label='Read latency')
 plt.plot(x_a, Awrite_time, marker='o', label='Write latency')
-plt.plot(x_a, Atotal_time, marker='o', label='Average latency')
 plt.title('Latency vs. Number of Clients [YCSB-A]')
 plt.xlabel('Number of Clients')
-plt.ylabel('Latency (Millsec/op)')
+plt.ylabel('Latency for Write operation(Millsec/op)')
 plt.legend()
-plt.savefig('/home/Jamiroq/Documents/GitHub/myRabia/plot/latency_plot-A.png')
+plt.savefig('/home/Jamiroq/Documents/GitHub/myRabia/plot/latencyA/Wlatency_plot-A.png')
 plt.close()
 
-
+plt.figure(figsize=(10, 5))
+plt.plot(x_a, Aread_time, marker='o', label='Read latency')
+plt.title('Latency vs. Number of Clients [YCSB-A]')
+plt.xlabel('Number of Clients')
+plt.ylabel('Latency for Read operation(Millsec/op)')
+plt.legend()
+plt.savefig('/home/Jamiroq/Documents/GitHub/myRabia/plot/latencyA/Rlatency_plot-A.png')
+plt.close()
 
 x_b = [1, 2, 4, 8, 16, 32, 64]
 Bread_time = [
@@ -56,13 +61,46 @@ Btotal_time = [
     12.082078
 ]
 
+
+# Creating the plot for YCSB-A
 plt.figure(figsize=(10, 5))
 plt.plot(x_b, Bread_time, marker='o', label='Read latency')
-plt.plot(x_b, Bwrite_time, marker='o', label='Write latency')
-plt.plot(x_b, Btotal_time, marker='o', label='Average latency')
-plt.title('Latency vs. Number of Clients [YCSB-B]')
+plt.title('Read Latency vs. Number of Clients [YCSB-B]')
 plt.xlabel('Number of Clients')
-plt.ylabel('Latency (Millsec/op)')
+plt.ylabel('Latency for Read operation(Millsec/op)')
 plt.legend()
-plt.savefig('/home/Jamiroq/Documents/GitHub/myRabia/plot/latency_plot-B.png')
+plt.savefig('/home/Jamiroq/Documents/GitHub/myRabia/plot/latencyB/Rlatency_plot-B.png')
 plt.close()
+
+plt.figure(figsize=(10, 5))
+plt.plot(x_b, Bwrite_time, marker='o', label='Write latency')
+plt.title('Write Latency vs. Number of Clients [YCSB-B]')
+plt.xlabel('Number of Clients')
+plt.ylabel('Latency for Write operation(Millsec/op)')
+plt.legend()
+plt.savefig('/home/Jamiroq/Documents/GitHub/myRabia/plot/latencyB/Wlatency_plot-B.png')
+plt.close()
+
+
+x_c = [1, 2, 4, 8, 16, 32, 64]
+
+Cread_time = [
+    1.150339,
+    1.096976,
+    1.114770,
+    1.135267,
+    1.251066,
+    1.659278,
+    2.410071
+]
+
+plt.figure(figsize=(10, 5))
+plt.plot(x_c, Cread_time, marker='o', label='Read latency')
+plt.title('Read Latency vs. Number of Clients [YCSB-C]')
+plt.xlabel('Number of Clients')
+plt.ylabel('Latency for Read operation(Millsec/op)')
+plt.legend()
+plt.savefig('/home/Jamiroq/Documents/GitHub/myRabia/plot/latencyC/Rlatency_plot-C.png')
+plt.close()
+
+
