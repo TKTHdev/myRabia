@@ -222,10 +222,6 @@ func handleConnection(conn net.Conn) {
 				now := time.Now()
 				value, err := parseReadCommand(data.CommandData.Op, StateMachine)
 				duration := time.Since(now)
-				durationSum += duration
-				readCnt++
-				readAverage = durationSum / time.Duration(readCnt)
-				fmt.Println("Average read time: ", readAverage)
 
 				
 				if err == "notFound" {
@@ -235,6 +231,12 @@ func handleConnection(conn net.Conn) {
 					response := ResponseToClient{Value: value}
 					sendData(conn, response)
 				}
+
+				durationSum += duration
+				readCnt++
+				readAverage = durationSum / time.Duration(readCnt)
+				fmt.Println("Average read time: ", readAverage)
+
 
 
 			} else if !data.Redirected {
