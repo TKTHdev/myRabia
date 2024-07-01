@@ -116,7 +116,7 @@ func YCSB(command string, stopChannel chan bool, reportChannel chan Report, ID i
 
 		default:
 			var command string = generateRandomCommand(readRatio)
-			//fmt.Println("Command: " + command)
+			
 			start := time.Now()
 			sendData(conn, Request{CommandData: CommandData{Op: command, Timestamp: time.Now(), Seq: 0, ClientAddr: conn.LocalAddr().String()}, Redirected: false, Timestamp: 0})
 
