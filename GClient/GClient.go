@@ -15,6 +15,8 @@ type Report struct {
 	readTime   time.Duration
 	writeTime  time.Duration
 	totalTime  time.Duration
+	readCnt int 
+	writeCnt int
 }
 
 func main() {
@@ -44,6 +46,8 @@ func main() {
 	var totalReadTime time.Duration = 0
 	var totalWriteTime time.Duration = 0
 	var totalTime time.Duration = 0
+	var totalReadCnt int = 0
+	var totalWriteCnt int = 0
 
 	for i := 0; i < clientNum; i++ {
 		fmt.Println("client", i, "stop")
@@ -52,16 +56,18 @@ func main() {
 		totalReadTime += report.readTime
 		totalWriteTime += report.writeTime
 		totalTime += report.totalTime
+		totalReadCnt += report.readCnt
+		totalWriteCnt += report.writeCnt
 	}
 
 	fmt.Println("Total number of commands executed: ", totalCommandNum)
-	fmt.Println("Average read time: ", totalReadTime)
+		fmt.Println("Total Read time: ", totalReadTime, " with read count: ", totalReadCnt)
 	if totalWriteTime == 0 {
 		fmt.Println("Average write time: 0")
 	} else {
-		fmt.Println("Average write time: ", totalWriteTime/time.Duration(totalCommandNum))
+		fmt.Println("Total write time: ", totalWriteTime, " with write count: ", totalWriteCnt)
 	}
-	fmt.Println("Average total time: ", totalTime/time.Duration(totalCommandNum))
+	fmt.Println("Average total time: ", totalTime, " with total count: ", totalCommandNum)
 }
 
 func YCSB(command string, stopChannel chan bool, reportChannel chan Report, ID int) {
@@ -105,17 +111,17 @@ func YCSB(command string, stopChannel chan bool, reportChannel chan Report, ID i
 			if writeCnt == 0 {
 				writeTimeAverage = 0
 			} else {
-				writeTimeAverage = writeTime / time.Duration(writeCnt)
+				writeTimeAverage = writeTime 
 			}
 
 			var totalAverage time.Duration
 			if cnt == 0 {
 				totalAverage = 0
 			} else {
-				totalAverage = total / time.Duration(cnt)
+				totalAverage = total 
 			}
 			fmt.Println("Client stopped")
-			reportChannel <- Report{commandNum: cnt, readTime: readTimeAverage, writeTime: writeTimeAverage, totalTime: totalAverage}
+			reportChannel <- Report{commandNum: cnt, readTime: readTimeAverage, writeTime: writeTimeAverage, totalTime: totalAverage, readCnt: readCnt, writeCnt: writeCnt}
 			return
 
 		default:
@@ -143,7 +149,6 @@ func YCSB(command string, stopChannel chan bool, reportChannel chan Report, ID i
 				}
 				//end measuring time
 				elapsed := time.Since(start)
-				fmt.Println("Read time: ", elapsed)
 				readTime += time.Duration(elapsed)
 				total += time.Duration(elapsed)
 				readCnt++
