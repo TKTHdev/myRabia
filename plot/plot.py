@@ -1,5 +1,8 @@
 import matplotlib.pyplot as plt
 
+
+fontSize = 14
+
 # Data points for YCSB-A
 x_a = [1, 2, 4, 8, 16, 32, 64]
 y_a= [259.17,407.36,461.94,457.64,461.21,480.75,483.78]
@@ -19,7 +22,8 @@ plt.plot(x_a_d, y_a_d, marker='o', label='YCSB-A with Network Disconnection')
 plt.title('Throughput vs. Number of Clients [YCSB-A]')
 plt.xlabel('Number of Clients')
 plt.ylabel('Throughput (ops/sec)')
-plt.legend()
+plt.legend(fontsize=fontSize)
+plt.rcParams["font.size"] = 14
 plt.savefig('/home/Jamiroq/Documents/GitHub/myRabia/plot/throughput_plot-A.png')
 plt.close()
 
@@ -43,7 +47,8 @@ plt.plot(x_b_d, y_b_d, marker='o', label='YCSB-B with Network Disconnection')
 plt.title('Throughput vs. Number of Clients [YCSB-B]')
 plt.xlabel('Number of Clients')
 plt.ylabel('Throughput (ops/sec)')
-plt.legend()
+plt.legend(fontsize=fontSize)
+plt.rcParams["font.size"] = fontSize
 plt.savefig('/home/Jamiroq/Documents/GitHub/myRabia/plot/throughput_plot-B.png')
 plt.close()
 
@@ -62,7 +67,8 @@ plt.plot(x_c_d, y_c_d, marker='o', label='YCSB-C with Network Disconnection')
 plt.title('Throughput vs. Number of Clients [YCSB-C]')
 plt.xlabel('Number of Clients')
 plt.ylabel('Throughput (ops/sec)')
-plt.legend()
+plt.legend(fontsize=fontSize)
+plt.rcParams["font.size"] = fontSize
 plt.savefig('/home/Jamiroq/Documents/GitHub/myRabia/plot/throughput_plot-C.png')
 plt.close()
 
@@ -92,7 +98,8 @@ plt.plot(x_c_geo, y_c_geo, marker='o', label='YCSB-C when Geo-Distributed')
 plt.title('Throughput vs. Number of Clients [YCSB-A,B,C]')
 plt.xlabel('Number of Clients')
 plt.ylabel('Throughput (ops/sec)')
-plt.legend()
+plt.legend(fontsize=fontSize)
+plt.rcParams["font.size"] = fontSize
 plt.savefig('/home/Jamiroq/Documents/GitHub/myRabia/plot/throughput_plot-_geo.png')
 plt.close()
 
@@ -108,7 +115,8 @@ plt.plot(x_b_geo, y_b_geo, marker='o', label='YCSB-B when Geo-Distributed')
 plt.title('Throughput vs. Number of Clients [YCSB-B]')
 plt.xlabel('Number of Clients')
 plt.ylabel('Throughput (ops/sec)')
-plt.legend()
+plt.legend(fontsize=fontSize)
+plt.rcParams["font.size"] = fontSize
 plt.savefig('/home/Jamiroq/Documents/GitHub/myRabia/plot/throughput_plot-B_geo.png')
 plt.close()
 
@@ -125,11 +133,28 @@ plt.plot(x_c_geo, y_c_geo, marker='o', label='YCSB-C when Geo-Distributed')
 plt.title('Throughput vs. Number of Clients [YCSB-C]')
 plt.xlabel('Number of Clients')
 plt.ylabel('Throughput (ops/sec)')
-plt.legend()
+plt.legend(fontsize=fontSize)
+plt.rcParams["font.size"] = fontSize
 plt.savefig('/home/Jamiroq/Documents/GitHub/myRabia/plot/throughput_plot-C_geo.png')
 plt.close()
 
 
+
+
+x_o = [1, 2, 3, 4,5,6,7,8]
+y_o = [61695,112742,124189,145647,117635,126337, 120289, 109782]
+
+
+plt.figure(figsize=(10, 5))
+#plt.plot(x_c, y_c, marker='o', label='YCSB-C Normal')
+plt.plot(x_o, y_o, marker='o', label='YCSB-C when Geo-Distributed')
+plt.title('Throughput vs. Number of Clients [YCSB-C]')
+plt.xlabel('Number of Clients')
+plt.ylabel('Throughput (ops/sec)')
+plt.legend(fontsize=fontSize)
+plt.rcParams["font.size"] = fontSize
+plt.savefig('/home/Jamiroq/Documents/GitHub/myRabia/plot/throughput_plo_geo.png')
+plt.close()
 
 
 
