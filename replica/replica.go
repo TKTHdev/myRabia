@@ -276,8 +276,8 @@ func resolveTermination(termination TerminationValue, ownProposal CommandData){
 
 	IP := strings.Split(termination.CommandData.ReplicaAddr, ":")[0]
 	if ownIP == IP  {
-		c:= color.New(color.FgHiMagenta)
-		c.Println("sending response to client: ", termination.CommandData.ClientAddr)
+		//c:= color.New(color.FgHiMagenta)
+		//c.Println("sending response to client: ", termination.CommandData.ClientAddr)
 		responceChannelMapMutex.Lock()
 		responseChannelMap[termination.CommandData.ClientAddr] <- ResponseToClient{Value: 0, ClientAddr: termination.CommandData.ClientAddr}
 		responceChannelMapMutex.Unlock()
