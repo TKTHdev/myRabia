@@ -127,7 +127,7 @@ func main() {
 			value := TerminationValue{isNull: stateStruct.Value == 0, CommandData: stateStruct.CommandData, phase: 0, seq: seq}
 			//color.Green("reached consensus: ", value, "\n")
 			resolveTermination(value, *commandPointer)
-			//c.Println("SM in seq", seq, ":", StateMachine)
+			c.Println("SM in seq", seq, ":", StateMachine)
 			seq++
 			phaseSum += 0
 			// fmt.Println("null cnt:", nullCnt)
@@ -276,8 +276,6 @@ func resolveTermination(termination TerminationValue, ownProposal CommandData){
 
 	IP := strings.Split(termination.CommandData.ReplicaAddr, ":")[0]
 	if ownIP == IP  {
-		//c:= color.New(color.FgHiMagenta)
-		//c.Println("sending response to client: ", termination.CommandData.ClientAddr)
 		responceChannelMapMutex.Lock()
 		responseChannelMap[termination.CommandData.ClientAddr] <- ResponseToClient{Value: 0, ClientAddr: termination.CommandData.ClientAddr}
 		responceChannelMapMutex.Unlock()

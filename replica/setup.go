@@ -15,7 +15,7 @@ func setConnectionWithOtherReplicas(IPLists []string) []net.Conn {
 		if IP[0]!= 'N'  && IP!= stringIP{
 			conn, err := net.Dial("tcp", IP+":8080")
 			if err != nil {
-				fmt.Printf("接続エラー  %d: %v\n", conn, err)
+				//fmt.Printf("接続エラー  %d: %v\n", conn, err)
 				continue
 			}
 			conns = append(conns, conn)

@@ -27,7 +27,10 @@ for cmd in "${COMMANDS[@]}"; do
 
     # 各クライアント数で処理
     for clients in "${CLIENT_NUMBERS[@]}"; do
-        total_sum=0
+        total_commands=0
+        total_read_time=0
+        total_write_time=0
+        total_total_time=0
         
         echo "Testing with $clients clients" >> $OUTPUT_FILE
         
@@ -38,22 +41,40 @@ for cmd in "${COMMANDS[@]}"; do
             # プログラムを実行し、出力を取得
             temp_output=$(echo -e "$cmd\n$clients\n$DURATION" | $PROGRAM)
             
-            # Total number of commands executedの値を抽出
+            # 必要なデータを抽出
             commands=$(echo "$temp_output" | grep "Total number of commands executed:" | awk '{print $NF}')
+            read_time=$(echo "$temp_output" | grep "Total Read time:" | awk '{print $NF}')
+            write_time=$(echo "$temp_output" | grep "Total write time:" | awk '{print $NF}') 
+            total_time=$(echo "$temp_output" | grep "Average total time:" | awk '{print $NF}')
             
-            total_sum=$((total_sum + commands))
+            total_commands=$((total_commands + commands))
+            total_read_time=$(echo "scale=2; $total_read_time + $read_time" | bc)
+            total_write_time=$(echo "scale=2; $total_write_time + $write_time" | bc) 
+            total_total_time=$(echo "scale=2; $total_total_time + $total_time" | bc)
             
             echo "    Commands executed: $commands" >> $OUTPUT_FILE
+            echo "    Total read latency: $read_time" >> $OUTPUT_FILE
+            echo "    Total write latency: $write_time" >> $OUTPUT_FILE
+            echo "    Total latency: $total_time" >> $OUTPUT_FILE
+
             sleep 5  # 各実行間に5秒の休止
         done
         
-        # 平均を計算し、DURATIONで割る
-        average=$(echo "scale=2; $total_sum / $ITERATION_NUMBER" | bc)
-        result=$(echo "scale=2; $average / $DURATION" | bc)
+        # コマンド/秒の平均を計算 
+        average_commands=$(echo "scale=2; $total_commands / $ITERATION_NUMBER" | bc)
+        commands_per_sec=$(echo "scale=2; $average_commands / $DURATION" | bc)
         
+        # 平均レイテンシを計算
+        average_read_latency=$(echo "scale=2; $total_read_time / $ITERATION_NUMBER" | bc)
+        average_write_latency=$(echo "scale=2; $total_write_time / $ITERATION_NUMBER" | bc)
+        average_total_latency=$(echo "scale=2; $total_total_time / $ITERATION_NUMBER" | bc)
+
         # 結果をファイルに出力
-        echo "Clients: $clients, Average commands per second: $result" >> $OUTPUT_FILE
-        echo "----------------------------------------" >> $OUTPUT_FILE
+        echo "Clients: $clients, Average commands per second: $commands_per_sec" >> $OUTPUT_FILE
+        echo "Clients: $clients, Average read latency: $average_read_latency" >> $OUTPUT_FILE
+        echo "Clients: $clients, Average write latency: $average_write_latency" >> $OUTPUT_FILE 
+        echo "Clients: $clients, Average total latency: $average_total_latency" >> $OUTPUT_FILE
+        echo "----------------------------------------" >> $OUTPUT_FILE 
     done
 
     echo "Results for Command $cmd have been saved to $OUTPUT_FILE"

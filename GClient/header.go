@@ -33,8 +33,10 @@ type CommandTimestamp struct {
 	Timestamp int
 }
 
+
 type ResponseToClient struct {
-	Value int
+	Value      int
+	ClientAddr string
 }
 
 func init() {
