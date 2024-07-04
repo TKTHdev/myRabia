@@ -166,3 +166,34 @@ x_7= [1, 2, 3]
 y_7 = [(3089+3492+3251+3242)/120, (4453+4615+4276+4593)/120, (4598+5005+4979+4783+4855)/120]
 y_7_lat = [30/((3089+3492+3251+3242)/4), 60/((4453+4615+4276+4593)/4), 90/((4598+5005+4979+4783+4855)/5)]
 
+
+# データの定義
+throughput = {
+    'normal': [178.83, 276.46, 315.84],
+    'geo': [(23+23+23)/90, (39+43+51+45+44+43)/150,(55+46+49+64)/120]
+}
+latency = {
+    'normal': [0.005603, 0.007221, 0.012308],
+    'geo': [30/((23+23+23)/3), 60/((39+43+51+45+44+43)/6), 90/((55+46+49+64)/4)]
+}
+
+plt.figure(figsize=(12, 8))  
+
+plt.plot(throughput['normal'], latency['normal'], 'b-', label='通常', marker='o', markersize=10)
+plt.plot(throughput['geo'], latency['geo'], 'g-', label='地理分散 ', marker='s', markersize=10)
+
+# グラフの設定
+plt.xlabel('Throughput (reqs/sec)', fontsize=24)
+plt.ylabel('Median Latency (ms)', fontsize=24)
+plt.legend(fontsize=30)
+plt.grid(True)
+
+# 軸のフォントサイズを設定
+plt.tick_params(axis='both', which='major', labelsize=12)
+
+plt.tight_layout()
+
+plt.savefig('network_partition.png', dpi=300, bbox_inches='tight')
+
+plt.show()
+
